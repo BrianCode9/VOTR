@@ -26,8 +26,22 @@
     {
       "idx": 3,
       "version": "7",
-      "when": 1789856014608,
-      "tag": "0003_confidence_corroboration_speakers",
+      "when": 1789857836541,
+      "tag": "0003_candidate_sources",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1789859218768,
+      "tag": "0004_secret_random",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1789859797509,
+      "tag": "0005_confidence_corroboration_speakers",
       "breakpoints": true
     }
   ]

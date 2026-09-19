@@ -134,6 +134,8 @@ export interface FeedItem {
   documentTitle: string
   sourceName: string
   sourceUrl: string
+  /** Lead image for the source document, when it has one. */
+  imageUrl: string | null
   publishedAt: Date | null
   createdAt: Date
   isSynthetic: boolean
@@ -313,6 +315,7 @@ interface FeedRow {
   document_title: string
   source_name: string
   source_url: string
+  image_url: string | null
   published_at: string | Date | null
   created_at: string | Date
   is_synthetic: boolean
@@ -502,6 +505,7 @@ export async function getInsightFeed(query: FeedQuery = {}): Promise<FeedPage> {
         d.title as document_title,
         d.source_name,
         d.url as source_url,
+        d.image_url,
         d.published_at,
         d.is_synthetic,
         ${savedAt} as saved_at,
@@ -539,7 +543,7 @@ export async function getInsightFeed(query: FeedQuery = {}): Promise<FeedPage> {
            r.judge_rating, r.relevance_score,
            r.quote, r.quote_char_start, r.quote_char_end, r.quote_verified,
            r.quote_similarity, r.candidate_name, r.document_id, r.document_title,
-           r.source_name, r.source_url, r.published_at, r.created_at,
+           r.source_name, r.source_url, r.image_url, r.published_at, r.created_at,
            r.is_synthetic, r.saved_at, r.siblings
     from grouped r
     where r.rn = 1
@@ -698,6 +702,7 @@ function toFeedItem(row: FeedRow): FeedItem {
     documentTitle: row.document_title,
     sourceName: row.source_name,
     sourceUrl: row.source_url,
+    imageUrl: row.image_url,
     publishedAt: row.published_at ? new Date(row.published_at) : null,
     createdAt: new Date(row.created_at),
     isSynthetic: row.is_synthetic,

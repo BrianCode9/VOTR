@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import Image from "next/image"
 import type { FeedItem } from "@/lib/queries/feed"
 
 /**
@@ -79,6 +80,17 @@ export function InsightCard({ item }: { item: FeedItem }) {
       </header>
 
       <div className="flex-1 flex flex-col justify-center py-6 min-h-0 overflow-y-auto">
+        {item.imageUrl ? (
+          <Image
+            src={item.imageUrl}
+            alt=""
+            width={1280}
+            height={720}
+            unoptimized
+            className="mb-6 aspect-[16/9] w-full max-h-[28vh] object-cover"
+          />
+        ) : null}
+
         <blockquote>
           <p className="text-[clamp(1.5rem,5.2vw,2.75rem)] leading-[1.15] font-semibold tracking-[-0.02em]">
             <span

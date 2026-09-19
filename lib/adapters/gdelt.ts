@@ -115,6 +115,7 @@ export async function fetchGdeltDocuments(
       sourceType: "gdelt",
       sourceName: article.domain || "gdelt",
       title: text.value.title || article.title || article.url,
+      imageUrl: text.value.imageUrl ?? undefined,
       publishedAt: parseSeenDate(article.seendate) ?? text.value.publishedAt,
       fetchedAt: new Date(),
       rawText: text.value.text,
