@@ -1,5 +1,5 @@
 import { desc, eq } from "drizzle-orm"
-import { db } from "@/db"
+import { db, hasDatabase } from "@/db"
 import { candidates, documents, insights } from "@/db/schema"
 
 /**
@@ -33,6 +33,11 @@ export interface FeedItem {
 }
 
 export async function getFeed(limit = 40): Promise<FeedItem[]> {
+  // Someone working on the UI may not be in the Neon org yet. Return an empty
+  // feed so the page renders its empty state instead of crashing the dev
+  // server with a connection error.
+  if (!hasDatabase) return []
+
   const rows = await db
     .select({
       id: insights.id,

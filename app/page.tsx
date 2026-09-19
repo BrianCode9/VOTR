@@ -1,3 +1,4 @@
+import { hasDatabase } from "@/db"
 import { getFeed } from "@/lib/queries/feed"
 import { InsightCard } from "@/components/insight-card"
 
@@ -10,14 +11,37 @@ export default async function FeedPage() {
 
   if (items.length === 0) {
     return (
-      <main className="min-h-dvh bg-ink flex items-center justify-center px-6">
-        <div className="max-w-md space-y-3">
-          <h1 className="text-2xl font-semibold tracking-[-0.02em]">Nothing in the feed</h1>
-          <p className="text-text-lo">
-            No verified insights are stored yet. Run{" "}
-            <code className="font-mono text-mark">npm run ingest</code> to pull documents,
-            then <code className="font-mono text-mark">npm run persist</code> to extract
-            and verify quotes from them.
+      <main className="min-h-dvh bg-ink flex items-center justify-center px-6 py-12">
+        <div className="max-w-lg space-y-4">
+          <p className="font-mono text-[11px] uppercase tracking-wider text-text-lo">
+            {hasDatabase ? "Feed is empty" : "No database connection"}
+          </p>
+          <h1 className="text-2xl font-semibold tracking-[-0.02em]">
+            {hasDatabase
+              ? "Nothing has been ingested yet."
+              : "You are not connected to the database."}
+          </h1>
+
+          {hasDatabase ? (
+            <p className="text-text-lo leading-relaxed">
+              Pull some documents, then extract and verify quotes from them:
+            </p>
+          ) : (
+            <p className="text-text-lo leading-relaxed">
+              The interface runs without it, so you can build and style against this
+              page. To load real data, run setup. If it reports that the env pull
+              failed, you are not in the Neon org yet and need an invite.
+            </p>
+          )}
+
+          <pre className="font-mono text-[12px] leading-relaxed bg-ink-raised text-text-hi p-4 overflow-x-auto">
+            {hasDatabase
+              ? "npm run ingest\nnpm run persist"
+              : "npm run setup"}
+          </pre>
+
+          <p className="font-mono text-[11px] text-text-lo">
+            See README.md for the full setup, or AGENTS.md if you are an agent.
           </p>
         </div>
       </main>
