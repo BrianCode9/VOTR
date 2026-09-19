@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import Image from "next/image"
 import type { FeedItem } from "@/lib/queries/feed"
 
 /**
@@ -35,6 +36,7 @@ export function InsightCard({ item }: { item: FeedItem }) {
   const ref = useRef<HTMLElement>(null)
   const [swept, setSwept] = useState(false)
   const [showWhy, setShowWhy] = useState(false)
+  const [portraitFailed, setPortraitFailed] = useState(false)
 
   // The highlight sweep is the one orchestrated entrance. It fires when the
   // card actually reaches the viewport, not on mount, or every card sweeps at
@@ -53,6 +55,12 @@ export function InsightCard({ item }: { item: FeedItem }) {
   }, [])
 
   const issue = ISSUE_LABELS[item.issueTag] ?? item.issueTag.replace(/_/g, " ")
+  const initials = item.candidateName
+    ?.trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("")
 
   return (
     <article
@@ -97,7 +105,54 @@ export function InsightCard({ item }: { item: FeedItem }) {
 
       <footer className="space-y-3">
         <div className="font-mono text-[11px] leading-relaxed text-text-lo">
-          <div className="text-text-hi">{item.candidateName}</div>
+          <div className="flex items-center gap-3">
+            {item.candidateName ? (
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border border-text-lo/30 bg-ink-raised text-sm text-text-lo">
+                {item.candidatePhoto && !portraitFailed ? (
+                  <Image
+                    src={item.candidatePhoto.imageUrl}
+                    alt={`${item.candidateName} portrait`}
+                    width={56}
+                    height={56}
+                    unoptimized
+                    onError={() => setPortraitFailed(true)}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <span aria-label="Portrait unavailable">{initials || "?"}</span>
+                )}
+              </div>
+            ) : null}
+            <div>
+              <div className="text-text-hi">{item.candidateName}</div>
+              {item.candidatePhoto ? (
+                <div className="mt-1 flex flex-wrap gap-x-1">
+                  <a
+                    href={item.candidatePhoto.filePage}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline underline-offset-2 hover:text-text-hi"
+                  >
+                    Photo: {item.candidatePhoto.creator || "Wikimedia contributor"}
+                  </a>
+                  {item.candidatePhoto.licenseUrl ? (
+                    <a
+                      href={item.candidatePhoto.licenseUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline underline-offset-2 hover:text-text-hi"
+                    >
+                      · {item.candidatePhoto.licenseName}
+                    </a>
+                  ) : (
+                    <span>· {item.candidatePhoto.licenseName}</span>
+                  )}
+                </div>
+              ) : item.candidateName ? (
+                <div className="mt-1">No free verified portrait found</div>
+              ) : null}
+            </div>
+          </div>
           <div>
             {item.attribution === "own_words" ? "Own words" : "Reporter's characterization"}
             {" · "}

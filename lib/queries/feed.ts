@@ -89,6 +89,14 @@ export interface FeedItem {
   relevanceScore: number
   /** null when the document names no one, which claims and risks often do. */
   candidateName: string | null
+  /** Portrait with its reusable image license and source attribution. */
+  candidatePhoto: {
+    imageUrl: string
+    filePage: string
+    creator: string | null
+    licenseName: string
+    licenseUrl: string | null
+  } | null
   documentId: string
   documentTitle: string
   sourceName: string
@@ -237,6 +245,11 @@ interface FeedRow {
   reading_level_estimate: number | null
   topic_boost: number
   candidate_name: string | null
+  candidate_photo_url: string | null
+  candidate_photo_file_page: string | null
+  candidate_photo_creator: string | null
+  candidate_photo_license_name: string | null
+  candidate_photo_license_url: string | null
   document_id: string
   document_title: string
   source_name: string
@@ -367,6 +380,11 @@ export async function getInsightFeed(query: FeedQuery = {}): Promise<FeedPage> {
         substring(d.raw_text from i.quote_char_start + 1
                   for i.quote_char_end - i.quote_char_start) as quote,
         c.name as candidate_name,
+        cp.image_url as candidate_photo_url,
+        cp.file_page as candidate_photo_file_page,
+        cp.creator as candidate_photo_creator,
+        cp.license_name as candidate_photo_license_name,
+        cp.license_url as candidate_photo_license_url,
         d.id as document_id,
         d.title as document_title,
         d.source_name,
@@ -378,6 +396,7 @@ export async function getInsightFeed(query: FeedQuery = {}): Promise<FeedPage> {
       from insights i
       join documents d on d.id = i.document_id
       left join candidates c on c.id = i.candidate_id
+      left join candidate_photos cp on cp.candidate_id = i.candidate_id
       ${savedJoin}
       where i.status = 'published'
         -- An offset past the end of the document means the stored text and the
@@ -404,7 +423,10 @@ export async function getInsightFeed(query: FeedQuery = {}): Promise<FeedPage> {
            r.fact_check_status, r.topic_boost,
            r.judge_rating, r.relevance_score,
            r.quote, r.quote_char_start, r.quote_char_end, r.quote_verified,
-           r.quote_similarity, r.candidate_name, r.document_id, r.document_title,
+           r.quote_similarity, r.candidate_name, r.candidate_photo_url,
+           r.candidate_photo_file_page, r.candidate_photo_creator,
+           r.candidate_photo_license_name, r.candidate_photo_license_url,
+           r.document_id, r.document_title,
            r.source_name, r.source_url, r.published_at, r.created_at,
            r.is_synthetic, r.saved_at, r.siblings
     from grouped r
@@ -532,6 +554,15 @@ function toFeedItem(row: FeedRow): FeedItem {
     judgeRating: row.judge_rating,
     relevanceScore: row.relevance_score,
     candidateName: row.candidate_name,
+    candidatePhoto: row.candidate_photo_url && row.candidate_photo_file_page && row.candidate_photo_license_name
+      ? {
+          imageUrl: row.candidate_photo_url,
+          filePage: row.candidate_photo_file_page,
+          creator: row.candidate_photo_creator,
+          licenseName: row.candidate_photo_license_name,
+          licenseUrl: row.candidate_photo_license_url,
+        }
+      : null,
     documentId: row.document_id,
     documentTitle: row.document_title,
     sourceName: row.source_name,
