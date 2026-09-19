@@ -9,7 +9,7 @@
  * are measured against whatever this function returned on the day it ran.
  */
 
-const NAMED_ENTITIES: Record<string, string> = {
+export const NAMED_ENTITIES: Record<string, string> = {
   amp: "&",
   lt: "<",
   gt: ">",
