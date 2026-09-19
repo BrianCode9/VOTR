@@ -54,10 +54,17 @@ git clone https://github.com/BrianCode9/VOTR.git
 cd VOTR
 npm install
 
-npm i -g neon@latest
-neon login
-neon env pull
+npm i -g neon@latest && neon login
+npm run setup
 ```
+
+`npm run setup` is the only command you have to read the output of. It checks
+your Node version, pulls the database credentials from Neon, tells you which
+API keys are missing and where to get each one, and then proves the database
+and your Anthropic key actually answer. Re-run it any time; it is safe.
+
+No credentials are in this repository and none should ever be committed. Each
+person supplies their own keys in `.env.local`, which is gitignored.
 
 That is the whole database setup. `.neon` is committed to this repo, so the clone
 already knows which Neon org, project, and branch to use. `neon env pull` reads it and

@@ -13,7 +13,8 @@
     "ingest": "tsx scripts/ingest.ts",
     "test": "tsx --test lib/**/*.test.ts",
     "extract": "tsx scripts/extract.ts",
-    "persist": "tsx scripts/persist.ts"
+    "persist": "tsx scripts/persist.ts",
+    "setup": "tsx scripts/setup.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.127.0",
