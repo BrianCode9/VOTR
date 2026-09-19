@@ -8,6 +8,7 @@ export const MIN_ARTICLE_CHARS = 400
 
 export interface ArticleText {
   title: string | null
+  imageUrl: string | null
   text: string
   publishedAt: Date | null
 }
@@ -33,6 +34,7 @@ export async function extractArticleText(
 
     return ok({
       title: article?.title?.trim() || null,
+      imageUrl: article?.image?.trim() || null,
       text,
       publishedAt: parseDate(article?.published),
     })

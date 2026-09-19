@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="Votr">
+  <title>Votr</title>
+  <defs>
+    <linearGradient id="votr-mark" x1="6" y1="4" x2="42" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4C82FF" />
+      <stop offset="1" stop-color="#14318F" />
+    </linearGradient>
+  </defs>
+  <rect width="48" height="48" rx="14" fill="url(#votr-mark)" />
+  <path
+    d="M14 20.5 L22.5 33 L34.5 15"
+    fill="none"
+    stroke="#FFFFFF"
+    stroke-width="4.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>

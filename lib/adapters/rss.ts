@@ -82,6 +82,7 @@ export async function fetchRssFeed(
       sourceType: "rss",
       sourceName,
       title: article.value.title || item.title?.trim() || url,
+      imageUrl: article.value.imageUrl ?? imageFromRssItem(item),
       // The feed's own date is more trustworthy than a date scraped from the page.
       publishedAt: parseDate(item.isoDate ?? item.pubDate) ?? article.value.publishedAt,
       fetchedAt: new Date(),
@@ -103,6 +104,39 @@ export async function fetchRssFeed(
   }
 
   return { documents, failures }
+}
+
+/**
+ * Best-effort lead image for a feed entry, used when the article page has none.
+ *
+ * Feeds advertise images in two places and neither is reliable on its own: an
+ * <enclosure> tag, or an <img> buried in content:encoded. Tracking pixels are
+ * common in the latter, so obvious ones are skipped rather than stored as the
+ * card image.
+ */
+function imageFromRssItem(item: { enclosure?: { url?: string }; [key: string]: unknown }): string | undefined {
+  const enclosureUrl = item.enclosure?.url?.trim()
+  if (enclosureUrl) return enclosureUrl
+
+  const content = item["content:encoded"]
+  if (typeof content !== "string") return undefined
+
+  const imagePattern = /<img\b[^>]*\bsrc\s*=\s*["']([^"']+)["'][^>]*>/gi
+  for (const match of content.matchAll(imagePattern)) {
+    const url = match[1]?.trim()
+    if (url && !isTrackingImage(url)) return url
+  }
+
+  return undefined
+}
+
+function isTrackingImage(url: string): boolean {
+  try {
+    const parsed = new URL(url)
+    return /tracking|pixel|spacer/i.test(`${parsed.hostname}${parsed.pathname}`)
+  } catch {
+    return true
+  }
 }
 
 export interface RssAdapterConfig {
