@@ -27,9 +27,10 @@ Nothing secret is in this repo and nothing secret should ever be committed.
 - **Database:** you do not need a connection string. `.neon` is committed, so
   `neon env pull` fetches credentials against your own Neon login. You must be
   a member of the Neon org first; ask the project owner for an invite.
-- **API keys:** the team shares one set. Do not create your own accounts. Ask
-  for the shared block and paste it into `.env.local`, which is gitignored.
-  `npm run setup` then verifies each key actually works.
+- **API keys:** go in `.env.local`, which is gitignored. `ANTHROPIC_API_KEY`
+  and `ELEVENLABS_API_KEY` are your own. `NVIDIA_API_KEY` is shared by the
+  team, so ask for it rather than making one. `npm run setup` verifies each
+  key with a real call.
 
 If a key is missing, stop and say so. Do not stub an API call and continue.
 A stubbed call produces plausible output that nobody notices for four features.

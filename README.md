@@ -66,60 +66,31 @@ actually answer. Re-run it any time; it is safe.
 If it says `neon env pull failed`, you are not in the Neon org yet. Ask for an
 invite and re-run. Nothing else can fix that locally.
 
-### Keys are shared, do not make your own
+### API keys
 
-The team runs on one set of API keys. You do not need an Anthropic, NVIDIA, or
-ElevenLabs account of your own.
+Three keys go in `.env.local`, which is gitignored. Two are yours, one is the
+team's.
 
-Ask whoever set the project up for the shared block and paste it into
-`.env.local`, which is gitignored:
+| Key | Whose | Where |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | yours | [console.anthropic.com](https://console.anthropic.com/settings/keys) |
+| `ELEVENLABS_API_KEY` | yours | [elevenlabs.io](https://elevenlabs.io/app/settings/api-keys) |
+| `NVIDIA_API_KEY` | **shared, one for the team** | ask whoever set the project up |
 
-```
-ANTHROPIC_API_KEY=...
-NVIDIA_API_KEY=...
-ELEVENLABS_API_KEY=...
-```
+Make your own Anthropic and ElevenLabs keys. Do not make your own NVIDIA key;
+there is one for the whole team, so ask for it rather than burning a second
+free tier.
 
-Then re-run `npm run setup`. It will confirm each key actually works rather
-than just checking that something is present.
+You do **not** add `DATABASE_URL` by hand. `npm run setup` pulls it from Neon
+against your own login, so nobody passes a database password around.
 
-You do **not** paste `DATABASE_URL`. `npm run setup` pulls that from Neon
-against your own login, so nobody has to pass a database password around.
+Re-run `npm run setup` after adding keys. It calls each API for real rather
+than just checking that a value is present.
 
-The keys are not in this repository and must not be committed. This repo is
+Nothing secret is committed here, and nothing secret should be. This repo is
 public: GitHub scans public repositories for credentials and providers revoke
-leaked keys automatically, usually within minutes, so committing the shared
-block would take the whole team down rather than save anyone time.
-
-That is the whole database setup. `.neon` is committed to this repo, so the clone
-already knows which Neon org, project, and branch to use. `neon env pull` reads it and
-writes `DATABASE_URL`, `DATABASE_URL_UNPOOLED`, and `NEON_BRANCH` into your
-`.env.local`.
-
-You do not paste a connection string by hand, and nobody should be sending you one
-over chat. `neon env pull` is safe to re-run at any time: it rewrites only those three
-variables and leaves your API keys alone.
-
-If `.neon` is ever missing or you need to relink from scratch:
-
-```bash
-neon link --project-id cold-glade-81327185 --branch production -y
-```
-
-Then fill in the three remaining keys in `.env.local` by hand. Ask whoever owns the
-accounts for them:
-
-```
-DATABASE_URL            # written by `neon link`, do not edit
-DATABASE_URL_UNPOOLED   # written by `neon link`, do not edit
-NEON_BRANCH             # written by `neon link`, do not edit
-ANTHROPIC_API_KEY       # you supply
-NVIDIA_API_KEY          # you supply
-ELEVENLABS_API_KEY      # you supply
-```
-
-`.env.local` is gitignored and must stay that way. `.env.example` is committed and
-documents the shape only. Never put a real value in it.
+leaked keys automatically, so committing a key takes the team down rather than
+saving anyone time.
 
 Verify:
 
