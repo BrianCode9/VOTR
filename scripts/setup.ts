@@ -46,28 +46,67 @@ async function main() {
     blocking++
   }
 
-  // 2. Neon CLI and project link
-  const neonVersion = run("neon --version")
+  // 2. Neon CLI, installed for you if absent
+  let neonVersion = run("neon --version")
+  if (!neonVersion) {
+    console.log("  installing the neon CLI...")
+    try {
+      execSync("npm i -g neon@latest", { stdio: "inherit" })
+      neonVersion = run("neon --version")
+    } catch {
+      bad("could not install the neon CLI")
+      hint("macOS/Linux, if this was a permissions error: sudo npm i -g neon@latest")
+      hint("or set a user-writable prefix: npm config set prefix ~/.npm-global")
+      blocking++
+    }
+  }
+
   if (neonVersion) {
     ok(`neon CLI ${neonVersion}`)
+
+    // `neon me` opens a browser when there is no stored credential, so it
+    // doubles as the login step. stdio is inherited so the auth URL is
+    // visible and the browser handshake can complete.
+    let account = run("neon me")
+    if (!account) {
+      console.log("  signing you in to Neon, a browser window will open...")
+      try {
+        execSync("neon me", { stdio: "inherit" })
+        account = run("neon me")
+      } catch {
+        // fall through to the failure below
+      }
+    }
+
+    if (account) {
+      const login = /Login\s+(\S+)/.exec(account)?.[1] ?? "ok"
+      ok(`signed in to Neon as ${login}`)
+    } else {
+      bad("Neon sign-in did not complete")
+      hint("run it directly and follow the browser prompt: neon login")
+      blocking++
+    }
+
+    if (!existsSync(".neon")) {
+      warn(".neon is missing, relinking")
+      execSync("neon link --project-id cold-glade-81327185 --branch production -y", {
+        stdio: "inherit",
+      })
+    }
+
     if (existsSync(".neon")) {
       const link = JSON.parse(readFileSync(".neon", "utf8"))
-      ok(`linked to project ${link.projectId} on branch ${link.branch}`)
-      if (run("neon env pull") !== null) {
-        ok("pulled database credentials into .env.local")
-      } else {
-        bad("neon env pull failed, you are probably not in the Neon org yet")
-        hint("Ask the project owner to invite you, then run: neon login && neon env pull")
-        blocking++
-      }
-    } else {
-      warn(".neon is missing, relink with:")
-      hint("neon link --project-id cold-glade-81327185 --branch production -y")
+      ok(`project ${link.projectId}, branch ${link.branch}`)
     }
-  } else {
-    bad("neon CLI not installed")
-    hint("npm i -g neon@latest && neon login")
-    blocking++
+
+    if (run("neon env pull") !== null) {
+      ok("pulled database credentials into .env.local")
+    } else {
+      bad("neon env pull failed")
+      hint("This almost always means you are not in the Neon org yet.")
+      hint("Ask Brian to invite you to org-nameless-credit-38867566, then re-run.")
+      blocking++
+    }
   }
 
   // 3. Env file

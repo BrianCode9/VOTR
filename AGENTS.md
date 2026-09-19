@@ -11,7 +11,7 @@ structural. `STATUS.md` says what is built and what is not.
 
 ```bash
 npm install
-npm run setup     # says exactly what is missing and how to fix it
+npm run setup     # installs the neon CLI, signs you in, pulls DB creds, checks keys
 npm run dev       # feed at localhost:3000
 ```
 
