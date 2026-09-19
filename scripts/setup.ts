@@ -119,33 +119,44 @@ async function main() {
   }
   process.loadEnvFile(".env.local")
 
-  const keys: { name: string; where: string; needed: string }[] = [
+  // The team shares one set of keys. Nobody needs to make their own account.
+  const keys: { name: string; fallback: string; needed: string }[] = [
     {
       name: "ANTHROPIC_API_KEY",
-      where: "https://console.anthropic.com/settings/keys",
+      fallback: "https://console.anthropic.com/settings/keys",
       needed: "extraction (npm run persist)",
     },
     {
       name: "NVIDIA_API_KEY",
-      where: "https://build.nvidia.com  (key must start with nvapi-)",
+      fallback: "https://build.nvidia.com  (a valid key starts with nvapi-)",
       needed: "Nemotron triage, judge, and the eval",
     },
     {
       name: "ELEVENLABS_API_KEY",
-      where: "https://elevenlabs.io/app/settings/api-keys",
+      fallback: "https://elevenlabs.io/app/settings/api-keys",
       needed: "transcription and audio briefings",
     },
   ]
 
+  const missing: string[] = []
   console.log()
   for (const k of keys) {
     const v = process.env[k.name]
     if (v && v.length > 10) {
       ok(`${k.name} present`)
     } else {
+      missing.push(k.name)
       warn(`${k.name} missing, needed for ${k.needed}`)
-      hint(`get one at ${k.where}`)
-      hint(`then add it to .env.local`)
+    }
+  }
+
+  if (missing.length > 0) {
+    console.log()
+    hint("These are SHARED across the team. Do not create your own accounts.")
+    hint("Ask whoever set the project up to paste the block, then drop it into")
+    hint(".env.local and re-run. Self-serve links, only if you truly need one:")
+    for (const k of keys) {
+      if (missing.includes(k.name)) hint(`  ${k.name}  ${k.fallback}`)
     }
   }
 

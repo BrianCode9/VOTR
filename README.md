@@ -66,8 +66,30 @@ actually answer. Re-run it any time; it is safe.
 If it says `neon env pull failed`, you are not in the Neon org yet. Ask for an
 invite and re-run. Nothing else can fix that locally.
 
-No credentials are in this repository and none should ever be committed. Each
-person supplies their own keys in `.env.local`, which is gitignored.
+### Keys are shared, do not make your own
+
+The team runs on one set of API keys. You do not need an Anthropic, NVIDIA, or
+ElevenLabs account of your own.
+
+Ask whoever set the project up for the shared block and paste it into
+`.env.local`, which is gitignored:
+
+```
+ANTHROPIC_API_KEY=...
+NVIDIA_API_KEY=...
+ELEVENLABS_API_KEY=...
+```
+
+Then re-run `npm run setup`. It will confirm each key actually works rather
+than just checking that something is present.
+
+You do **not** paste `DATABASE_URL`. `npm run setup` pulls that from Neon
+against your own login, so nobody has to pass a database password around.
+
+The keys are not in this repository and must not be committed. This repo is
+public: GitHub scans public repositories for credentials and providers revoke
+leaked keys automatically, usually within minutes, so committing the shared
+block would take the whole team down rather than save anyone time.
 
 That is the whole database setup. `.neon` is committed to this repo, so the clone
 already knows which Neon org, project, and branch to use. `neon env pull` reads it and
