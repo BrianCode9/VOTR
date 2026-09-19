@@ -43,3 +43,9 @@ next-env.d.ts
 # Neon project link (org/project/branch IDs only, no secrets) - committed on purpose
 # so `neon` commands and teammates resolve the project automatically after clone.
 # (.neon is intentionally absent from this file)
+
+# Download cache (public source files; do not commit full pages or contact lists)
+/data/candidates/raw/
+/data/candidates/policy-source-sections.json
+/data/candidates/schema-extension.txt
+/scripts/__pycache__/
