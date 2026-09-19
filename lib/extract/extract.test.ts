@@ -79,7 +79,10 @@ const STANCE = {
   positionSummary: "Supports capping rent increases at three percent.",
   plainLanguage: "She wants to limit how much rents can go up.",
   attribution: "own_words" as const,
-  confidence: 0.95,
+  // The per-item support rating, which replaced the old `confidence` field on
+  // stances. See lib/confidence/score.ts for why it is named for what it
+  // measures rather than being a third thing called "confidence".
+  claimSupportConfidence: 0.95,
   quote: "We will cap rent increases at three percent next year",
   quoteCharStart: 0,
   quoteCharEnd: 0,
@@ -125,6 +128,7 @@ describe("flattenExtraction", () => {
             plainLanguage: "She says 4,000 cheap homes disappeared since 2024.",
             attribution: "own_words",
             checkability: "easily_checkable",
+            claimSupportConfidence: 0.9,
             quote: "the city had lost 4,000 affordable units since 2024",
             quoteCharStart: 0,
             quoteCharEnd: 0,

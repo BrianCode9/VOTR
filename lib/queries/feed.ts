@@ -1,5 +1,10 @@
 import { sql, type SQL } from "drizzle-orm"
 import { db, hasDatabase } from "@/db"
+import {
+  isConfidenceLabel,
+  type ConfidenceLabel,
+  type PresentationMode,
+} from "../confidence/score"
 import { isInsightFlag, type FactCheckStatus, type InsightFlag } from "../flags/types"
 import {
   CARD_TYPES,
@@ -31,7 +36,7 @@ import { loadTopics } from "../topics/taxonomy"
  * without one falls back to `recent` rather than erroring: a sort order is not
  * worth a failed request.
  */
-export type FeedSort = "recent" | "relevant" | "saved"
+export type FeedSort = "recent" | "relevant" | "saved" | "confidence" | "corroboration"
 
 export type QuoteVerification = "exact" | "normalized" | "transcript" | "fuzzy"
 
@@ -72,6 +77,37 @@ export interface FeedItem {
   flags: InsightFlag[]
   factCheckStatus: FactCheckStatus
   /**
+   * How directly the quote supports this card's claim, 0 to 1.
+   *
+   * Null on a row written before the extractor was asked the question. A
+   * client should branch on `presentationMode`, not on this number: the
+   * threshold lives on the server precisely so it can move without a client
+   * release. See lib/confidence/score.ts.
+   */
+  claimSupportConfidence: number | null
+  /** The bucketed score. `low` is the one that changes how a card reads. */
+  confidenceLabel: ConfidenceLabel
+  /** True exactly when confidenceLabel is `low`. */
+  verifyYourself: boolean
+  /**
+   * What the client may do with this card.
+   *
+   * `stated`       render the claim as written.
+   * `nudge_verify` never as flatly stated fact: lead with the quote, show the
+   *                check-it-yourself affordance, link the source.
+   */
+  presentationMode: PresentationMode
+  /**
+   * Independent sources reporting this insight, including this card's own.
+   *
+   * Always at least 1. `sources` is capped, so `count` can exceed its length;
+   * a client showing "+3 more" reads the count, not the array.
+   */
+  sourceDiversity: {
+    count: number
+    sources: { sourceName: string; sourceUrl: string }[]
+  }
+  /**
    * The rewrite pass's sentence, or null when it did not run or did not
    * produce something usable. The card always has `quote` to fall back on.
    */
@@ -89,6 +125,11 @@ export interface FeedItem {
   relevanceScore: number
   /** null when the document names no one, which claims and risks often do. */
   candidateName: string | null
+  /**
+   * The person, not the ballot line. Null on an unattributed card and on rows
+   * written before `speakers` existed. This is the id the timeline takes.
+   */
+  speakerId: string | null
   documentId: string
   documentTitle: string
   sourceName: string
@@ -138,6 +179,19 @@ export interface FeedQuery {
   topicMode?: TopicMode
   /** Restrict to insights carrying at least one of these badges. */
   flags?: InsightFlag[]
+  /** Restrict to these confidence labels. Empty or absent means all. */
+  confidenceLabels?: ConfidenceLabel[]
+  /**
+   * `true` for only the cards that need a verify-yourself nudge, `false` for
+   * only the ones that do not. Absent means both, which is the feed.
+   */
+  verifyYourself?: boolean
+  /** Only insights confirmed by at least this many independent sources. */
+  minCorroboration?: number
+  /** Restrict to one person, across every race and every spelling of a name. */
+  speakerId?: string
+  /** How many corroborating sources to inline per card. Default 3, max 10. */
+  sourceDiversityLimit?: number
   /**
    * Restrict to one reader's saved insights.
    *
@@ -161,6 +215,8 @@ const MAX_LIMIT = 50
 /** "saved" without a reader has nothing to order by, so it degrades to recent. */
 function resolveSort(query: FeedQuery): FeedSort {
   if (query.sort === "relevant") return "relevant"
+  if (query.sort === "confidence") return "confidence"
+  if (query.sort === "corroboration") return "corroboration"
   if (query.sort === "saved" && query.savedBy) return "saved"
   return "recent"
 }
@@ -171,6 +227,14 @@ interface Cursor {
   s: FeedSort
   /** relevance_score, only on the relevant sort. */
   r?: number
+  /**
+   * The leading numeric term of the confidence and corroboration sorts.
+   *
+   * Same reason `r` exists: a keyset predicate has to compare against the
+   * exact tuple the ORDER BY uses, and a sort whose first term is missing from
+   * the cursor hands back the top of the list again at every page boundary.
+   */
+  n?: number
   /** created_at, ISO. */
   t: string
   id: string
@@ -233,9 +297,17 @@ interface FeedRow {
   topics: string[] | null
   flags: InsightFlag[] | null
   fact_check_status: FactCheckStatus
+  claim_support_confidence: number | null
+  confidence_label: ConfidenceLabel
+  verify_yourself: boolean
+  presentation_mode: PresentationMode
+  corroboration_count: number
+  corroborating_sources: { sourceName: string; sourceUrl: string }[] | null
+  confidence_sort: number
   plain_language_summary: string | null
   reading_level_estimate: number | null
   topic_boost: number
+  speaker_id: string | null
   candidate_name: string | null
   document_id: string
   document_title: string
@@ -285,6 +357,10 @@ export async function getInsightFeed(query: FeedQuery = {}): Promise<FeedPage> {
     (CARD_TYPES as readonly string[]).includes(t),
   )
   const flags = (query.flags ?? []).filter(isInsightFlag)
+  const confidenceLabels = [
+    ...new Set((query.confidenceLabels ?? []).filter(isConfidenceLabel)),
+  ]
+  const sourceDiversityLimit = Math.min(Math.max(1, query.sourceDiversityLimit ?? 3), 10)
 
   const topicMode: TopicMode = query.topicMode === "strict" ? "strict" : "boost"
   // Boosting with nothing selected is just the normal feed, and carrying a
@@ -307,6 +383,20 @@ export async function getInsightFeed(query: FeedQuery = {}): Promise<FeedPage> {
     )
     filters.push(sql`and i.flags && array[${list}]::insight_flag[]`)
   }
+  if (confidenceLabels.length > 0) {
+    filters.push(sql`and i.confidence_label::text in ${values(confidenceLabels)}`)
+  }
+  // An explicit false is a filter for "only the confident ones", which is not
+  // the same as leaving it out. `!== undefined` rather than a truthiness test.
+  if (query.verifyYourself !== undefined) {
+    filters.push(sql`and i.verify_yourself = ${query.verifyYourself}`)
+  }
+  if (query.minCorroboration !== undefined && query.minCorroboration > 1) {
+    filters.push(sql`and i.corroboration_count >= ${Math.floor(query.minCorroboration)}`)
+  }
+  // The person, not the ballot line, so a speaker filter spans every race and
+  // every spelling of their name. `candidateId` is kept and still works.
+  if (query.speakerId) filters.push(sql`and i.speaker_id = ${query.speakerId}::uuid`)
   // Strict mode is a filter; boost mode is an ordering term computed below.
   if (selectedTopics.length > 0 && topicMode === "strict") {
     filters.push(sql`and ${taggedWith(selectedTopics)}`)
@@ -323,6 +413,18 @@ export async function getInsightFeed(query: FeedQuery = {}): Promise<FeedPage> {
     ? sql`case when ${taggedWith(selectedTopics)} then 1 else 0 end`
     : sql`0`
 
+  /**
+   * The numeric term the confidence and corroboration sorts lead with.
+   *
+   * `claim_support_confidence` falls back to `extractor_confidence` so a row
+   * written before the column existed sorts by the rating it does have rather
+   * than sinking to the bottom of every confidence-ordered page. Spelled once
+   * here and referenced by name afterwards, because an ORDER BY and its keyset
+   * predicate that compute the same value two ways is a page boundary bug
+   * waiting for the first row where they disagree.
+   */
+  const confidenceSort = sql`coalesce(i.claim_support_confidence, i.extractor_confidence, 0)`
+
   const keyset = buildKeyset(sort, cursor, boosting)
   // The boost bucket leads the sort, so a reader's issues come first and the
   // rest of the feed follows in its normal order rather than disappearing.
@@ -330,9 +432,13 @@ export async function getInsightFeed(query: FeedQuery = {}): Promise<FeedPage> {
   const ordering =
     sort === "relevant"
       ? sql`order by ${boostOrder}r.relevance_score desc, r.created_at desc, r.id desc`
-      : sort === "saved"
-        ? sql`order by ${boostOrder}r.saved_at desc, r.id desc`
-        : sql`order by ${boostOrder}r.created_at desc, r.id desc`
+      : sort === "confidence"
+        ? sql`order by ${boostOrder}r.confidence_sort desc, r.created_at desc, r.id desc`
+        : sort === "corroboration"
+          ? sql`order by ${boostOrder}r.corroboration_count desc, r.created_at desc, r.id desc`
+          : sort === "saved"
+            ? sql`order by ${boostOrder}r.saved_at desc, r.id desc`
+            : sql`order by ${boostOrder}r.created_at desc, r.id desc`
 
   const rows = await db.execute<FeedRow>(sql`
     with visible as (
@@ -355,8 +461,33 @@ export async function getInsightFeed(query: FeedQuery = {}): Promise<FeedPage> {
         i.fact_check_status,
         i.plain_language_summary,
         i.reading_level_estimate,
+        i.claim_support_confidence,
+        i.confidence_label,
+        i.verify_yourself,
+        i.presentation_mode,
+        i.corroboration_count,
+        i.speaker_id,
         i.created_at,
+        ${confidenceSort} as confidence_sort,
         ${boost} as topic_boost,
+        -- The corroborating outlets, inline, so a card can render "3 sources"
+        -- with names and links without a second round trip per card. DISTINCT
+        -- ON collapses two articles from one outlet to one entry, which is the
+        -- same rule the stored count uses.
+        coalesce(
+          (select json_agg(json_build_object(
+                    'sourceName', s.source_name,
+                    'sourceUrl', s.source_url))
+             from (
+               select distinct on (ic.source_key) cd.source_name, cd.url as source_url
+                 from insight_corroborations ic
+                 join documents cd on cd.id = ic.document_id
+                where ic.insight_id = i.id
+                order by ic.source_key, cd.published_at desc nulls last
+                limit ${sourceDiversityLimit}
+             ) s),
+          '[]'::json
+        ) as corroborating_sources,
         coalesce(
           (select array_agg(t.slug order by it."primary" desc, t.sort_order)
              from insight_topics it
@@ -402,6 +533,9 @@ export async function getInsightFeed(query: FeedQuery = {}): Promise<FeedPage> {
            r.plain_language_summary, r.reading_level_estimate,
            r.issue_tag, r.topics, r.attribution, r.flag, r.flags,
            r.fact_check_status, r.topic_boost,
+           r.claim_support_confidence, r.confidence_label, r.verify_yourself,
+           r.presentation_mode, r.corroboration_count, r.corroborating_sources,
+           r.confidence_sort, r.speaker_id,
            r.judge_rating, r.relevance_score,
            r.quote, r.quote_char_start, r.quote_char_end, r.quote_verified,
            r.quote_similarity, r.candidate_name, r.document_id, r.document_title,
@@ -429,6 +563,12 @@ export async function getInsightFeed(query: FeedQuery = {}): Promise<FeedPage> {
         ? encodeCursor({
             s: sort,
             r: sort === "relevant" ? last.relevanceScore : undefined,
+            n:
+              sort === "confidence"
+                ? (last.claimSupportConfidence ?? 0)
+                : sort === "corroboration"
+                  ? last.sourceDiversity.count
+                  : undefined,
             b: boosting ? (last.matchesInterests ? 1 : 0) : undefined,
             // The cursor's timestamp is whichever column the sort reads.
             t: (sort === "saved" ? (last.savedAt ?? last.createdAt) : last.createdAt).toISOString(),
@@ -465,6 +605,16 @@ function buildKeyset(sort: FeedSort, cursor: Cursor | null, boosting: boolean): 
   if (sort === "relevant") {
     return sql`and (${boostTerm}r.relevance_score, r.created_at, r.id)
                < (${boostValue}${cursor.r ?? 0}::real, ${cursor.t}::timestamptz, ${cursor.id}::uuid)`
+  }
+
+  if (sort === "confidence") {
+    return sql`and (${boostTerm}r.confidence_sort, r.created_at, r.id)
+               < (${boostValue}${cursor.n ?? 0}::real, ${cursor.t}::timestamptz, ${cursor.id}::uuid)`
+  }
+
+  if (sort === "corroboration") {
+    return sql`and (${boostTerm}r.corroboration_count, r.created_at, r.id)
+               < (${boostValue}${cursor.n ?? 0}::int, ${cursor.t}::timestamptz, ${cursor.id}::uuid)`
   }
 
   if (sort === "saved") {
@@ -526,12 +676,24 @@ function toFeedItem(row: FeedRow): FeedItem {
     flag: row.flag,
     flags: row.flags ?? [],
     factCheckStatus: row.fact_check_status ?? "unresolved",
+    claimSupportConfidence: row.claim_support_confidence,
+    confidenceLabel: row.confidence_label ?? "medium",
+    verifyYourself: row.verify_yourself ?? false,
+    presentationMode: row.presentation_mode ?? "stated",
+    sourceDiversity: {
+      // Floor of 1 rather than 0: every insight came from somewhere, and a 0
+      // here would make "one source" and "not yet scanned" look the same to a
+      // client. A row the corroboration pass has never touched still has one.
+      count: Math.max(1, Number(row.corroboration_count ?? 1)),
+      sources: row.corroborating_sources ?? [],
+    },
     plainLanguageSummary: row.plain_language_summary,
     readingLevelEstimate: row.reading_level_estimate,
     matchesInterests: Number(row.topic_boost) === 1,
     judgeRating: row.judge_rating,
     relevanceScore: row.relevance_score,
     candidateName: row.candidate_name,
+    speakerId: row.speaker_id,
     documentId: row.document_id,
     documentTitle: row.document_title,
     sourceName: row.source_name,

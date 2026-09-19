@@ -211,12 +211,202 @@ confusing downstream errors rather than an obvious connection failure.
 
 ---
 
+## The API, for whoever is building the frontend
+
+The full contract is `docs/openapi.yaml`. Paste it into
+[editor.swagger.io](https://editor.swagger.io) if you want it rendered.
+
+Everything lives under `/api/v1`. The unversioned paths that shipped first
+(`/api/feed`, `/api/topics`, `/api/profile`, `/api/saved`,
+`/api/insights/:id/source`, `/api/insights/:id/share`, `/api/share/:id`) still
+work and are literally the same handler object, so they cannot drift. New code
+should use `/api/v1`.
+
+Inside v1 the rule is **additive only**: a new field may appear on any response
+at any time, a new value may be added to any enum, and a new query parameter
+may appear. What will not happen is a field changing type, changing meaning, or
+disappearing. Anything that cannot be done additively gets `/api/v2`.
+
+That last point matters for the enums below: **branch with a default case, not
+exhaustively.** A `switch` with no `default` will break the day a fourth badge
+ships.
+
+### Build against fixtures, not against the pipeline
+
+Filling the feed for real costs model calls and a crawl. You do not need
+either:
+
+```bash
+npm run seed:demo            # install the demo dataset
+npm run seed:demo -- --reset # wipe it and reinstall, for a clean demo
+npm run seed:demo -- --clear # remove it
+```
+
+or, if the app is running and you do not have a terminal in this repo:
+
+```bash
+curl -X POST localhost:3000/api/v1/dev/seed -d '{"reset":true}'
+curl localhost:3000/api/v1/dev/seed          # what is installed
+```
+
+Three invented speakers, six invented documents, fifteen insights, covering
+every enum value below at least once, plus cards at one source and cards at
+two. `GET /api/v1/dev/seed` reports the expected counts, so a short seed is
+visible rather than silent. The data does not move between two page loads.
+
+The documents are marked `isSynthetic: true` and the people in them are not
+real. Nothing in the fixture set is a real quote from a real politician, and it
+must stay that way: an app whose whole claim is traceability cannot circulate a
+fabricated quote attributed to someone who exists.
+
+### The enums you will branch on
+
+#### `presentationMode` - `stated` | `nudge_verify`
+
+**Read this one before `claimSupportConfidence`.** It says what you are allowed
+to do with the card.
+
+| Value | What it means | What the UI must do |
+|---|---|---|
+| `stated` | The quote plainly supports the claim. | Render the claim as written. |
+| `nudge_verify` | The claim is an inference the quote supports only weakly. | **Never present it as flatly stated fact.** Lead with the quote, show a "check this yourself" affordance, link the source. |
+
+The threshold behind it lives on the server so it can be moved without a client
+release, and so two surfaces cannot disagree about where the line is. Do not
+re-derive this from the raw score.
+
+#### `confidenceLabel` - `high` | `medium` | `low`
+
+The bucketed `claimSupportConfidence`: how directly the quote supports this
+card's claim. Defaults are `high >= 0.8`, `medium >= 0.5`, `low` below, and
+they are configurable via `CONFIDENCE_HIGH_THRESHOLD` and
+`CONFIDENCE_MEDIUM_THRESHOLD`.
+
+`low` is also what an **unrated** card gets. An insight nothing rated is exactly
+the case the nudge exists for, so it is not put in the middle band. `low` is
+the only label with `verifyYourself: true` and `presentationMode:
+nudge_verify`; use it for a chip or a sort, and use `presentationMode` for the
+wording.
+
+This is the third confidence number in the system and the three are not
+interchangeable:
+
+| Field | Asks | Where it comes from |
+|---|---|---|
+| `quoteSimilarity` | Was the quote copied correctly? | Measured against the stored document |
+| `claimSupportConfidence` | Does the quote support this claim? | The extractor rates each item |
+| (gates `FLIP_FLOP`) | Did a change of position actually occur? | The extractor rates each stance change |
+
+#### `flags` - `NEW` | `FLIP_FLOP` | `UNVERIFIED_CLAIM`
+
+An array. A card can carry several: a first-ever stance change on a topic is
+both `NEW` and `FLIP_FLOP`. `flag` (singular) is a legacy mirror of `flags[0]`.
+
+- **`NEW`** - the first thing on record for this speaker on this topic.
+  Assigned at write time and never recomputed, so a card that was the first of
+  its kind keeps the badge once later ones arrive. That is what a reader
+  scrolling a feed means by "new". Unattributed cards never carry it.
+- **`FLIP_FLOP`** - a recorded change of position that cleared the confidence
+  bar. **A `stance_change` card WITHOUT this badge is a shift the backend is
+  not willing to call a flip-flop.** Do not label it as one; it is the single
+  most damaging thing this app can get wrong.
+- **`UNVERIFIED_CLAIM`** - a factual assertion a reader should not take on
+  trust: either it is not quickly settleable, or nothing has settled it yet.
+  Note the gap: a claim checked and found **false** loses this badge, because
+  it is no longer unverified. Read `factCheckStatus` for that.
+
+#### `factCheckStatus` - `unresolved` | `supported` | `disputed` | `false`
+
+Where a factual claim stands against an external checker. Only meaningful on
+`factual_claim` cards; other card types carry `unresolved` and nothing should
+read it.
+
+`unresolved` is the honest default and today the common case. Do not render it
+as a neutral or positive state: **a claim nobody has checked is not a claim
+that checked out**, and collapsing the two is the error this app exists to
+avoid.
+
+#### `checkability` - `easily_checkable` | `requires_expertise` | `unverifiable`
+
+On `factual_claim` payloads. How settleable the assertion is: minutes with a
+named source, domain analysis, or not the kind of thing that can be checked at
+all (a prediction, a statement of intent, a value judgment). `unverifiable` is
+not a failure to check it.
+
+#### The others, briefly
+
+- `cardType` - `stance` | `stance_change` | `factual_claim` |
+  `voter_relevance`. The discriminator; `payload` narrows on it.
+- `quoteVerified` - `exact` | `normalized` | `transcript` | `fuzzy`. Which rung
+  located the quote. There is no failure value: a quote that could not be
+  located was never stored. `fuzzy` means the string was corrected, and
+  `quoteSimilarity` says by how much.
+- `attribution` - `own_words` | `characterization`. Worth surfacing: "reported
+  to support X" is a weaker thing than "said X".
+
+### `sourceDiversity`, and what the number counts
+
+```json
+"sourceDiversity": { "count": 3, "sources": [{ "sourceName": "…", "sourceUrl": "…" }] }
+```
+
+`count` is **distinct outlets including this card's own**, so the floor is 1
+and there is no 0. Two articles from the same outlet count once. `sources`
+lists the others and is capped by `?sourceDiversityLimit` (default 3), so
+`count` can exceed `sources.length` - render "+N more" from the count, and call
+`GET /api/v1/insights/:id/sources` if someone taps it.
+
+### Timelines
+
+`GET /api/v1/speakers/:id/timeline` takes a **speaker** id, not a candidate id.
+A candidate row is one person's appearance on one ballot line; a speaker is the
+person, across races and across the three ways an outlet might spell their
+name. Feed items carry `speakerId` for exactly this handoff.
+
+Default `include=flip_flops` and `order=asc`. `include=stance_changes` widens
+it to every recorded shift, including the ones that did not clear the
+confidence bar - if you use that mode, read `flags` on each entry and do not
+label the extras as flip-flops.
+
+### Errors
+
+One shape everywhere:
+
+```json
+{ "error": "human-readable, may be reworded", "code": "not_found", "details": {} }
+```
+
+Switch on `code`: `bad_request`, `missing_user`, `not_found`, `unprocessable`,
+`server_error`.
+
+### Identifying a reader
+
+There is no account system. Endpoints that need a reader take an anonymous
+session string as the `x-votr-session` header, the `votr_session` cookie, or a
+`userId` query parameter, in that order. 8 to 128 characters of
+`[A-Za-z0-9_-]`. The server never mints one: an endpoint that needs a reader
+and does not get one returns 400 `missing_user` rather than inventing a user
+and writing rows under it.
+
+---
+
 ## Commands
 
 ```bash
-npm run dev      # dev server
-npm run build    # production build, must pass before you push
-npm run lint     # eslint
+npm run dev          # dev server
+npm run build        # production build, must pass before you push
+npm run lint         # eslint
+npm test             # unit tests, no database or API key needed
+```
+
+Data:
+
+```bash
+npm run ingest       # pull an RSS feed into documents
+npm run persist      # extract + verify + store insights (costs model calls)
+npm run seed:demo    # install the demo fixtures, no model call
+npm run backfill     # one-time after migration 0003: speakers + corroboration
+npm run corroborate  # recompute source-diversity counts
 ```
 
 Neon:

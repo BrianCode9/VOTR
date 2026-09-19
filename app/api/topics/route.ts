@@ -1,41 +1,15 @@
-import { NextResponse } from "next/server"
-import { MAX_TOPICS, MIN_TOPICS } from "@/lib/storage/profiles"
-import { loadTopics } from "@/lib/topics/taxonomy"
+import { topicsGET } from "@/lib/api/handlers/topics"
 
 /**
- * GET /api/topics
+ * /api/topics
  *
- * The issue taxonomy, for the onboarding picker.
- *
- *   ?includeInactive=true   also return retired topics
- *
- * The pick bounds are returned alongside the list rather than hardcoded in the
- * client, so the rule the API enforces and the rule the UI shows cannot drift
- * apart.
+ * The unversioned alias of /api/v1/topics. Same handler object, so the two cannot drift
+ * apart: a field added to one appears in the other because it is the same
+ * code. Kept because it shipped first and something may already call it. New
+ * clients should use the versioned path; see lib/api/version.ts for what
+ * "additive only" commits to.
  */
 
 export const dynamic = "force-dynamic"
 
-export async function GET(request: Request) {
-  const includeInactive =
-    new URL(request.url).searchParams.get("includeInactive") === "true"
-
-  try {
-    const all = await loadTopics()
-    const topics = includeInactive ? all : all.filter((t) => t.active)
-
-    return NextResponse.json({
-      topics: topics.map((t) => ({
-        id: t.id,
-        slug: t.slug,
-        label: t.label,
-        description: t.description,
-        active: t.active,
-      })),
-      selection: { min: MIN_TOPICS, max: MAX_TOPICS },
-    })
-  } catch (e) {
-    console.error("topic list failed", e)
-    return NextResponse.json({ error: "topic list failed" }, { status: 500 })
-  }
-}
+export const GET = topicsGET

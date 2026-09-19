@@ -55,8 +55,16 @@ function readCookie(header: string | null, name: string): string | null {
   return null
 }
 
-/** The 400 body for a route that requires a reader and did not get one. */
+/**
+ * The 400 body for a route that requires a reader and did not get one.
+ *
+ * `code` was added alongside the rest of the API's error shape; `error` is
+ * unchanged and still says the same thing, so a client already reading it
+ * keeps working. Clients switch on `code`, because the message is allowed to
+ * be reworded and the code is not. See lib/api/version.ts.
+ */
 export const MISSING_USER = {
   error: `no reader id. Send a ${SESSION_HEADER} header, a ${SESSION_COOKIE} cookie, ` +
     `or a userId query parameter. It must be 8 to 128 characters of [A-Za-z0-9_-].`,
+  code: "missing_user" as const,
 }
