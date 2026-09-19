@@ -12,8 +12,22 @@
     {
       "idx": 1,
       "version": "7",
-      "when": 1789853515753,
-      "tag": "0001_silky_lilandra",
+      "when": 1789851977149,
+      "tag": "0001_illegal_unicorn",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789854048878,
+      "tag": "0002_what_changed_flags",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1789857836541,
+      "tag": "0003_candidate_sources",
       "breakpoints": true
     }
   ]
