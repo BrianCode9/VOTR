@@ -1,13 +1,13 @@
 import { sql } from "drizzle-orm"
 import {
   pgTable,
+  jsonb,
   pgEnum,
   uuid,
   text,
   integer,
   real,
   boolean,
-  jsonb,
   timestamp,
   index,
   uniqueIndex,
@@ -551,3 +551,26 @@ export const rejections = pgTable(
   },
   (t) => [index("rejections_document_idx").on(t.documentId)],
 )
+
+﻿
+/** Provenance for real election imports. Demo candidates have no source row.
+ * FEC registrations are cycle-level records, not confirmed general nominees.
+ */
+export const candidateSources = pgTable(
+  "candidate_sources",
+  {
+    sourceKey: text("source_key").primaryKey(),
+    candidateId: uuid("candidate_id").notNull().references(() => candidates.id, { onDelete: "cascade" }),
+    electionStage: text("election_stage").notNull(),
+    candidacyStatus: text("candidacy_status").notNull(),
+    sourceName: text("source_name").notNull(),
+    sourceUrl: text("source_url").notNull(),
+    sourceRecord: jsonb("source_record").notNull(),
+    incumbentKnown: boolean("incumbent_known").notNull(),
+    campaignWebsite: text("campaign_website"),
+    biography: text("biography"),
+    fetchedAt: timestamp("fetched_at", { withTimezone: true }).notNull(),
+  },
+  (t) => [index("candidate_sources_candidate_idx").on(t.candidateId)],
+)
+

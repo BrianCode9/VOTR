@@ -1,0 +1,39 @@
+{
+  "verifiedAt": "2026-09-19T22:08:50.354Z",
+  "candidateRecordsVerified": 4496,
+  "policyQuotesVerified": 42,
+  "candidatesWithCuratedPolicies": 29,
+  "localRecordsImported": 0,
+  "coverage": [
+    {
+      "source_name": "California Secretary of State",
+      "level": "federal",
+      "candidates": 104
+    },
+    {
+      "source_name": "California Secretary of State",
+      "level": "state",
+      "candidates": 220
+    },
+    {
+      "source_name": "Federal Election Commission",
+      "level": "federal",
+      "candidates": 3848
+    },
+    {
+      "source_name": "Maryland State Board of Elections",
+      "level": "federal",
+      "candidates": 21
+    },
+    {
+      "source_name": "Maryland State Board of Elections",
+      "level": "state",
+      "candidates": 303
+    }
+  ],
+  "databaseTotals": {
+    "candidates": 4517,
+    "documents": 53,
+    "insights": 86
+  }
+}
