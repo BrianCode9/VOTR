@@ -56,12 +56,23 @@ npm install
 
 npm i -g neon@latest
 neon login
-neon link --project-id cold-glade-81327185 --branch production -y
+neon env pull
 ```
 
-`neon link` writes `.neon` and pulls the database credentials straight into
-`.env.local`. You do not paste a connection string by hand and nobody should be
-sending one to you over chat.
+That is the whole database setup. `.neon` is committed to this repo, so the clone
+already knows which Neon org, project, and branch to use. `neon env pull` reads it and
+writes `DATABASE_URL`, `DATABASE_URL_UNPOOLED`, and `NEON_BRANCH` into your
+`.env.local`.
+
+You do not paste a connection string by hand, and nobody should be sending you one
+over chat. `neon env pull` is safe to re-run at any time: it rewrites only those three
+variables and leaves your API keys alone.
+
+If `.neon` is ever missing or you need to relink from scratch:
+
+```bash
+neon link --project-id cold-glade-81327185 --branch production -y
+```
 
 Then fill in the three remaining keys in `.env.local` by hand. Ask whoever owns the
 accounts for them:
@@ -114,9 +125,33 @@ everyone benefits.
 
 ### Getting access
 
-You need to be a member of the Neon org before `neon link` will work. Ask the project
-owner to invite you in the Neon console. Once you are in, `neon login` plus
-`neon link` is all you need. The credentials arrive automatically.
+You need to be a member of the Neon org before `neon env pull` will work. Ask the
+project owner to invite you in the Neon console. Once you are in, `neon login` plus
+`neon env pull` is all you need. The credentials arrive automatically.
+
+The project identifiers are committed in `.neon` and are not secrets. The credentials
+are not committed anywhere and are fetched per person against their own Neon login.
+
+Send a new teammate exactly this:
+
+```
+1. Accept the Neon org invite in your email.
+2. Install Node 24:  https://github.com/nvm-windows/nvm/releases
+                     then:  nvm install lts && nvm use lts
+3. git clone https://github.com/BrianCode9/VOTR.git
+   cd VOTR
+   npm install
+4. npm i -g neon@latest
+   neon login
+   neon env pull
+5. Open .env.local and paste in the three API keys I sent you separately:
+   ANTHROPIC_API_KEY, NVIDIA_API_KEY, ELEVENLABS_API_KEY
+6. npm run build   (must pass)
+   npm run dev
+```
+
+The three API keys are the only values that have to be passed person to person. The
+database credentials are not among them.
 
 This is why the connection string is not in the repo and should not be pasted into
 Discord. Access is granted per person and can be revoked per person.
@@ -184,6 +219,7 @@ npm run lint     # eslint
 Neon:
 
 ```bash
+neon env pull                   # refresh DB credentials in .env.local
 neon branches list              # what branches exist
 neon checkout <name>            # switch branch, re-pull .env.local
 neon checkout <name> --create   # create it first, then switch

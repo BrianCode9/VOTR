@@ -40,4 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 !.env.example
-.neon
+# Neon project link (org/project/branch IDs only, no secrets) - committed on purpose
+# so `neon` commands and teammates resolve the project automatically after clone.
+# (.neon is intentionally absent from this file)
