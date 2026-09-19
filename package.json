@@ -11,7 +11,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "ingest": "tsx scripts/ingest.ts",
-    "test": "tsx --test lib/**/*.test.ts"
+    "test": "tsx --test lib/**/*.test.ts",
+    "extract": "tsx scripts/extract.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.127.0",
