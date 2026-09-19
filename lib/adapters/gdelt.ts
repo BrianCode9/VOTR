@@ -1,6 +1,7 @@
 import { extractArticleText } from "./article-text"
-import type { AdapterRun, Document, FetchResult } from "./types"
-import { err, ok } from "./types"
+import type { SourceAdapter } from "./registry"
+import type { AdapterRun, FetchResult, NormalizedDocument } from "./types"
+import { documentId, err, ok, publishedSince } from "./types"
 
 const GDELT_DOC_ENDPOINT = "https://api.gdeltproject.org/api/v2/doc/doc"
 
@@ -91,7 +92,7 @@ export async function fetchGdeltDocuments(
 ): Promise<AdapterRun> {
   const { limit = 25, timeoutMs = 20_000 } = options
 
-  const documents: Document[] = []
+  const documents: NormalizedDocument[] = []
   const failures: { url: string; reason: string }[] = []
 
   const search = await searchGdelt(params)
@@ -109,15 +110,27 @@ export async function fetchGdeltDocuments(
     }
 
     documents.push({
-      url: article.url,
-      imageUrl: text.value.imageUrl ?? undefined,
+      id: documentId(article.url),
+      sourceUrl: article.url,
       sourceType: "gdelt",
       sourceName: article.domain || "gdelt",
       title: text.value.title || article.title || article.url,
+      imageUrl: text.value.imageUrl ?? undefined,
       publishedAt: parseSeenDate(article.seendate) ?? text.value.publishedAt,
+      fetchedAt: new Date(),
       rawText: text.value.text,
       mediaType: "article",
       isSynthetic: false,
+      // GDELT's own row, kept whole. Its language and country fields are not
+      // normalized anywhere yet but are exactly what a later filter would want.
+      rawMetadata: {
+        query: params.query,
+        seendate: article.seendate,
+        domain: article.domain,
+        language: article.language,
+        sourcecountry: article.sourcecountry,
+        gdeltTitle: article.title,
+      },
     })
   }
 
@@ -135,4 +148,57 @@ export function parseSeenDate(seendate: string | undefined): Date | null {
   const [, y, mo, d, h, mi, s] = m
   const date = new Date(`${y}-${mo}-${d}T${h}:${mi}:${s}Z`)
   return Number.isNaN(date.getTime()) ? null : date
+}
+
+/** GDELT wants datetimes as YYYYMMDDHHMMSS in UTC, with no separators. */
+export function toGdeltDatetime(date: Date): string {
+  return date.toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "").replace("T", "")
+}
+
+export interface GdeltAdapterConfig {
+  /**
+   * GDELT query strings, e.g. `"jane doe" sourcelang:english`.
+   *
+   * Narrow these hard. GDELT indexes the whole world's news and a loose query
+   * returns mostly documents with no quotable political position in them,
+   * which costs an extraction call each to find out.
+   */
+  queries: string[]
+  id?: string
+  label?: string
+  /** Window used when fetch() is called with since = null. */
+  defaultTimespan?: string
+  maxRecords?: number
+  limitPerQuery?: number
+  timeoutMs?: number
+}
+
+/** Build a registrable adapter over a fixed list of GDELT queries. */
+export function gdeltAdapter(config: GdeltAdapterConfig): SourceAdapter {
+  return {
+    id: config.id ?? "gdelt",
+    label: config.label ?? `GDELT (${config.queries.length} queries)`,
+    sourceType: "gdelt",
+    async fetch(since) {
+      const documents: NormalizedDocument[] = []
+      const failures: AdapterRun["failures"] = []
+
+      // Push the time window into the query rather than filtering after the
+      // fact, so GDELT spends its 250-record cap on the window we care about.
+      const window = since
+        ? { startDatetime: toGdeltDatetime(since), endDatetime: toGdeltDatetime(new Date()) }
+        : { timespan: config.defaultTimespan ?? "7d" }
+
+      for (const query of config.queries) {
+        const run = await fetchGdeltDocuments(
+          { query, maxRecords: config.maxRecords, ...window },
+          { limit: config.limitPerQuery, timeoutMs: config.timeoutMs },
+        )
+        documents.push(...run.documents)
+        failures.push(...run.failures)
+      }
+
+      return { documents: publishedSince(documents, since), failures }
+    },
+  }
 }

@@ -1,163 +1,156 @@
 /**
- * Extract from stored documents and persist verified insights.
+ * Extract, verify, and persist insights from stored documents.
  *
  *   npm run persist
  *   npm run persist -- --limit 6
+ *   npm run persist -- --dry-run          model call, no writes
+ *   npm run persist -- --document <uuid>
+ *   npm run persist -- --no-rewrite       skip the plain-language pass
  *
- * Creates a demo district, race, and candidate rows on demand so the feed has
- * something real to render. Candidate resolution here is by name only; proper
- * address-to-district resolution is build-order step 7.
- *
- * judge_rating stays null until the Nemotron judge exists. Status is set to
- * published so the feed renders, and the judge pass will re-route these rows
- * once it can run.
+ * Reports what verification threw away as prominently as what it kept. A
+ * rising rejection rate is the earliest signal that the prompt has drifted,
+ * and it is the number the public failure log is built on.
  */
-
-import { eq, and } from "drizzle-orm"
-import { extractInsights } from "../lib/extract/extract"
-import type { Document } from "../lib/adapters/types"
 
 process.loadEnvFile(".env.local")
 
-const DEMO = {
-  districtType: "congressional",
-  districtName: "Demo district",
-  state: "US",
-  geoId: "DEMO-01",
-  office: "U.S. House",
-  level: "federal" as const,
-}
-
 async function main() {
   const args = process.argv.slice(2)
-  const limitIdx = args.indexOf("--limit")
-  const limit = limitIdx >= 0 ? Number(args[limitIdx + 1]) : 6
+  const limit = Number(valueOf(args, "--limit") ?? 6)
+  const documentId = valueOf(args, "--document")
+  const dryRun = args.includes("--dry-run")
+  const skipRewrite = args.includes("--no-rewrite")
 
   const { db } = await import("../db/index")
-  const schema = await import("../db/schema")
+  const { documents } = await import("../db/schema")
+  const { toNormalized } = await import("../lib/storage/documents")
+  const { processDocuments } = await import("../lib/pipeline/run")
+  const { EXTRACTION_MODEL } = await import("../lib/extract/extract")
+  const { eq } = await import("drizzle-orm")
 
-  // Demo ballot scaffolding, created once.
-  let [district] = await db
-    .select()
-    .from(schema.districts)
-    .where(eq(schema.districts.geoId, DEMO.geoId))
-  if (!district) {
-    ;[district] = await db
-      .insert(schema.districts)
-      .values({
-        type: DEMO.districtType,
-        name: DEMO.districtName,
-        state: DEMO.state,
-        geoId: DEMO.geoId,
-      })
-      .returning()
+  const rows = documentId
+    ? await db.select().from(documents).where(eq(documents.id, documentId))
+    : await db.select().from(documents).limit(limit)
+
+  if (rows.length === 0) {
+    console.log("no documents stored. run: npm run ingest")
+    return
   }
 
-  let [race] = await db
-    .select()
-    .from(schema.races)
-    .where(eq(schema.races.districtId, district.id))
-  if (!race) {
-    ;[race] = await db
-      .insert(schema.races)
-      .values({
-        districtId: district.id,
-        office: DEMO.office,
-        electionDate: new Date("2026-11-03"),
-        level: DEMO.level,
-      })
-      .returning()
-  }
+  console.log(`model:     ${EXTRACTION_MODEL}`)
+  console.log(`documents: ${rows.length}${dryRun ? "  (dry run, nothing is written)" : ""}\n`)
 
-  const rows = await db.select().from(schema.documents).limit(limit)
-  console.log(`extracting from ${rows.length} documents\n`)
+  const results = await processDocuments(rows.map(toNormalized), { dryRun, skipRewrite })
 
-  let persisted = 0
+  let kept = 0
   let rejected = 0
+  let inserted = 0
+  let rewritten = 0
+  let rewriteFailed = 0
+  let tokensIn = 0
+  let tokensOut = 0
 
-  for (const row of rows) {
-    // Skip documents we have already extracted from, so re-running is cheap.
-    const existing = await db
-      .select({ id: schema.insights.id })
-      .from(schema.insights)
-      .where(eq(schema.insights.documentId, row.id))
-      .limit(1)
-    if (existing.length > 0) {
-      console.log(`· already done: ${row.title.slice(0, 60)}`)
+  for (const result of results) {
+    console.log(`─ ${truncate(result.title, 72)}`)
+    tokensIn += result.usage.inputTokens
+    tokensOut += result.usage.outputTokens
+
+    if (result.error) {
+      console.log(`  ERROR: ${result.error}\n`)
       continue
     }
 
-    const doc: Document = {
-      url: row.url,
-      sourceType: "rss",
-      sourceName: row.sourceName,
-      title: row.title,
-      publishedAt: row.publishedAt,
-      rawText: row.rawText,
-      mediaType: row.mediaType,
-      isSynthetic: row.isSynthetic,
+    if (result.speakers.length > 0) {
+      console.log(
+        `  speakers: ${result.speakers.join(", ")}  ` +
+          `(${result.priorStanceCount} prior stances in context)`,
+      )
     }
 
-    const run = await extractInsights(doc)
-    if (run.error) {
-      console.log(`! ${row.title.slice(0, 55)}: ${run.error}`)
-      continue
+    for (const item of result.verified) {
+      kept++
+      const flagged = item.quoteVerified === "fuzzy" ? ` similarity ${item.similarity.toFixed(3)}` : ""
+      console.log(
+        `  ✓ [${item.cardType}] [${item.topic}] ${item.candidateName ?? "unattributed"}`,
+      )
+      console.log(`    ${truncate(item.headline, 88)}`)
+      console.log(
+        `    ${item.quoteVerified}${flagged} offsets=${item.quoteCharStart}..${item.quoteCharEnd}` +
+          `  topics=${item.topics.join("+")}`,
+      )
     }
 
-    for (const v of run.verified) {
-      const candidateId = await resolveCandidate(db, schema, race.id, v.candidateName)
-
-      await db.insert(schema.insights).values({
-        documentId: row.id,
-        candidateId,
-        issueTag: v.issueTag,
-        positionText: v.positionText,
-        plainLanguage: v.plainLanguage,
-        quoteCharStart: v.quoteCharStart,
-        quoteCharEnd: v.quoteCharEnd,
-        attribution: v.attribution,
-        extractorConfidence: v.confidence,
-        judgeRating: null,
-        status: "published",
-      })
-      persisted++
-    }
-
-    // Every failed quote goes in the public failure log.
-    for (const r of run.rejected) {
-      await db.insert(schema.rejections).values({
-        documentId: row.id,
-        reason: `quote failed verification: ${r.reason}`,
-      })
+    for (const r of result.rejected) {
       rejected++
+      console.log(`  ✗ REJECTED [${r.item.cardType}] ${r.reason}`)
+      console.log(`    claimed quote: "${truncate(r.item.quote, 90)}"`)
     }
 
+    for (const d of result.deduped) {
+      console.log(`  · collapsed: ${d.reason}`)
+    }
+
+    inserted += result.inserted
+    rewritten += result.rewritten
+    rewriteFailed += result.rewriteFailures.length
+
+    // The rewrite is allowed to fail, which is exactly why its failures are
+    // printed: silent degradation is how "plain language is optional" turns
+    // into "plain language never works and nobody noticed".
+    for (const failure of result.rewriteFailures) {
+      console.log(`  ~ no rewrite: ${failure.reason}`)
+      console.log(`    ${truncate(failure.headline, 88)}`)
+    }
+
+    if (result.unknownTopics.length > 0) {
+      console.log(`  ! topics not in the taxonomy, dropped: ${result.unknownTopics.join(", ")}`)
+    }
+
+    if (!dryRun) {
+      console.log(
+        `  stored ${result.inserted}` +
+          (result.duplicates > 0 ? `, ${result.duplicates} already present` : "") +
+          (result.stanceLinks > 0 ? `, ${result.stanceLinks} stance links` : "") +
+          (result.topicLinks > 0 ? `, ${result.topicLinks} topic tags` : ""),
+      )
+    }
+
+    if (result.verified.length === 0 && result.rejected.length === 0) {
+      console.log("  (nothing quotable)")
+    }
+    console.log()
+  }
+
+  const total = kept + rejected
+  console.log("─".repeat(60))
+  console.log(
+    `verified ${kept}, rejected ${rejected}` +
+      (total > 0 ? ` (${Math.round((rejected / total) * 100)}% rejection rate)` : ""),
+  )
+  if (!skipRewrite) {
+    const attempted = rewritten + rewriteFailed
     console.log(
-      `✓ ${row.title.slice(0, 55)} → ${run.verified.length} kept, ${run.rejected.length} rejected`,
+      `plain-language rewrites: ${rewritten} of ${attempted}` +
+        (rewriteFailed > 0
+          ? `  (${rewriteFailed} served with the quote alone, which is the fallback working)`
+          : ""),
     )
   }
-
-  console.log(`\npersisted ${persisted} insights, logged ${rejected} rejections`)
+  if (!dryRun) console.log(`inserted ${inserted} insights`)
+  console.log(`tokens: ${tokensIn.toLocaleString()} in, ${tokensOut.toLocaleString()} out`)
 }
 
-async function resolveCandidate(
-  db: Awaited<typeof import("../db/index")>["db"],
-  schema: typeof import("../db/schema"),
-  raceId: string,
-  name: string,
-): Promise<string> {
-  const [found] = await db
-    .select()
-    .from(schema.candidates)
-    .where(and(eq(schema.candidates.raceId, raceId), eq(schema.candidates.name, name)))
-    .limit(1)
-  if (found) return found.id
+function valueOf(args: string[], flag: string): string | undefined {
+  const exact = args.indexOf(flag)
+  if (exact >= 0 && args[exact + 1] && !args[exact + 1].startsWith("--")) {
+    return args[exact + 1]
+  }
+  const inline = args.find((a) => a.startsWith(`${flag}=`))
+  return inline?.slice(flag.length + 1)
+}
 
-  const [created] = await db
-    .insert(schema.candidates)
-    .values({ raceId, name, party: null, incumbent: false })
-    .returning()
-  return created.id
+function truncate(s: string, n: number): string {
+  return s.length <= n ? s : s.slice(0, n - 1) + "…"
 }
 
 main()
@@ -166,3 +159,7 @@ main()
     console.error(e)
     process.exit(1)
   })
+
+// Marks this file as a module: every script here declares a `main`, and
+// without it they share one global scope.
+export {}

@@ -1,5 +1,5 @@
 {
-  "id": "14d116bd-d725-4755-8470-08bb5266c9b4",
+  "id": "3b00a3e3-6547-4fdd-9d49-08c4074741dc",
   "prevId": "e8038177-6d7a-4cd5-a11b-7d71e4c52b19",
   "version": "7",
   "dialect": "postgresql",
@@ -297,12 +297,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "image_url": {
-          "name": "image_url",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
         "published_at": {
           "name": "published_at",
           "type": "timestamp with time zone",
@@ -347,6 +341,13 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false
+        },
+        "raw_metadata": {
+          "name": "raw_metadata",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
         }
       },
       "indexes": {
@@ -409,7 +410,15 @@
           "name": "candidate_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
+        },
+        "card_type": {
+          "name": "card_type",
+          "type": "insight_card_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'stance'"
         },
         "issue_tag": {
           "name": "issue_tag",
@@ -429,6 +438,13 @@
           "primaryKey": false,
           "notNull": true
         },
+        "payload": {
+          "name": "payload",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
         "quote_char_start": {
           "name": "quote_char_start",
           "type": "integer",
@@ -440,6 +456,20 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": true
+        },
+        "quote_verified": {
+          "name": "quote_verified",
+          "type": "quote_verified",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'exact'"
+        },
+        "quote_similarity": {
+          "name": "quote_similarity",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
         },
         "timestamp_start": {
           "name": "timestamp_start",
@@ -478,6 +508,13 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": false
+        },
+        "relevance_score": {
+          "name": "relevance_score",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
         },
         "status": {
           "name": "status",
@@ -542,6 +579,81 @@
             }
           ],
           "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "insights_feed_recent_idx": {
+          "name": "insights_feed_recent_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "insights_feed_relevance_idx": {
+          "name": "insights_feed_relevance_idx",
+          "columns": [
+            {
+              "expression": "relevance_score",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "insights_dedup_key": {
+          "name": "insights_dedup_key",
+          "columns": [
+            {
+              "expression": "document_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "quote_char_start",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "quote_char_end",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "card_type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
           "concurrently": false,
           "method": "btree",
           "with": {}
@@ -921,6 +1033,16 @@
         "local"
       ]
     },
+    "public.insight_card_type": {
+      "name": "insight_card_type",
+      "schema": "public",
+      "values": [
+        "stance",
+        "stance_change",
+        "factual_claim",
+        "voter_relevance"
+      ]
+    },
     "public.insight_flag": {
       "name": "insight_flag",
       "schema": "public",
@@ -954,6 +1076,16 @@
         "publish",
         "hold",
         "reject"
+      ]
+    },
+    "public.quote_verified": {
+      "name": "quote_verified",
+      "schema": "public",
+      "values": [
+        "exact",
+        "normalized",
+        "transcript",
+        "fuzzy"
       ]
     },
     "public.reaction_kind": {
