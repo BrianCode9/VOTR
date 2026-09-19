@@ -10,6 +10,7 @@
  */
 
 import { fetchRssFeed } from "../lib/adapters/rss"
+import { sql } from "drizzle-orm"
 import type { Document } from "../lib/adapters/types"
 
 process.loadEnvFile(".env.local")
@@ -68,10 +69,12 @@ async function main() {
   const inserted = await db
     .insert(documentsTable)
     .values(rows)
-    // Documents are immutable once stored. A URL we already have is skipped
-    // rather than updated, because updating raw_text would silently invalidate
-    // every quote offset already pointing into it.
-    .onConflictDoNothing({ target: documentsTable.url })
+    // Documents are immutable once stored. Only fill missing metadata on an
+    // existing URL; never update raw_text, since quote offsets point into it.
+    .onConflictDoUpdate({
+      target: documentsTable.url,
+      set: { imageUrl: sql`coalesce(${documentsTable.imageUrl}, excluded.image_url)` },
+    })
     .returning({ id: documentsTable.id, title: documentsTable.title })
 
   console.log(`\nstored ${inserted.length} new, skipped ${rows.length - inserted.length} already present`)
@@ -91,6 +94,7 @@ async function main() {
 function toRow(d: Document) {
   return {
     url: d.url,
+    imageUrl: d.imageUrl ?? null,
     sourceType: d.sourceType,
     sourceName: d.sourceName,
     title: d.title,

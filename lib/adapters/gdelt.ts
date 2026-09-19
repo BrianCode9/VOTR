@@ -110,6 +110,7 @@ export async function fetchGdeltDocuments(
 
     documents.push({
       url: article.url,
+      imageUrl: text.value.imageUrl ?? undefined,
       sourceType: "gdelt",
       sourceName: article.domain || "gdelt",
       title: text.value.title || article.title || article.url,

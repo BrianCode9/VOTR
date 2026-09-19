@@ -92,6 +92,7 @@ export const documents = pgTable(
     sourceType: text("source_type").notNull(), // rss | gdelt | transcript | user
     sourceName: text("source_name").notNull(),
     title: text("title").notNull(),
+    imageUrl: text("image_url"),
     publishedAt: timestamp("published_at", { withTimezone: true }),
     rawText: text("raw_text").notNull(),
     fetchedAt: timestamp("fetched_at", { withTimezone: true }).notNull().defaultNow(),

@@ -25,6 +25,7 @@ export interface FeedItem {
   candidateName: string
   sourceName: string
   sourceUrl: string
+  imageUrl: string | null
   documentTitle: string
   publishedAt: Date | null
   isSynthetic: boolean
@@ -52,6 +53,7 @@ export async function getFeed(limit = 40): Promise<FeedItem[]> {
       candidateName: candidates.name,
       sourceName: documents.sourceName,
       sourceUrl: documents.url,
+      imageUrl: documents.imageUrl,
       documentTitle: documents.title,
       publishedAt: documents.publishedAt,
       isSynthetic: documents.isSynthetic,
@@ -77,6 +79,7 @@ export async function getFeed(limit = 40): Promise<FeedItem[]> {
       candidateName: r.candidateName,
       sourceName: r.sourceName,
       sourceUrl: r.sourceUrl,
+      imageUrl: r.imageUrl,
       documentTitle: r.documentTitle,
       publishedAt: r.publishedAt,
       isSynthetic: r.isSynthetic,

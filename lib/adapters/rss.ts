@@ -59,6 +59,7 @@ export async function fetchRssFeed(
 
     documents.push({
       url,
+      imageUrl: article.value.imageUrl ?? imageFromRssItem(item),
       sourceType: "rss",
       sourceName,
       title: article.value.title || item.title?.trim() || url,
@@ -71,6 +72,31 @@ export async function fetchRssFeed(
   }
 
   return { documents, failures }
+}
+
+function imageFromRssItem(item: { enclosure?: { url?: string }; [key: string]: unknown }): string | undefined {
+  const enclosureUrl = item.enclosure?.url?.trim()
+  if (enclosureUrl) return enclosureUrl
+
+  const content = item["content:encoded"]
+  if (typeof content !== "string") return undefined
+
+  const imagePattern = /<img\b[^>]*\bsrc\s*=\s*["']([^"']+)["'][^>]*>/gi
+  for (const match of content.matchAll(imagePattern)) {
+    const url = match[1]?.trim()
+    if (url && !isTrackingImage(url)) return url
+  }
+
+  return undefined
+}
+
+function isTrackingImage(url: string): boolean {
+  try {
+    const parsed = new URL(url)
+    return /tracking|pixel|spacer/i.test(`${parsed.hostname}${parsed.pathname}`)
+  } catch {
+    return true
+  }
 }
 
 function safeHostname(url: string): string {

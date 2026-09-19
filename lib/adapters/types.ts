@@ -11,6 +11,7 @@ export type SourceType = "rss" | "gdelt" | "transcript" | "user"
 
 export interface Document {
   url: string
+  imageUrl?: string
   sourceType: SourceType
   sourceName: string
   title: string
