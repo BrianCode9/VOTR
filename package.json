@@ -14,7 +14,12 @@
     "test": "tsx --test lib/**/*.test.ts",
     "extract": "tsx scripts/extract.ts",
     "persist": "tsx scripts/persist.ts",
-    "setup": "tsx scripts/setup.ts"
+    "setup": "tsx scripts/setup.ts",
+    "data:prepare": "python scripts/prepare-candidate-data.py",
+    "data:import": "tsx scripts/import-candidates.ts",
+    "data:policies": "tsx scripts/import-policy-evidence.ts",
+    "data:verify": "tsx scripts/verify-candidate-import.ts",
+    "data:fetch": "node scripts/fetch-candidate-sources.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.127.0",
