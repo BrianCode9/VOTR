@@ -1,43 +1,50 @@
 import Anthropic from "@anthropic-ai/sdk"
-import type { Document } from "../adapters/types"
+import type { NormalizedDocument } from "../adapters/types"
 import {
   extractionResultSchema,
-  type ExtractedInsight,
-  type VerifiedInsight,
+  flattenExtraction,
+  type ExtractedItem,
+  type VerifiedItem,
 } from "../schemas/insight"
 import { toToolSchema } from "../schemas/tool-schema"
-import { EXTRACTION_SYSTEM, buildExtractionPrompt } from "./prompt"
-import { verifyQuote } from "./verify"
+import { EXTRACTION_SYSTEM, buildExtractionPrompt, type PromptContext } from "./prompt"
+import { verifyQuote, type VerifyOptions } from "./verify"
 
 /**
- * Extraction, step 3 of the pipeline, followed immediately by verification.
+ * Extraction, followed immediately by verification.
  *
- * These two are deliberately in one function. An ExtractedInsight carrying an
+ * These two are deliberately in one function. An ExtractedItem carrying an
  * unverified quote string is a dangerous value to hand around: it looks exactly
  * like a verified one and nothing in its type says otherwise. Callers only ever
- * receive VerifiedInsight, which cannot exist without real offsets.
+ * receive VerifiedItem, which cannot exist without real offsets.
  */
 
 export const EXTRACTION_MODEL = "claude-opus-5"
 
-const TOOL_NAME = "record_insights"
+const TOOL_NAME = "record_extraction"
 
 /**
  * Built once at module load: the tool list is part of the cache prefix, so it
  * must be byte-identical on every request or caching silently stops working.
  */
-const RECORD_INSIGHTS_TOOL: Anthropic.Tool = {
+const RECORD_EXTRACTION_TOOL: Anthropic.Tool = {
   name: TOOL_NAME,
   description:
-    "Record the positions found in this document, each with a verbatim supporting quote.",
+    "Record the stances, stance changes, factual claims, and voter-relevant risks " +
+    "and opportunities found in this document, each with a verbatim supporting quote.",
   input_schema: toToolSchema(extractionResultSchema),
   strict: true,
 }
 
+export interface RejectedItem {
+  item: ExtractedItem
+  reason: string
+}
+
 export interface ExtractionRun {
-  verified: VerifiedInsight[]
-  /** Quotes the model returned that are not actually in the document. */
-  rejected: { insight: ExtractedInsight; reason: string }[]
+  verified: VerifiedItem[]
+  /** Items whose quote is not actually in the document. Never shown to users. */
+  rejected: RejectedItem[]
   usage: {
     inputTokens: number
     outputTokens: number
@@ -47,10 +54,18 @@ export interface ExtractionRun {
   error?: string
 }
 
+export interface ExtractOptions extends PromptContext {
+  client?: Anthropic
+  verify?: VerifyOptions
+  maxTokens?: number
+}
+
 export async function extractInsights(
-  doc: Document,
-  client: Anthropic = new Anthropic(),
+  doc: NormalizedDocument,
+  options: ExtractOptions = {},
 ): Promise<ExtractionRun> {
+  const client = options.client ?? new Anthropic()
+
   const empty: ExtractionRun = {
     verified: [],
     rejected: [],
@@ -61,7 +76,7 @@ export async function extractInsights(
   try {
     response = await client.messages.create({
       model: EXTRACTION_MODEL,
-      max_tokens: 16000,
+      max_tokens: options.maxTokens ?? 16000,
       thinking: { type: "adaptive" },
       system: [
         {
@@ -72,11 +87,20 @@ export async function extractInsights(
           cache_control: { type: "ephemeral" },
         },
       ],
-      tools: [RECORD_INSIGHTS_TOOL],
+      tools: [RECORD_EXTRACTION_TOOL],
       // Forced tool_choice is incompatible with extended thinking, so the tool
       // is named in the prompt instead and `strict` keeps the arguments valid.
       tool_choice: { type: "auto" },
-      messages: [{ role: "user", content: buildExtractionPrompt(doc) }],
+      messages: [
+        {
+          role: "user",
+          content: buildExtractionPrompt(doc, {
+            priorStances: options.priorStances,
+            knownSpeakers: options.knownSpeakers,
+            topicVocabulary: options.topicVocabulary,
+          }),
+        },
+      ],
     })
   } catch (e) {
     return { ...empty, error: e instanceof Error ? e.message : String(e) }
@@ -98,31 +122,65 @@ export async function extractInsights(
   )
 
   // No tool call means the model found nothing quotable, which is the expected
-  // outcome for most documents and is not an error.
+  // outcome for many documents and is not an error.
   if (!toolUse) return { ...empty, usage }
 
   const parsed = extractionResultSchema.safeParse(toolUse.input)
   if (!parsed.success) {
-    return { ...empty, usage, error: `tool input failed validation: ${parsed.error.message}` }
+    return {
+      ...empty,
+      usage,
+      error: `tool input failed validation: ${parsed.error.message}`,
+    }
   }
 
-  const verified: VerifiedInsight[] = []
-  const rejected: ExtractionRun["rejected"] = []
+  const { verified, rejected } = verifyItems(
+    flattenExtraction(parsed.data),
+    doc,
+    options.verify,
+  )
 
-  for (const insight of parsed.data.insights) {
-    const result = verifyQuote(insight.quote, doc)
+  return { verified, rejected, usage }
+}
+
+/**
+ * Run every extracted item through the quote ladder.
+ *
+ * Exported separately so the verification half can be tested, and replayed
+ * over a stored model response, without an API call.
+ */
+export function verifyItems(
+  items: ExtractedItem[],
+  doc: NormalizedDocument,
+  options?: VerifyOptions,
+): { verified: VerifiedItem[]; rejected: RejectedItem[] } {
+  const verified: VerifiedItem[] = []
+  const rejected: RejectedItem[] = []
+
+  for (const item of items) {
+    const result = verifyQuote(item.quote, doc, options)
+
+    // The only exit for an unverifiable item. It is not stored as an insight,
+    // it is not flagged and rendered, it does not reach a user. The caller
+    // writes it to the rejections table, which is a failure log, not a feed.
     if (!result.ok) {
-      rejected.push({ insight, reason: result.reason })
+      rejected.push({ item, reason: result.reason })
       continue
     }
+
     verified.push({
-      ...insight,
+      ...item,
       quoteCharStart: result.start,
       quoteCharEnd: result.end,
-      rung: result.rung,
+      quoteVerified: result.rung,
+      similarity: result.similarity,
       occurrences: result.occurrences,
+      // The model's guess is kept only as a signal. Large drift on a quote
+      // that still verified usually means the model reconstructed the span
+      // from memory rather than copying it.
+      hintDrift: Math.abs(item.quoteHint.start - result.start),
     })
   }
 
-  return { verified, rejected, usage }
+  return { verified, rejected }
 }

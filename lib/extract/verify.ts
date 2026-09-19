@@ -1,5 +1,6 @@
-import type { Document } from "../adapters/types"
+import type { NormalizedDocument } from "../adapters/types"
 import { NAMED_ENTITIES } from "../adapters/html-to-text"
+import { locateFuzzy, similarity, type MappedText } from "./fuzzy"
 
 /**
  * The quote verification ladder.
@@ -19,7 +20,7 @@ import { NAMED_ENTITIES } from "../adapters/html-to-text"
  * character remembers the span of original characters that produced it.
  */
 
-export type VerifyRung = "exact" | "normalized" | "transcript"
+export type VerifyRung = "exact" | "normalized" | "transcript" | "fuzzy"
 
 export type VerifyResult =
   | {
@@ -32,12 +33,37 @@ export type VerifyResult =
       rung: VerifyRung
       /** How many times the quote appears. >1 means the span is ambiguous. */
       occurrences: number
+      /**
+       * 1 on the exact, normalized, and transcript rungs, which are all
+       * lossless matches. On the fuzzy rung, the measured ratio.
+       */
+      similarity: number
     }
   | { ok: false; reason: string }
 
+export interface VerifyOptions {
+  /**
+   * Minimum similarity for the fuzzy rung, 0 to 1.
+   *
+   * 0.9 means roughly one character in ten may differ. Raising it makes the
+   * ladder stricter; lowering it below about 0.85 starts matching text the
+   * speaker did not say, which is the failure this whole module exists to
+   * prevent. Do not lower it to make a demo look better.
+   */
+  fuzzyThreshold?: number
+  /** Set false to stop at the lossless rungs. */
+  allowFuzzy?: boolean
+}
+
+export const DEFAULT_FUZZY_THRESHOLD = 0.9
+
+/** Fuzzy matching is O(quote x window); refuse rather than stall on an essay. */
+const MAX_FUZZY_QUOTE_CHARS = 1500
+
 /**
  * A normalized string plus, for each of its characters, the span in the
- * ORIGINAL string that produced it.
+ * ORIGINAL string that produced it. Defined in ./fuzzy so both modules read
+ * the same index map.
  *
  * starts[i] and ends[i] are offsets into the original. ends is exclusive.
  * Keeping ends separately from starts is what makes a quote that ends on a
@@ -49,15 +75,16 @@ export type VerifyResult =
  * Arrays are indexed per UTF-16 code unit so that text.length, starts.length
  * and ends.length always agree.
  */
-interface Mapped {
-  text: string
-  starts: number[]
-  ends: number[]
-}
+type Mapped = MappedText
 
 /* -------------------------------------------------------------- public -- */
 
-export function verifyQuote(quote: string, doc: Document): VerifyResult {
+export function verifyQuote(
+  quote: string,
+  doc: NormalizedDocument,
+  options: VerifyOptions = {},
+): VerifyResult {
+  const { fuzzyThreshold = DEFAULT_FUZZY_THRESHOLD, allowFuzzy = true } = options
   const raw = doc.rawText
   const candidate = quote.trim()
 
@@ -73,6 +100,7 @@ export function verifyQuote(quote: string, doc: Document): VerifyResult {
       end: exactIdx + candidate.length,
       rung: "exact",
       occurrences: countOccurrences(raw, candidate),
+      similarity: 1,
     }
   }
 
@@ -85,7 +113,7 @@ export function verifyQuote(quote: string, doc: Document): VerifyResult {
     if (!verifiesBack(raw, normHit.start, normHit.end, quoteNorm, "normalized")) {
       return { ok: false, reason: "offset mapping failed self-check at rung 2" }
     }
-    return { ok: true, ...normHit, rung: "normalized" }
+    return { ok: true, ...normHit, rung: "normalized", similarity: 1 }
   }
 
   // Rung 3: transcripts only. Filler words and stutter repeats.
@@ -100,14 +128,48 @@ export function verifyQuote(quote: string, doc: Document): VerifyResult {
       ) {
         return { ok: false, reason: "offset mapping failed self-check at rung 3" }
       }
-      return { ok: true, ...speechHit, rung: "transcript" }
+      return { ok: true, ...speechHit, rung: "transcript", similarity: 1 }
+    }
+  }
+
+  // Rung 4: fuzzy. The model dropped a comma, swapped a word, or merged two
+  // spaces in a way the lossless rungs cannot undo. Everything found here is
+  // flagged as fuzzy downstream, never presented as an exact match.
+  if (allowFuzzy) {
+    if (candidate.length > MAX_FUZZY_QUOTE_CHARS) {
+      return { ok: false, reason: `quote too long for fuzzy matching (${candidate.length} chars)` }
+    }
+
+    // Reuses the rung 2 normalization: the fuzzy rung is about residual
+    // differences the lossless folding could not remove, not about raw text.
+    const fuzzy = locateFuzzy(docNorm, quoteNorm, fuzzyThreshold)
+
+    if (fuzzy) {
+      // The fuzzy self-check cannot demand equality, so it re-measures: the
+      // ORIGINAL span these offsets point at must itself score above the
+      // threshold. A broken index map produces a slice that does not.
+      const backCheck = similarity(
+        normalizeMapped(raw.slice(fuzzy.start, fuzzy.end)).text.trim(),
+        quoteNorm,
+      )
+      if (backCheck < fuzzyThreshold) {
+        return { ok: false, reason: "offset mapping failed self-check at rung 4" }
+      }
+      return {
+        ok: true,
+        start: fuzzy.start,
+        end: fuzzy.end,
+        rung: "fuzzy",
+        occurrences: 1,
+        similarity: backCheck,
+      }
     }
   }
 
   return {
     ok: false,
     reason: `quote not found in document (${candidate.length} chars, tried ${
-      doc.mediaType === "transcript" ? "3 rungs" : "2 rungs"
+      allowFuzzy ? (doc.mediaType === "transcript" ? "4 rungs" : "3 rungs") : "lossless rungs only"
     })`,
   }
 }
