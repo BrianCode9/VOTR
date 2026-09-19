@@ -46,7 +46,7 @@ export function SiteFooter() {
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
             {COLUMNS.map((column) => (
               <div key={column.heading}>
-                <h3 className="font-mono text-[10px] tracking-[0.2em] text-white/55 uppercase">
+                <h3 className="font-mono text-[10px] tracking-[-0.01em] text-white/55">
                   {column.heading}
                 </h3>
                 <ul className="mt-4 space-y-2.5">

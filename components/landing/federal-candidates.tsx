@@ -1,10 +1,12 @@
-import { ArrowRight, Landmark } from "lucide-react"
+import { Landmark } from "lucide-react"
 import { Section, SectionHeading, NeutralityNote } from "@/components/landing/section"
 import { Reveal } from "@/components/landing/reveal"
 import { CandidateCard } from "@/components/landing/candidate-card"
-import { federalCandidates } from "@/lib/landing/content"
+import { getFederalCandidates } from "@/lib/landing/queries"
 
-export function FederalCandidates() {
+export async function FederalCandidates() {
+  const federalCandidates = await getFederalCandidates(4)
+
   return (
     <Section id="federal" tone="mist">
       <SectionHeading
@@ -17,7 +19,6 @@ export function FederalCandidates() {
             className="inline-flex items-center gap-1.5 rounded-lg text-sm font-medium text-brand transition-colors hover:text-brand-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
           >
             See all federal races
-            <ArrowRight className="size-4" aria-hidden="true" />
           </a>
         }
       />

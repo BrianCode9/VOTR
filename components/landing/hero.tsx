@@ -1,4 +1,4 @@
-import { ArrowRight, BadgeCheck, MapPin, Sparkles } from "lucide-react"
+import { BadgeCheck, MapPin, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/landing/section"
 import { BallotPreview } from "@/components/landing/ballot-preview"
@@ -26,8 +26,8 @@ export function Hero() {
       <Container className="relative">
         <div className="grid items-center gap-14 lg:grid-cols-[1.02fr_0.98fr] lg:gap-12">
           <div>
-            <p className="animate-in fade-in slide-in-from-bottom-2 fill-mode-both inline-flex items-center gap-2 rounded-full border border-hairline bg-white/70 py-1.5 pr-3.5 pl-2 text-xs font-medium text-slate-ink shadow-[0_1px_2px_rgba(10,17,36,0.04)] duration-700">
-              <span className="rounded-full bg-brand-tint px-2 py-0.5 font-mono text-[10px] tracking-wider text-brand-deep uppercase">
+            <p className="animate-in fade-in slide-in-from-bottom-2 fill-mode-both inline-flex items-center gap-2 rounded-full border border-hairline bg-sheet/70 py-1.5 pr-3.5 pl-2 text-xs font-medium text-slate-ink shadow-[0_1px_2px_rgba(10,17,36,0.04)] duration-700">
+              <span className="rounded-full bg-brand-tint px-2 py-0.5 font-mono text-[10px] tracking-wider text-brand-deep">
                 New
               </span>
               Built for first-time and every-time voters
@@ -41,7 +41,7 @@ export function Hero() {
                 <span className="relative z-10">understand.</span>
                 <span
                   aria-hidden="true"
-                  className="absolute inset-x-0 bottom-1 z-0 h-[0.28em] rounded-full bg-gradient-to-r from-brand-bright/45 to-brand/25"
+                  className="absolute inset-x-0 bottom-1 z-0 h-[0.28em] bg-brand/20"
                 />
               </span>
             </h1>
@@ -60,7 +60,6 @@ export function Hero() {
               >
                 <a href="#ballot">
                   Explore your ballot
-                  <ArrowRight className="size-4" aria-hidden="true" />
                 </a>
               </Button>
 
@@ -68,7 +67,7 @@ export function Hero() {
                 asChild
                 variant="outline"
                 size="lg"
-                className="h-12 rounded-full border-hairline bg-white px-6 text-base text-navy hover:border-brand/40 hover:bg-white"
+                className="h-12 rounded-full border-hairline bg-sheet px-6 text-base text-navy hover:border-brand/40 hover:bg-sheet"
               >
                 <a href="#trending">Explore issues</a>
               </Button>
@@ -96,9 +95,9 @@ export function Hero() {
                 sideways on a phone. */}
             <div
               aria-hidden="true"
-              className="absolute -top-4 -left-6 hidden rounded-2xl border border-hairline bg-white px-3.5 py-2.5 shadow-[0_18px_40px_-24px_rgba(10,17,36,0.4)] sm:block"
+              className="absolute -top-4 -left-6 hidden rounded-2xl border border-hairline bg-sheet px-3.5 py-2.5 sm:block"
             >
-              <p className="font-mono text-[9px] tracking-[0.18em] text-slate-ink/80 uppercase">
+              <p className="font-mono text-[9px] tracking-[-0.01em] text-slate-ink/80">
                 Registered
               </p>
               <p className="mt-0.5 text-sm font-semibold text-navy">You&rsquo;re set</p>
@@ -106,7 +105,7 @@ export function Hero() {
 
             <div
               aria-hidden="true"
-              className="absolute -right-4 -bottom-5 hidden items-center gap-2 rounded-2xl border border-hairline bg-navy px-3.5 py-2.5 text-white shadow-[0_18px_40px_-20px_rgba(10,17,36,0.7)] sm:flex"
+              className="absolute -right-4 -bottom-5 hidden items-center gap-2 rounded-2xl border border-hairline bg-navy px-3.5 py-2.5 text-white sm:flex"
             >
               <BadgeCheck className="size-4 text-brand-bright" />
               <span className="text-sm font-medium">15 verified quotes today</span>
@@ -118,16 +117,19 @@ export function Hero() {
   )
 }
 
-/** Soft blue wash and a grid. No flags, no stars, nothing waving. */
+/**
+ * Ruled paper.
+ *
+ * This was a blue wash plus three blurred colour orbs plus a grid. The wash and
+ * the orbs are on CLAUDE.md's list of generated-page defaults, so they are
+ * gone. The rule lines stay because they are the one part that meant
+ * something: the product is built on annotated documents, and a ruled sheet is
+ * that, not decoration borrowed from a template.
+ */
 function HeroBackdrop() {
   return (
     <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-      <div className="absolute inset-0 bg-gradient-to-b from-brand-tint/70 via-white to-white" />
-      <div className="absolute -top-40 -left-32 size-[34rem] rounded-full bg-brand/12 blur-[120px]" />
-      <div className="absolute -top-24 right-[-10rem] size-[30rem] rounded-full bg-brand-bright/14 blur-[130px]" />
-      {/* The single red note in the hero, at 5% opacity. */}
-      <div className="absolute right-1/3 bottom-0 size-[22rem] rounded-full bg-signal/5 blur-[120px]" />
-      <div className="absolute inset-0 [mask-image:radial-gradient(70%_55%_at_50%_0%,black,transparent)] bg-[linear-gradient(to_right,rgba(10,17,36,0.045)_1px,transparent_1px),linear-gradient(to_bottom,rgba(10,17,36,0.045)_1px,transparent_1px)] bg-[size:64px_64px]" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(10,17,36,0.05)_1px,transparent_1px)] bg-[size:100%_32px]" />
     </div>
   )
 }

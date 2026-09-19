@@ -1,12 +1,12 @@
 "use client"
 
 import { useId, useState, type FormEvent } from "react"
-import { ArrowRight, Check, MapPin, Sparkles } from "lucide-react"
+import { Check, MapPin, Sparkles } from "lucide-react"
 import { cn } from "cn"
 import { Button } from "@/components/ui/button"
 import { Container, Eyebrow } from "@/components/landing/section"
 import { TopicIcon } from "@/components/landing/topic-icon"
-import { issues } from "@/lib/landing/content"
+import type { Issue } from "@/lib/landing/content"
 
 /**
  * "For Me".
@@ -20,7 +20,7 @@ import { issues } from "@/lib/landing/content"
  * you see first. Ordering people by predicted agreement is the exact thing
  * this product refuses to do.
  */
-export function ForMe() {
+export function ForMe({ issues }: { issues: Issue[] }) {
   const addressId = useId()
   const [selected, setSelected] = useState<string[]>(["economy", "housing"])
   const [address, setAddress] = useState("")
@@ -85,7 +85,7 @@ export function ForMe() {
             className="rounded-[1.75rem] border border-navy-line bg-navy-raised/80 p-6 backdrop-blur-sm sm:p-8"
           >
             <fieldset className="border-0 p-0">
-              <legend className="font-mono text-[10px] tracking-[0.2em] text-white/55 uppercase">
+              <legend className="font-mono text-[10px] tracking-[-0.01em] text-white/55">
                 Choose your issues
               </legend>
 
@@ -99,10 +99,10 @@ export function ForMe() {
                       aria-pressed={active}
                       onClick={() => toggle(issue.id)}
                       className={cn(
-                        "inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-medium transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-bright",
+                        "inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-medium transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-bright",
                         active
                           ? "border-brand-bright bg-brand text-white"
-                          : "border-white/15 bg-white/[0.03] text-white/70 hover:border-white/35 hover:text-white"
+                          : "border-white/15 bg-sheet/[0.03] text-white/70 hover:border-white/35 hover:text-white"
                       )}
                     >
                       <TopicIcon name={issue.icon} className="size-3.5" />
@@ -116,7 +116,7 @@ export function ForMe() {
             <div className="mt-7">
               <label
                 htmlFor={addressId}
-                className="font-mono text-[10px] tracking-[0.2em] text-white/55 uppercase"
+                className="font-mono text-[10px] tracking-[-0.01em] text-white/55"
               >
                 Where you vote
               </label>
@@ -139,7 +139,7 @@ export function ForMe() {
                       setAddress(event.target.value)
                       setSaved(false)
                     }}
-                    className="h-12 w-full rounded-full border border-white/15 bg-white/[0.04] pr-4 pl-10 text-sm text-white transition-colors placeholder:text-white/60 hover:border-white/30 focus:border-brand-bright focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-bright/40"
+                    className="h-12 w-full rounded-full border border-white/15 bg-sheet/[0.04] pr-4 pl-10 text-sm text-white transition-colors placeholder:text-white/60 hover:border-white/30 focus:border-brand-bright focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-bright/40"
                   />
                 </div>
 
@@ -147,17 +147,16 @@ export function ForMe() {
                   type="submit"
                   size="lg"
                   disabled={selected.length === 0}
-                  className="h-12 shrink-0 rounded-full bg-white px-6 text-base text-navy hover:bg-brand-bright hover:text-white disabled:opacity-40"
+                  className="h-12 shrink-0 rounded-full bg-sheet px-6 text-base text-navy hover:bg-brand-bright hover:text-white disabled:opacity-40"
                 >
                   Build my feed
-                  <ArrowRight className="size-4" aria-hidden="true" />
                 </Button>
               </div>
             </div>
 
             <div
               aria-live="polite"
-              className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3.5"
+              className="mt-6 rounded-2xl border border-white/10 bg-sheet/[0.03] px-4 py-3.5"
             >
               {saved ? (
                 <p className="flex items-start gap-2.5 text-sm text-white/80">

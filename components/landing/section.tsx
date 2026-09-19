@@ -61,7 +61,10 @@ export function Eyebrow({
   return (
     <p
       className={cn(
-        "font-mono text-[10px] uppercase tracking-[0.2em] sm:text-[11px]",
+        // Martian Mono, small, for a label. Not all-caps and not tracked out:
+        // CLAUDE.md lists the tracked-out caps eyebrow as a generated-page
+        // tell, and the type spec wants mono used for meta, sparingly.
+        "font-mono text-[11px] leading-none tracking-[-0.01em] sm:text-xs",
         tone === "brand" && "text-brand",
         tone === "muted" && "text-slate-ink/80",
         tone === "signal" && "text-signal",

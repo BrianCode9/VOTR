@@ -1,13 +1,13 @@
-import { ArrowRight, CalendarDays } from "lucide-react"
+import { CalendarDays } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/landing/section"
 import { Reveal } from "@/components/landing/reveal"
 import {
   daysUntil,
   formatElectionDate,
-  upcomingElections,
   type ElectionLevel,
 } from "@/lib/landing/content"
+import { getElections } from "@/lib/landing/queries"
 
 const LEVEL_LABELS: Record<ElectionLevel, string> = {
   federal: "Federal",
@@ -20,8 +20,8 @@ const LEVEL_LABELS: Record<ElectionLevel, string> = {
  * white, and it puts the only genuinely time-sensitive thing on the page
  * above everything else.
  */
-export function UpcomingElections() {
-  const [next, ...rest] = upcomingElections()
+export async function UpcomingElections() {
+  const [next, ...rest] = await getElections()
 
   if (!next) return null
 
@@ -40,7 +40,7 @@ export function UpcomingElections() {
 
             <div className="relative grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">
               <div>
-                <p className="flex items-center gap-2 font-mono text-[10px] tracking-[0.2em] text-brand-bright uppercase sm:text-[11px]">
+                <p className="flex items-center gap-2 font-mono text-[10px] tracking-[-0.01em] text-brand-bright sm:text-[11px]">
                   <CalendarDays className="size-3.5" aria-hidden="true" />
                   Upcoming elections
                 </p>
@@ -55,7 +55,7 @@ export function UpcomingElections() {
                 </div>
 
                 <div className="mt-6 flex flex-wrap items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-signal/15 px-3 py-1 font-mono text-[11px] tracking-wider text-[#FF8A93] uppercase">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-signal/15 px-3 py-1 font-mono text-[11px] tracking-wider text-[#FF8A93]">
                     <span
                       className="size-1.5 rounded-full bg-signal"
                       aria-hidden="true"
@@ -66,7 +66,7 @@ export function UpcomingElections() {
                   {next.levels.map((level) => (
                     <span
                       key={level}
-                      className="rounded-full border border-white/15 px-3 py-1 font-mono text-[11px] tracking-wider text-white/70 uppercase"
+                      className="rounded-full border border-white/15 px-3 py-1 font-mono text-[11px] tracking-wider text-white/70"
                     >
                       {LEVEL_LABELS[level]}
                     </span>
@@ -81,17 +81,16 @@ export function UpcomingElections() {
                 <Button
                   asChild
                   size="lg"
-                  className="mt-7 h-12 rounded-full bg-white px-6 text-base text-navy hover:bg-brand-bright hover:text-white"
+                  className="mt-7 h-12 rounded-full bg-sheet px-6 text-base text-navy hover:bg-brand-bright hover:text-white"
                 >
                   <a href="#for-me">
                     View your ballot
-                    <ArrowRight className="size-4" aria-hidden="true" />
                   </a>
                 </Button>
               </div>
 
               <div>
-                <p className="font-mono text-[10px] tracking-[0.2em] text-white/55 uppercase">
+                <p className="font-mono text-[10px] tracking-[-0.01em] text-white/55">
                   Also on the calendar
                 </p>
 
@@ -102,7 +101,7 @@ export function UpcomingElections() {
                         href="#for-me"
                         className="group flex items-center gap-4 py-4 transition-colors hover:text-brand-bright focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-bright"
                       >
-                        <span className="w-20 shrink-0 font-mono text-xs tracking-wider text-white/55 uppercase">
+                        <span className="w-20 shrink-0 font-mono text-xs tracking-wider text-white/55">
                           {formatElectionDate(election.date, true)}
                         </span>
                         <span className="flex-1">
@@ -115,10 +114,6 @@ export function UpcomingElections() {
                               .join(" · ")}
                           </span>
                         </span>
-                        <ArrowRight
-                          className="size-4 shrink-0 text-white/30 transition-transform group-hover:translate-x-0.5 group-hover:text-brand-bright"
-                          aria-hidden="true"
-                        />
                       </a>
                     </li>
                   ))}

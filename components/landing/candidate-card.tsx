@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { ArrowRight } from "lucide-react"
+
 import type { Candidate } from "@/lib/landing/content"
 
 /**
@@ -14,13 +14,13 @@ export function CandidateCard({ candidate }: { candidate: Candidate }) {
   return (
     <a
       href="#for-me"
-      className="group flex h-full flex-col rounded-card border border-hairline bg-white p-5 transition-all duration-300 hover:-translate-y-1 hover:border-brand/35 hover:shadow-[0_24px_50px_-30px_rgba(10,17,36,0.4)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+      className="group flex h-full flex-col rounded-card border border-hairline bg-sheet p-5 transition-colors duration-150 hover:border-brand/35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
     >
       <div className="flex items-center gap-4">
         <CandidatePortrait candidate={candidate} />
 
         <div className="min-w-0">
-          <p className="truncate font-mono text-[10px] tracking-[0.15em] text-slate-ink/80 uppercase">
+          <p className="truncate font-mono text-[10px] tracking-[-0.01em] text-slate-ink/80">
             {candidate.office}
           </p>
           <h3 className="mt-1 truncate font-heading text-lg font-semibold tracking-[-0.02em] text-navy">
@@ -44,10 +44,6 @@ export function CandidateCard({ candidate }: { candidate: Candidate }) {
 
       <span className="mt-5 inline-flex items-center gap-1.5 border-t border-hairline pt-4 text-sm font-medium text-brand">
         View profile
-        <ArrowRight
-          className="size-3.5 transition-transform group-hover:translate-x-0.5"
-          aria-hidden="true"
-        />
       </span>
     </a>
   )
@@ -71,7 +67,7 @@ function CandidatePortrait({ candidate }: { candidate: Candidate }) {
   return (
     <span
       aria-hidden="true"
-      className="grid size-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-brand-tint to-mist font-heading text-base font-semibold text-navy/70 ring-1 ring-hairline ring-inset"
+      className="grid size-14 shrink-0 place-items-center rounded-sm bg-mist font-heading text-base font-semibold text-navy/70 ring-1 ring-hairline ring-inset"
     >
       {initials(candidate.name)}
     </span>

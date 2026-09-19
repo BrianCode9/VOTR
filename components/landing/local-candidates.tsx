@@ -1,9 +1,9 @@
-import { ArrowRight, MapPin } from "lucide-react"
+import { MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Section, Eyebrow, NeutralityNote } from "@/components/landing/section"
 import { Reveal } from "@/components/landing/reveal"
 import { CandidateCard } from "@/components/landing/candidate-card"
-import { localCandidates } from "@/lib/landing/content"
+import { getLocalCandidates } from "@/lib/landing/queries"
 
 const OFFICE_TYPES = [
   "Mayor & city council",
@@ -18,7 +18,9 @@ const OFFICE_TYPES = [
  * Given more room than the federal band on purpose. Down-ballot races are the
  * ones people actually skip, and they are the reason this product exists.
  */
-export function LocalCandidates() {
+export async function LocalCandidates() {
+  const localCandidates = await getLocalCandidates(4)
+
   return (
     <Section id="local">
       <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
@@ -60,7 +62,6 @@ export function LocalCandidates() {
             >
               <a href="#for-me">
                 Find my local races
-                <ArrowRight className="size-4" aria-hidden="true" />
               </a>
             </Button>
           </div>

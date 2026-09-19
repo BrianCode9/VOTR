@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { ArrowRight, Menu, Search } from "lucide-react"
+import { Menu, Search } from "lucide-react"
 import { cn } from "cn"
 import { VotrLogo } from "@/components/brand/votr-logo"
 import { Button } from "@/components/ui/button"
@@ -41,7 +41,7 @@ export function SiteNav() {
       className={cn(
         "sticky top-0 z-50 transition-colors duration-300",
         scrolled
-          ? "border-b border-hairline bg-white/85 backdrop-blur-md"
+          ? "border-b border-hairline bg-sheet/85 backdrop-blur-md"
           : "border-b border-transparent bg-transparent"
       )}
     >
@@ -75,7 +75,7 @@ export function SiteNav() {
               live search field. */}
           <a
             href="#for-me"
-            className="hidden items-center gap-2 rounded-full border border-hairline bg-white/70 py-2 pr-4 pl-3 text-sm text-slate-ink/80 transition-colors hover:border-brand/40 hover:text-navy focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand lg:inline-flex"
+            className="hidden items-center gap-2 rounded-full border border-hairline bg-sheet/70 py-2 pr-4 pl-3 text-sm text-slate-ink/80 transition-colors hover:border-brand/40 hover:text-navy focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand lg:inline-flex"
           >
             <Search className="size-4" aria-hidden="true" />
             Find your ballot
@@ -88,7 +88,6 @@ export function SiteNav() {
           >
             <a href="#ballot">
               Explore your ballot
-              <ArrowRight className="size-4" aria-hidden="true" />
             </a>
           </Button>
 
@@ -122,10 +121,6 @@ export function SiteNav() {
                         className="flex items-center justify-between rounded-xl px-3 py-3 font-heading text-lg font-medium text-navy transition-colors hover:bg-brand-tint focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
                       >
                         {link.label}
-                        <ArrowRight
-                          className="size-4 text-slate-ink/40"
-                          aria-hidden="true"
-                        />
                       </a>
                     </SheetClose>
                   </li>
@@ -141,7 +136,6 @@ export function SiteNav() {
                   >
                     <a href="#ballot">
                       Explore your ballot
-                      <ArrowRight className="size-4" aria-hidden="true" />
                     </a>
                   </Button>
                 </SheetClose>
