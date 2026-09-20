@@ -23,9 +23,8 @@ import {
  * does nothing, which is the failure this refactor is about.
  */
 const LINKS = [
-  { href: "/#trending", label: "Trending" },
-  { href: "/#local", label: "Local" },
-  { href: "/#policy", label: "Policy" },
+  { href: "/#featured", label: "Candidates" },
+  { href: "/#local", label: "State" },
 ] as const
 
 /**

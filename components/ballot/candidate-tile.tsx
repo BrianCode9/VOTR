@@ -55,6 +55,12 @@ export function CandidateTile({ candidate }: { candidate: BallotCandidate }) {
         </p>
       ) : null}
 
+      {!candidate.certified ? (
+        <p className="mt-3 font-mono text-[10px] leading-relaxed text-slate-ink/70">
+          Declared a run with the FEC · not a certified ballot listing
+        </p>
+      ) : null}
+
       <p className="mt-auto flex items-center gap-1.5 pt-3.5 font-mono text-[10px] tracking-[-0.01em] text-slate-ink/80">
         {candidate.positionCount > 0 ? (
           <>

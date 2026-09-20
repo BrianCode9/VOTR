@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { CalendarDays, ChevronDown, MapPin, Pencil } from "lucide-react"
+import { CalendarDays, ChevronDown, Info, MapPin, Pencil } from "lucide-react"
 import { CandidateTile } from "@/components/ballot/candidate-tile"
 import { SiteNav } from "@/components/landing/site-nav"
 import { SiteFooter } from "@/components/landing/site-footer"
@@ -132,6 +132,17 @@ export default async function BallotPage({
                 </Link>
               </div>
             </div>
+
+            {ballot.certification !== "certified" ? (
+              <p className="mt-6 flex max-w-2xl items-start gap-2.5 rounded-card border border-signal/30 bg-signal-tint px-4 py-3 text-sm leading-relaxed text-signal-ink">
+                <Info className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+                <span>
+                  {ballot.certification === "filings"
+                    ? `No state authority has certified a ${ballot.stateName} ballot to us yet. Everyone below has filed a federal campaign-finance declaration to run — that is a statement of intent, not a confirmed place on the ballot, and some of them will not appear on it.`
+                    : `Some candidates below were certified by a state election authority and some are federal campaign-finance filings, which are declarations of intent rather than a confirmed place on the ballot. Each card says which.`}
+                </span>
+              </p>
+            ) : null}
 
             <dl className="mt-8 grid grid-cols-2 gap-3 sm:max-w-2xl sm:grid-cols-3">
               <Stat

@@ -14,6 +14,30 @@ export function normalizeTitle(value) {
   return value.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/_/g, " ").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim().replace(/\s+/g, " ")
 }
 
+/**
+ * A candidate name as a Wikipedia title.
+ *
+ * MediaWiki titles are case-sensitive after the first character, so a lookup
+ * for "WESLEY HUNT" matches nothing while "Wesley Hunt" matches. Most states
+ * publish their certified list in caps - 3,849 of 4,517 names here - and only
+ * California and Maryland use mixed case, which is the entire reason those
+ * were the only two states that ever got portraits.
+ *
+ * Applied only to names that are entirely uppercase. A name that already
+ * carries case is the state's own spelling and is left alone.
+ */
+export function toWikiTitle(name) {
+  const trimmed = (name ?? "").trim().replace(/\s+/g, " ")
+  if (!trimmed || /[a-z]/.test(trimmed)) return trimmed
+  return trimmed
+    .split(" ")
+    .map(word => word
+      .toLowerCase()
+      .split("-").map(part => part.split("'").map(bit => bit.charAt(0).toUpperCase() + bit.slice(1)).join("'")).join("-")
+      .replace(/(Mc)([a-z])/g, (_, prefix, letter) => prefix + letter.toUpperCase()))
+    .join(" ")
+}
+
 export function usableLicense(value) {
   const license = (value ?? "").trim().toLowerCase()
   return license === "cc0" || license === "public domain" || license.startsWith("pd-") || /^cc by(?:-sa)?(?:\s|$)/.test(license)
@@ -104,7 +128,7 @@ export async function resolvePhotos(candidates, checkpoint, saveCheckpoint) {
   for (let start = checkpoint.nextPageIndex; start < entries.length; start += 50) {
     const batch = entries.slice(start, start + 50)
     console.log("Checking candidate pages", start + 1, "to", start + batch.length, "of", entries.length)
-    const pages = await fetchPages(batch.map((entry) => entry[1][0].name))
+    const pages = await fetchPages(batch.map((entry) => toWikiTitle(entry[1][0].name)))
     const index = new Map(pages.map(page => [normalizeTitle(page.title), page]))
     for (const [key, rows] of batch) {
       const page = index.get(key)
@@ -158,8 +182,17 @@ async function main() {
   if (!url) throw new Error("DATABASE_URL_UNPOOLED or DATABASE_URL is required")
   const sql = postgres(url, { max:1, connect_timeout:20 })
   try {
-    const candidates = await sql.unsafe("select c.id,c.name,d.state,r.office,r.level from candidates c join races r on r.id=c.race_id join districts d on d.id=r.district_id order by c.name,d.state")
-    const checkpointPath = "data/candidates/candidate-photo-progress.json"
+    // --state=PA,WV scopes the run. Wikipedia is paced at 3.5s a request, so a
+    // whole-country pass is ~20 minutes; scoping it makes a single state a
+    // minute and lets a checkpoint stay valid per scope.
+    const stateArg = process.argv.find(a => a.startsWith("--state="))
+    const onlyStates = stateArg ? stateArg.slice(8).split(",").map(s => s.trim().toUpperCase()).filter(Boolean) : null
+    const candidates = (await sql.unsafe("select c.id,c.name,d.state,r.office,r.level from candidates c join races r on r.id=c.race_id join districts d on d.id=r.district_id order by c.name,d.state"))
+      .filter(row => !onlyStates || onlyStates.includes(row.state))
+    if (onlyStates) console.log("Scoped to", onlyStates.join(", "), "-", candidates.length, "candidates")
+    const checkpointPath = onlyStates
+      ? `data/candidates/candidate-photo-progress.${onlyStates.join("-").toLowerCase()}.json`
+      : "data/candidates/candidate-photo-progress.json"
     const fingerprint = createHash("sha256").update(candidates.map(row => [row.id,row.name,row.state,row.office].join("|")).join("\n")).digest("hex")
     let checkpoint = { version:1, fingerprint, nextPageIndex:0, pages:{}, nextFileIndex:0, imageInfo:{} }
     if (!process.argv.includes("--fresh") && existsSync(checkpointPath)) {

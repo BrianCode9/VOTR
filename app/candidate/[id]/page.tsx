@@ -5,8 +5,8 @@ import { notFound } from "next/navigation"
 import { ArrowLeft, BadgeCheck, CalendarDays, ExternalLink, MapPin } from "lucide-react"
 import { NoPositions, PositionCard } from "@/components/ballot/position-card"
 import { Container } from "@/components/landing/section"
-import { SiteFooter } from "@/components/landing/site-footer"
 import { SiteNav } from "@/components/landing/site-nav"
+import { SiteFooter } from "@/components/landing/site-footer"
 import { initials } from "@/lib/format/name"
 import { formatElectionDate } from "@/lib/landing/content"
 import { getCandidate } from "@/lib/queries/ballot"
@@ -91,6 +91,14 @@ export default async function CandidatePage({ params }: PageProps<"/candidate/[i
                   ) : null}
                 </div>
 
+                {!candidate.certified ? (
+                  <p className="mt-4 max-w-xl rounded-card border border-signal/30 bg-signal-tint px-4 py-2.5 text-sm leading-relaxed text-signal-ink">
+                    This is a federal campaign-finance filing, not a certified
+                    ballot listing. They have declared a run; no state authority
+                    has confirmed to us that they will appear on the ballot.
+                  </p>
+                ) : null}
+
                 {candidate.ballotDesignation ? (
                   <p className="mt-4 max-w-xl text-sm leading-relaxed text-slate-ink">
                     <span className="font-medium text-navy">
@@ -114,7 +122,9 @@ export default async function CandidatePage({ params }: PageProps<"/candidate/[i
                       className="inline-flex items-center gap-1.5 transition-colors hover:text-brand"
                     >
                       <BadgeCheck className="size-3.5 text-brand" aria-hidden="true" />
-                      Certified by {candidate.source.name}
+                      {candidate.certified
+                        ? `Certified by ${candidate.source.name}`
+                        : `Declared with the ${candidate.source.name}`}
                     </a>
                   ) : null}
 

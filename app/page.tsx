@@ -1,14 +1,10 @@
 import { SiteNav } from "@/components/landing/site-nav"
+import { SiteFooter } from "@/components/landing/site-footer"
 import { Hero } from "@/components/landing/hero"
 import { UpcomingElections } from "@/components/landing/upcoming-elections"
-import { PartyBeliefs } from "@/components/landing/party-beliefs"
-import { TrendingTopics } from "@/components/landing/trending-topics"
+import { FeaturedCandidates } from "@/components/landing/featured-candidates"
 import { FederalCandidates } from "@/components/landing/federal-candidates"
 import { LocalCandidates } from "@/components/landing/local-candidates"
-import { PolicyExplorer } from "@/components/landing/policy-explorer"
-import { ForMe } from "@/components/landing/for-me"
-import { FinalCta } from "@/components/landing/final-cta"
-import { SiteFooter } from "@/components/landing/site-footer"
 import { startHref } from "@/components/ballot/start-link"
 import { readLocation } from "@/lib/location/cookie"
 import { getStatesWithBallots } from "@/lib/queries/ballot"
@@ -55,13 +51,9 @@ export default async function LandingPage({ searchParams }: PageProps<"/">) {
           unresolved={query.unresolved === "1"}
         />
         <UpcomingElections />
-        <PartyBeliefs />
-        <TrendingTopics />
+        <FeaturedCandidates />
         <FederalCandidates />
         <LocalCandidates />
-        <PolicyExplorer />
-        <ForMe />
-        <FinalCta availableStates={available} savedState={location?.state} />
       </main>
 
       <SiteFooter />

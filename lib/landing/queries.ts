@@ -1,6 +1,7 @@
 import { and, desc, eq, isNotNull, sql } from "drizzle-orm"
 import { db, hasDatabase } from "@/db"
 import {
+  candidatePhotos,
   candidates as candidatesTable,
   candidateSources,
   districts,
@@ -8,6 +9,7 @@ import {
   races,
   topics as topicsTable,
 } from "@/db/schema"
+import { displayName } from "@/lib/format/name"
 import {
   type Candidate,
   type Election,
@@ -142,11 +144,13 @@ async function realCandidates(level: "federal" | "state", limit: number): Promis
       state: districts.state,
       district: districts.name,
       bio: candidateSources.biography,
+      photoUrl: candidatePhotos.imageUrl,
     })
     .from(candidatesTable)
     .innerJoin(candidateSources, eq(candidateSources.candidateId, candidatesTable.id))
     .innerJoin(races, eq(races.id, candidatesTable.raceId))
     .innerJoin(districts, eq(districts.id, races.districtId))
+    .leftJoin(candidatePhotos, eq(candidatePhotos.candidateId, candidatesTable.id))
     .where(
       and(
         eq(races.level, level),
@@ -159,13 +163,77 @@ async function realCandidates(level: "federal" | "state", limit: number): Promis
 
   return rows.map((r) => ({
     id: r.id,
-    name: r.name,
+    name: displayName(r.name),
     office: r.office,
     party: r.party ?? "Unaffiliated",
     jurisdiction: r.district && r.district !== "Demo district" ? r.district : r.state,
     bio: r.bio ?? "",
-    photoUrl: null,
+    photoUrl: r.photoUrl,
   }))
+}
+
+/**
+ * Featured candidates: the ones we can actually show a face for.
+ *
+ * An inner join on candidate_photos rather than a left join, because the whole
+ * point of this row is portraits. A card that falls back to initials here is
+ * the one thing it must not contain.
+ *
+ * Ordered by how many verified positions we hold, then by name. That is a fact
+ * about our coverage, not a judgement about the candidate, and it is the only
+ * ordering here that is not alphabetical: it puts the people whose cards lead
+ * somewhere worth going first. Nothing on the card is scored, and the order
+ * never implies one candidate is a better choice than another.
+ */
+export async function getFeaturedCandidates(limit = 8): Promise<Candidate[]> {
+  if (!hasDatabase) return []
+
+  try {
+    const rows = await db.execute<{
+      id: string
+      name: string
+      party: string | null
+      office: string
+      state: string
+      district: string
+      bio: string | null
+      photo_url: string
+      positions: number
+    }>(sql`
+      with with_photo as (
+        select distinct on (c.name)
+          c.id, c.name, c.party,
+          r.office, d.state, d.name as district,
+          cs.biography as bio,
+          cp.image_url as photo_url,
+          (select count(*) from insights i
+            where i.candidate_id = c.id and i.status = 'published')::int as positions
+        from candidates c
+        join candidate_sources cs on cs.candidate_id = c.id
+        join races r on r.id = c.race_id
+        join districts d on d.id = r.district_id
+        join candidate_photos cp on cp.candidate_id = c.id
+        where d.geo_id <> 'DEMO-01'
+          and c.party is not null
+        order by c.name
+      )
+      select * from with_photo
+      order by positions desc, name
+      limit ${limit}
+    `)
+
+    return [...rows].map((r) => ({
+      id: r.id,
+      name: displayName(r.name),
+      office: r.office,
+      party: r.party ?? "Unaffiliated",
+      jurisdiction: r.district && r.district !== "Demo district" ? r.district : r.state,
+      bio: r.bio ?? "",
+      photoUrl: r.photo_url,
+    }))
+  } catch {
+    return []
+  }
 }
 
 export async function getFederalCandidates(limit = 6): Promise<Candidate[]> {

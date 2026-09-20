@@ -47,6 +47,13 @@ export interface BallotCandidate {
   } | null
   /** Verified positions on the record. 0 is a real and common answer. */
   positionCount: number
+  /**
+   * Whether a state authority certified this candidacy for the ballot.
+   *
+   * False means the only proof we hold is a federal campaign-finance filing,
+   * which is a statement of intent to run, not a place on a ballot.
+   */
+  certified: boolean
 }
 
 export interface BallotRace {
@@ -86,6 +93,19 @@ export interface Ballot {
   otherRaces: BallotRace[]
   totals: { races: number; candidates: number; positions: number }
   nextElection: Date | null
+  /**
+   * What this ballot actually is.
+   *
+   * `certified` - every candidate was certified by a state election authority.
+   * `filings`   - every candidate is an FEC campaign-finance filing. Real
+   *               people who declared, but not a ballot anyone has finalised.
+   * `mixed`     - both, which the page has to say rather than round off.
+   *
+   * Surfaced because the difference is the whole product. A page that prints
+   * eleven FEC filers under "your ballot" is telling a voter something untrue
+   * in exactly the way this app exists not to.
+   */
+  certification: "certified" | "filings" | "mixed"
 }
 
 /**
@@ -117,6 +137,7 @@ interface BallotRow {
   photo_license_name: string | null
   photo_license_url: string | null
   position_count: number
+  certified: boolean
   race_id: string
   office: string
   level: "federal" | "state" | "local"
@@ -149,6 +170,7 @@ function toCandidate(row: BallotRow): BallotCandidate {
           }
         : null,
     positionCount: row.position_count,
+    certified: row.certified,
   }
 }
 
@@ -187,6 +209,7 @@ export async function getBallot(
           cp.license_name          as photo_license_name,
           cp.license_url           as photo_license_url,
           coalesce(pos.n, 0)::int  as position_count,
+          (cs.candidacy_status <> 'fec_filing_not_ballot_verified') as certified,
           r.id                     as race_id,
           r.office,
           r.level,
@@ -206,6 +229,12 @@ export async function getBallot(
         ) pos on true
         where d.state = ${code}
           and d.geo_id <> 'DEMO-01'
+          -- FEC status "N" is "filed paperwork, not yet a statutory
+          -- candidate". Those are people who may never appear on any ballot,
+          -- and listing them beside certified candidates is the difference
+          -- between a ballot and a mailing list. "C" and the state-certified
+          -- rows survive.
+          and coalesce(cs.source_record->>'candidateStatusCode', 'C') <> 'N'
         order by r.level, r.office, c.name
       `)),
     ]
@@ -250,6 +279,18 @@ export async function getBallot(
     .map((race) => race.electionDate.getTime())
     .filter((t) => Number.isFinite(t))
 
+  const certifiedCount = all.reduce(
+    (n, race) => n + race.candidates.filter((c) => c.certified).length,
+    0,
+  )
+  const candidateCount = all.reduce((n, race) => n + race.candidates.length, 0)
+  const certification: Ballot["certification"] =
+    certifiedCount === candidateCount
+      ? "certified"
+      : certifiedCount === 0
+        ? "filings"
+        : "mixed"
+
   return {
     state: code,
     stateName: stateName(code),
@@ -268,6 +309,7 @@ export async function getBallot(
       ),
     },
     nextElection: dates.length > 0 ? new Date(Math.min(...dates)) : null,
+    certification,
   }
 }
 
@@ -337,6 +379,7 @@ export async function getCandidate(id: string): Promise<CandidateProfile | null>
         cp.image_url as photo_url, cp.file_page as photo_file_page,
         cp.creator as photo_creator, cp.license_name as photo_license_name,
         cp.license_url as photo_license_url,
+        (cs.candidacy_status <> 'fec_filing_not_ballot_verified') as certified,
         coalesce((select count(*) from insights i
                    where i.candidate_id = c.id and i.status = 'published'), 0)::int
           as position_count,

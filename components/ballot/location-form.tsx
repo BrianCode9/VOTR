@@ -45,18 +45,18 @@ export function LocationForm({
     <form
       action={goToBallot}
       className={cn(
-        "rounded-[1.5rem] border p-4 sm:p-5",
+        "rounded-[1.5rem] border p-5 sm:p-7",
         dark ? "border-navy-line bg-navy-raised/80" : "border-hairline bg-sheet",
         className,
       )}
     >
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-        <div className="sm:w-[13.5rem]">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+        <div className="sm:w-[16rem]">
           <label
             htmlFor={stateId}
             className={cn(
-              "font-mono text-[10px] tracking-[-0.01em]",
-              dark ? "text-white/55" : "text-slate-ink/80",
+              "text-sm font-medium",
+              dark ? "text-white/70" : "text-navy",
             )}
           >
             Where you vote
@@ -65,7 +65,7 @@ export function LocationForm({
           <div className="relative mt-2">
             <MapPin
               className={cn(
-                "pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2",
+                "pointer-events-none absolute top-1/2 left-4 size-4.5 -translate-y-1/2",
                 dark ? "text-white/55" : "text-slate-ink/70",
               )}
               aria-hidden="true"
@@ -77,7 +77,7 @@ export function LocationForm({
               value={state}
               onChange={(event) => setState(event.target.value)}
               className={cn(
-                "h-12 w-full appearance-none rounded-full border pr-4 pl-10 text-sm transition-colors focus:outline-none focus-visible:ring-2",
+                "h-14 w-full appearance-none rounded-2xl border pr-4 pl-11 text-base transition-colors focus:outline-none focus-visible:ring-2",
                 dark
                   ? "border-white/15 bg-navy text-white hover:border-white/30 focus:border-brand-bright focus-visible:ring-brand-bright/40"
                   : "border-hairline bg-mist text-navy hover:border-brand/40 focus:border-brand focus-visible:ring-brand/30",
@@ -99,17 +99,18 @@ export function LocationForm({
           <label
             htmlFor={addressId}
             className={cn(
-              "font-mono text-[10px] tracking-[-0.01em]",
-              dark ? "text-white/55" : "text-slate-ink/80",
+              "text-sm font-medium",
+              dark ? "text-white/70" : "text-navy",
             )}
           >
-            Street address <span className="opacity-70">— optional, narrows to your district</span>
+            Street address{" "}
+            <span className="font-normal opacity-60">— optional</span>
           </label>
 
           <div className="relative mt-2">
             <Search
               className={cn(
-                "pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2",
+                "pointer-events-none absolute top-1/2 left-4 size-4.5 -translate-y-1/2",
                 dark ? "text-white/55" : "text-slate-ink/70",
               )}
               aria-hidden="true"
@@ -121,7 +122,7 @@ export function LocationForm({
               autoComplete="street-address"
               placeholder="123 Main St, Houston, TX 77002"
               className={cn(
-                "h-12 w-full rounded-full border pr-4 pl-10 text-sm transition-colors focus:outline-none focus-visible:ring-2",
+                "h-14 w-full rounded-2xl border pr-4 pl-11 text-base transition-colors focus:outline-none focus-visible:ring-2",
                 dark
                   ? "border-white/15 bg-sheet/[0.04] text-white placeholder:text-white/45 hover:border-white/30 focus:border-brand-bright focus-visible:ring-brand-bright/40"
                   : "border-hairline bg-mist text-navy placeholder:text-slate-ink/50 hover:border-brand/40 focus:border-brand focus-visible:ring-brand/30",
@@ -130,12 +131,15 @@ export function LocationForm({
           </div>
         </div>
 
+      </div>
+
+      <div className="mt-4">
         <SubmitButton dark={dark} />
       </div>
 
       <p
         className={cn(
-          "mt-3 font-mono text-[10px] leading-relaxed",
+          "mt-4 text-xs leading-relaxed",
           dark ? "text-white/45" : "text-slate-ink/70",
         )}
       >
@@ -160,7 +164,7 @@ function SubmitButton({ dark }: { dark: boolean }) {
       size="lg"
       disabled={pending}
       className={cn(
-        "h-12 shrink-0 rounded-full px-6 text-base",
+        "h-14 w-full shrink-0 rounded-2xl px-8 text-base font-medium",
         dark
           ? "bg-sheet text-navy hover:bg-brand-bright hover:text-white"
           : "bg-brand text-white shadow-[0_12px_30px_-12px_var(--color-brand)] hover:bg-brand-deep",

@@ -1,5 +1,5 @@
 import { Flame } from "lucide-react"
-import { Section, SectionHeading } from "@/components/landing/section"
+import { Section } from "@/components/landing/section"
 import { Reveal } from "@/components/landing/reveal"
 import { TopicIcon } from "@/components/landing/topic-icon"
 import { getTopics } from "@/lib/landing/queries"
@@ -17,18 +17,7 @@ export async function TrendingTopics() {
 
   return (
     <Section id="trending">
-      <SectionHeading
-        eyebrow="Trending political topics"
-        title="What people are actually arguing about."
-        lede="The issues moving right now, explained in a couple of sentences before you go deeper."
-        action={
-          <StartLink className="inline-flex items-center gap-1.5 rounded-lg text-sm font-medium text-brand transition-colors hover:text-brand-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
-            See these issues on your ballot
-          </StartLink>
-        }
-      />
-
-      <ul className="-mx-5 mt-12 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-4 sm:-mx-8 sm:px-8 md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 md:pb-0 lg:grid-cols-4">
+      <ul className="-mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-4 sm:-mx-8 sm:px-8 md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 md:pb-0 lg:grid-cols-4">
         {topics.map((topic, index) => (
           <Reveal
             as="li"
