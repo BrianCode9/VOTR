@@ -4,7 +4,7 @@
  * The certified lists are transcribed from each state's own filing, and the
  * states do not agree: California publishes "Xavier Becerra" and Texas
  * publishes "PATRICK FALLON". Both are the official spelling, so neither is
- * wrong to store — but rendering them side by side on one ballot makes the
+ * wrong to store, but rendering them side by side on one ballot makes the
  * shouted ones look like a different class of candidate.
  *
  * So the fix is at display time, never in the table. The stored name stays
@@ -19,7 +19,14 @@
 const PARTICLES = new Set(["de", "la", "del", "der", "van", "von", "di", "da", "du", "of", "the"])
 
 /** Suffixes and initialisms that stay uppercase. */
-const UPPERCASE = new Set(["II", "III", "IV", "V", "VI", "JR", "SR", "MD", "DDS", "PHD", "CPA"])
+const UPPERCASE = new Set(["II", "III", "IV", "V", "VI", "MD", "DDS", "PHD", "CPA"])
+
+/**
+ * Generational suffixes read as abbreviated words, not as initialisms, so they
+ * take a capital and a full stop. A Roman numeral is genuinely uppercase and
+ * stays in UPPERCASE above: "Nicholas Begich III", but "Henry Cuellar Jr."
+ */
+const SUFFIX_CASE = new Map([["JR", "Jr."], ["SR", "Sr."]])
 
 function capitalize(word: string): string {
   return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
@@ -32,8 +39,12 @@ function capitalize(word: string): string {
 function titleCaseWord(word: string, index: number): string {
   const bare = word.replace(/[^A-Za-z]/g, "")
 
-  // "JR." and "III" keep their case, but never as the first word, where they
-  // would be a given name that happens to collide (e.g. "Vi").
+  // "Jr." and "III" are suffixes, but never as the first word, where they would
+  // be a given name that happens to collide (e.g. "Vi").
+  if (index > 0) {
+    const suffix = SUFFIX_CASE.get(bare.toUpperCase())
+    if (suffix) return suffix
+  }
   if (index > 0 && UPPERCASE.has(bare.toUpperCase())) return word.toUpperCase()
 
   if (index > 0 && PARTICLES.has(word.toLowerCase().replace(/[^a-z]/g, ""))) {

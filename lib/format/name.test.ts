@@ -20,9 +20,15 @@ test("keeps the punctuation inside real names", () => {
   assert.equal(displayName("SEAN MCDONALD"), "Sean McDonald")
 })
 
-test("keeps suffixes uppercase, but not as a first name", () => {
-  assert.equal(displayName("HENRY CUELLAR JR"), "Henry Cuellar JR")
+test("cases suffixes by kind, but never as a first name", () => {
+  // A Roman numeral is uppercase; an abbreviated word is not.
+  assert.equal(displayName("HENRY CUELLAR JR"), "Henry Cuellar Jr.")
+  assert.equal(displayName("SAMUEL B. GRAVES JR."), "Samuel B. Graves Jr.")
+  assert.equal(displayName("TROY A. CARTER SR."), "Troy A. Carter Sr.")
   assert.equal(displayName("JOHN SMITH III"), "John Smith III")
+  assert.equal(displayName("DAMON LYNCH IV"), "Damon Lynch IV")
+  // A single letter with a period is an initial, not a numeral.
+  assert.equal(displayName("WILLIAM V. HILLEARY"), "William V. Hilleary")
 })
 
 test("lowercases particles inside a name", () => {

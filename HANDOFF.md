@@ -34,7 +34,7 @@ JavaScript disabled.
 | Candidate photos | 484 across 48 states |
 | Published verified positions | CA 23, MD 19, PA 163, WV 38; 0 in the other 46 states |
 | PA/WV candidate backgrounds | 28 sourced backgrounds across 35 researched candidates |
-| Tests | 225 passing |
+| Tests | 225 passing, plus 9 source-parser tests in `scripts/test-candidate-parsers.py` |
 | Speaker backfill | Run; 4,310 people resolved |
 
 ### Ballot provenance
@@ -79,6 +79,14 @@ publish accessible policy material.
 - Landing-page candidate cards show available candidate portraits.
 - Candidate profiles now display sourced biography text with a link to its
   campaign or official-office source.
+- FEC names parse from the source format instead of flipping on the first
+  comma, so the generational suffix lands after the surname and the honorifics
+  filers type into the name box are dropped: `GEORGE J JR KELLY` is now
+  `GEORGE J KELLY JR`, and `JOHN SEN CORNYN` is `JOHN CORNYN`. 549 of 3,848 FEC
+  names were wrong. The filed string is kept as `filedName` on the source
+  record, with anything removed under `droppedNameTokens`.
+- `displayName()` cases a generational suffix by kind: `Henry Cuellar Jr.`, but
+  `Nicholas Begich III`.
 
 ## Next work
 
@@ -92,9 +100,30 @@ publish accessible policy material.
 3. **257 additional portraits by FEC ID.** Join
    `candidate_sources.source_record->>'fecId'` to the `congress-legislators`
    dataset for exact Wikipedia titles.
-4. **FEC name parsing.** Names such as `GEORGE J JR KELLY` and
-   `NICHOLAS II SINGELIS` need a source-format parsing fix; `displayName()` only
-   corrects casing.
+4. **State and local offices outside CA and MD.** The FEC file is federal only,
+   so every non-CA/MD ballot is missing its state legislature and statewide
+   rows entirely.
+
+## Repairing imported data
+
+`npm run data:import` inserts with `on conflict do nothing`, so re-preparing the
+snapshot never rewrites a row that is already in the table. A fix to a source
+parser therefore needs a repair pass to reach the database.
+`scripts/repair-fec-names.ts` is the one written for the name fix and the model
+for the next: it reports by default and writes under `--apply`, in one
+transaction, taking the same advisory lock as the importer.
+
+It also repairs `speakers`, because `normalizeSpeakerName` strips a suffix only
+from the end of a name, so correcting a spelling moves the identity key. Where
+the corrected key already belonged to another row the two rows were always one
+person, and they are merged: 8 such pairs, 4,310 speakers down to 4,302.
+
+**One pass is still outstanding.** The corrected names and the speaker merges
+are applied. The refresh of `candidate_sources.source_record`, which writes
+`filedName` and `droppedNameTokens` onto all 3,848 FEC rows, is written and
+dry-run but not applied; it reports `sourceRecordsRefreshed: 3848`. Run
+`npm run data:repair-names -- --apply` to finish it. The script is idempotent,
+so re-running it after that is a no-op.
 
 ## Unused after the strip-down
 

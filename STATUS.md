@@ -80,7 +80,8 @@ npm run persist      # extract + verify + store insights
 npm run seed:demo    # demo fixtures, no model call, for frontend work
 npm run backfill     # one-time after migration 0003
 npm run corroborate  # recompute source-diversity counts
-npm test             # 208 tests, no database or API key needed
+npm test             # 225 tests, no database or API key needed
+npm run data:repair-names   # carry a source-parser fix into existing rows
 ```
 
 ## Known gaps, deliberate

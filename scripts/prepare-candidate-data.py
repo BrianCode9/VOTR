@@ -19,6 +19,54 @@ def build(source_key, name, party, state, office, district_type, district, level
     assert name.strip() and office and stage in ("cycle","general")
     return dict(sourceKey=source_key,name=name.strip(),party=party or None,state=state,office=office,districtType=district_type,district=str(district),level=level,electionStage=stage,candidacyStatus=status,sourceName=source_name,sourceUrl=source_url,sourceRecord=record,incumbent=bool(incumbent),incumbentKnown=incumbent is not None,campaignWebsite=website or None,biography=biography or None,electionDate="2026-11-03T00:00:00Z")
 
+# FEC files one name field and campaigns fill it inconsistently. The documented
+# shape is "LAST, GIVEN MIDDLE", but the generational suffix arrives either in a
+# third comma field ("CARL, JERRY LEE, JR") or glued onto the given names
+# ("GRAVES, SAMUEL B. JR."), and filers type honorifics and credentials into the
+# same box ("CONAWAY, HERB MD", "WENDELIN, STEVEN COMMANDER USN, (RET)").
+#
+# Flipping on the first comma alone therefore strands the suffix in the middle of
+# the printed name - "GEORGE J JR KELLY". So the suffix is lifted out and placed
+# after the surname and the courtesy titles are dropped. Only the given-name side
+# is touched, the surname is never edited, and the filed string is kept on the
+# source record so the published name can always be checked against the filing.
+
+# "I" is absent on purpose: in every row the FEC publishes it is a middle initial
+# ("COLLINS, KINA I"), never a generational suffix.
+SUFFIXES = {"JR","SR","II","III","IV","V"}
+# Held to the titles that actually appear in the 2026 file rather than every
+# title that exists, so that a real given name is never read as a courtesy title.
+TITLES = {"MR","MRS","MS","MX","DR","HON","HONORABLE","REV","REP","SEN","SGT","CAPT","COL","COLONEL","COMMANDER","MAJ","LT","LTC","THE"}
+CREDENTIALS = {"MD","PHD","PH.D","JD","ESQ","DDS","DVM","CPA","FACS","RN","USN","RET"}
+
+def name_token(token):
+    """Classify one token of the given-name side: suffix, title or name."""
+    bare = token.upper().strip(".,()")
+    # A single letter written with a period is an initial ("WILLIAM V."), even
+    # when it spells a numeral. A bare "V" is the suffix.
+    if len(bare) == 1 and token.endswith("."): return "name"
+    if bare in SUFFIXES: return "suffix"
+    if bare in TITLES or bare in CREDENTIALS: return "title"
+    return "name"
+
+def fec_name(raw):
+    """Return (display name, dropped title tokens) for one FEC name field."""
+    segments = [s.strip() for s in raw.split(",") if s.strip()]
+    # No comma means no surname to move; the field is published as filed.
+    if len(segments) < 2: return raw.strip(), []
+    surname, given, suffix, dropped = segments[0], [], [], []
+    for token in " ".join(segments[1:]).split():
+        kind = name_token(token)
+        (given if kind == "name" else suffix if kind == "suffix" else dropped).append(token)
+    # Every given token was a title, so there is no first name left to print.
+    # Publish the filed tokens rather than a bare surname.
+    if not given: given, dropped = dropped, []
+    # Some filers put the suffix in the surname field as well as after the given
+    # names ("JOHNSON II, CRAIG HENLEY MR II"). It gets printed once.
+    tail = surname.upper().split()[-1].strip(".") if surname.split() else ""
+    suffix = [s for s in suffix if s.upper().strip(".") != tail]
+    return " ".join(given + [surname] + suffix), dropped
+
 def parse_fec(text):
     output=[]
     for row in csv.reader(io.StringIO(text),delimiter="|"):
@@ -31,9 +79,12 @@ def parse_fec(text):
         if not re.fullmatch(r"[HS][A-Z0-9]{8}",ident) or not name or (office=="H" and not district.isdigit()):
             REJECTIONS.append(dict(sourceKey=ident,reason="Missing or invalid identity/name/House district"))
             continue
-        parts=name.split(",",1)
-        display=(parts[1].strip()+" "+parts[0].strip()) if len(parts)==2 else name
-        record=dict(fecId=ident,partyCode=party,electionYear=int(year),officeCode=office,officeDistrict=district,incumbentCode=ici,candidateStatusCode=status,principalCommitteeId=pcc,ballotVerified=False)
+        display,dropped=fec_name(name)
+        if not display.strip():
+            REJECTIONS.append(dict(sourceKey=ident,reason="Name field held no printable name"))
+            continue
+        record=dict(fecId=ident,partyCode=party,electionYear=int(year),officeCode=office,officeDistrict=district,incumbentCode=ici,candidateStatusCode=status,principalCommitteeId=pcc,filedName=name,ballotVerified=False)
+        if dropped: record["droppedNameTokens"]=dropped
         output.append(build("fec:2026:"+ident,display,PARTIES.get(party,party),state,"U.S. House" if office=="H" else "U.S. Senate","congressional" if office=="H" else "us_senate",str(int(district)) if office=="H" else "statewide","federal","cycle","fec_filing_not_ballot_verified","Federal Election Commission",f"https://www.fec.gov/data/candidate/{ident}/?cycle=2026",record,ici=="I" if ici in ("I","C","O") else None))
     return output
 

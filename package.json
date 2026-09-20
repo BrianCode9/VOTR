@@ -26,7 +26,8 @@
     "verify:core": "tsx scripts/verify-core.ts",
     "seed:demo": "tsx scripts/seed-demo.ts",
     "corroborate": "tsx scripts/corroborate.ts",
-    "backfill": "tsx scripts/backfill.ts"
+    "backfill": "tsx scripts/backfill.ts",
+    "data:repair-names": "tsx scripts/repair-fec-names.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.127.0",
