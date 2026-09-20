@@ -12,7 +12,6 @@ import {
   type Candidate,
   type Election,
   type Issue,
-  type IconName,
   type PolicyArea,
   type Topic,
   elections as staticElections,
@@ -22,6 +21,7 @@ import {
   policyAreas as staticPolicyAreas,
   topics as staticTopics,
 } from "./content"
+import { iconFor } from "@/lib/topics/icons"
 
 /**
  * The landing page, backed by the real database.
@@ -36,31 +36,6 @@ import {
  * the Neon org yet still gets a page that looks finished, and a demo does not
  * degrade into empty sections if a query goes wrong on stage.
  */
-
-/** Topic slug to the icon set the design already uses. */
-const TOPIC_ICONS: Record<string, IconName> = {
-  housing: "home",
-  education: "graduation",
-  student_debt: "graduation",
-  healthcare: "heart-pulse",
-  reproductive_rights: "heart-pulse",
-  economy: "line-chart",
-  jobs_and_labor: "line-chart",
-  technology_and_privacy: "cpu",
-  immigration: "globe",
-  foreign_policy: "globe",
-  climate: "leaf",
-  criminal_justice: "scale",
-  voting_rights: "scale",
-  taxes_and_budget: "receipt",
-  public_safety: "shield",
-  guns: "shield",
-  veterans: "shield",
-}
-
-function iconFor(slug: string): IconName {
-  return TOPIC_ICONS[slug] ?? "scale"
-}
 
 /** "3 positions on the record" reads honestly at 3 and at 0. */
 function coverageNote(count: number): string {

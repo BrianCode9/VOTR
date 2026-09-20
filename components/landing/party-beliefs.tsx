@@ -1,4 +1,5 @@
 
+import { StartLink } from "@/components/ballot/start-link"
 import { cn } from "cn"
 import { Section, SectionHeading, NeutralityNote } from "@/components/landing/section"
 import { Reveal } from "@/components/landing/reveal"
@@ -48,12 +49,9 @@ export function PartyBeliefs() {
                 ))}
               </dl>
 
-              <a
-                href="#policy"
-                className="mt-6 inline-flex items-center gap-1.5 self-start rounded-lg text-sm font-medium text-brand transition-colors hover:text-brand-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
-              >
-                Learn more
-              </a>
+              <StartLink className="mt-6 inline-flex items-center gap-1.5 self-start rounded-lg text-sm font-medium text-brand transition-colors hover:text-brand-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
+                See who is running
+              </StartLink>
             </article>
           </Reveal>
         ))}

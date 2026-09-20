@@ -2,30 +2,37 @@ import Link from "next/link"
 import { Container } from "@/components/landing/section"
 import { VotrLogo } from "@/components/brand/votr-logo"
 
+/**
+ * Every href here is absolute.
+ *
+ * The footer renders on the ballot, candidate and topic pages as well as the
+ * landing page, and a bare "#policy" on a candidate page is a link that goes
+ * nowhere. Two entries that used to point at the same duplicate anchor are
+ * gone rather than relabelled.
+ */
 const COLUMNS = [
   {
     heading: "Explore",
     links: [
-      { label: "Trending", href: "#trending" },
-      { label: "Policy", href: "#policy" },
-      { label: "Federal races", href: "#federal" },
-      { label: "Local races", href: "#local" },
+      { label: "Trending issues", href: "/#trending" },
+      { label: "Policy areas", href: "/#policy" },
+      { label: "Federal races", href: "/#federal" },
+      { label: "Local races", href: "/#local" },
     ],
   },
   {
     heading: "Your ballot",
     links: [
-      { label: "Upcoming elections", href: "#ballot" },
-      { label: "For me", href: "#for-me" },
-      { label: "Verified quotes", href: "/feed" },
+      { label: "Find your ballot", href: "/#start" },
+      { label: "Upcoming elections", href: "/#ballot" },
+      { label: "Every verified quote", href: "/feed" },
     ],
   },
   {
     heading: "About",
     links: [
-      { label: "How Votr works", href: "#parties" },
-      { label: "Our neutrality rules", href: "#parties" },
-      { label: "Sources", href: "/feed" },
+      { label: "How Votr works", href: "/#parties" },
+      { label: "Where the parties stand", href: "/#parties" },
     ],
   },
 ] as const

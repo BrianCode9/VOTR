@@ -6,15 +6,19 @@ import {
 } from "@/lib/landing/content"
 
 /**
- * The hero's product mockup. It is a real, tabbable summary of the ballot
- * shape rather than a screenshot, so it stays sharp, responsive and readable
- * to a screen reader — and so the eventual live version can reuse the markup.
+ * The hero's product mockup. Markup rather than a screenshot, so it stays
+ * sharp, responsive and readable to a screen reader.
+ *
+ * Deliberately not interactive. Each race row used to be an anchor to another
+ * section of the landing page, which made the illustration look like a working
+ * ballot that went nowhere. A picture of a ballot should not be tabbable: the
+ * real one is one form away, and this is aria-hidden furniture around it.
  */
 export function BallotPreview() {
   const days = daysUntil(ballotPreview.date)
 
   return (
-    <div className="relative">
+    <div className="relative" aria-hidden="true">
       {/* Stacked sheets behind the card: depth without a drop-shadow pile-up. */}
       <div
         aria-hidden="true"
@@ -44,10 +48,9 @@ export function BallotPreview() {
 
         <div className="mt-5 space-y-1.5">
           {ballotPreview.races.map((race) => (
-            <a
+            <div
               key={race.id}
-              href="#federal"
-              className="group flex items-center gap-3 rounded-2xl border border-transparent px-3 py-3 transition-colors hover:border-hairline hover:bg-mist focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+              className="flex items-center gap-3 rounded-2xl px-3 py-3"
             >
               <span className="flex-1 text-sm font-medium text-navy">
                 {race.office}
@@ -55,14 +58,14 @@ export function BallotPreview() {
               <span className="text-sm text-slate-ink/80">
                 {race.count} candidates
               </span>
-            </a>
+            </div>
           ))}
         </div>
 
         <div className="mt-5 flex items-center gap-2 rounded-2xl bg-mist px-3 py-3">
           <MapPin className="size-4 shrink-0 text-brand" aria-hidden="true" />
           <span className="truncate text-sm text-slate-ink">
-            Set your address to load real races
+            Pick your state to load the real one
           </span>
         </div>
 

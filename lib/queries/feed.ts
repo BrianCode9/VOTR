@@ -200,6 +200,16 @@ export interface FeedQuery {
   minCorroboration?: number
   /** Restrict to one person, across every race and every spelling of a name. */
   speakerId?: string
+  /**
+   * Restrict to candidates on a ballot in this state, as a USPS code.
+   *
+   * The join runs through `candidates -> races -> districts`, so an insight
+   * whose speaker was never matched to a certified filing is excluded rather
+   * than shown to a reader as something from their ballot. That is the point:
+   * a state-scoped feed that leaks unattributed national cards is telling the
+   * reader these are their races when they are not.
+   */
+  state?: string
   /** How many corroborating sources to inline per card. Default 3, max 10. */
   sourceDiversityLimit?: number
   /**
@@ -413,6 +423,20 @@ export async function getInsightFeed(query: FeedQuery = {}): Promise<FeedPage> {
   // The person, not the ballot line, so a speaker filter spans every race and
   // every spelling of their name. `candidateId` is kept and still works.
   if (query.speakerId) filters.push(sql`and i.speaker_id = ${query.speakerId}::uuid`)
+  // An EXISTS rather than another join, so the ballot scope cannot duplicate a
+  // card for a person who filed in two races.
+  if (query.state) {
+    filters.push(sql`
+      and exists (
+        select 1
+          from candidates bc
+          join races br on br.id = bc.race_id
+          join districts bd on bd.id = br.district_id
+         where bc.id = i.candidate_id
+           and bd.state = ${query.state.toUpperCase()}
+           and bd.geo_id <> 'DEMO-01'
+      )`)
+  }
   // Strict mode is a filter; boost mode is an ordering term computed below.
   if (selectedTopics.length > 0 && topicMode === "strict") {
     filters.push(sql`and ${taggedWith(selectedTopics)}`)

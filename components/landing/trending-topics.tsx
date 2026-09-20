@@ -3,6 +3,7 @@ import { Section, SectionHeading } from "@/components/landing/section"
 import { Reveal } from "@/components/landing/reveal"
 import { TopicIcon } from "@/components/landing/topic-icon"
 import { getTopics } from "@/lib/landing/queries"
+import { StartLink } from "@/components/ballot/start-link"
 
 /**
  * Trending topics.
@@ -21,12 +22,9 @@ export async function TrendingTopics() {
         title="What people are actually arguing about."
         lede="The issues moving right now, explained in a couple of sentences before you go deeper."
         action={
-          <a
-            href="#policy"
-            className="inline-flex items-center gap-1.5 rounded-lg text-sm font-medium text-brand transition-colors hover:text-brand-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
-          >
-            Browse all issues
-          </a>
+          <StartLink className="inline-flex items-center gap-1.5 rounded-lg text-sm font-medium text-brand transition-colors hover:text-brand-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
+            See these issues on your ballot
+          </StartLink>
         }
       />
 
@@ -38,10 +36,7 @@ export async function TrendingTopics() {
             delay={(index % 4) * 0.06}
             className="w-[17rem] shrink-0 snap-start md:w-auto md:shrink"
           >
-            <a
-              href="#policy"
-              className="group flex h-full flex-col rounded-card border border-hairline bg-sheet p-5 transition-colors duration-150 hover:border-brand/35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
-            >
+            <StartLink className="group flex h-full flex-col rounded-card border border-hairline bg-sheet p-5 transition-colors duration-150 hover:border-brand/35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
               <div className="flex items-start justify-between gap-3">
                 <span className="grid size-11 place-items-center rounded-xl bg-brand-tint text-brand transition-colors group-hover:bg-brand group-hover:text-white">
                   <TopicIcon name={topic.icon} className="size-5" />
@@ -71,7 +66,7 @@ export async function TrendingTopics() {
                   Explore
                 </span>
               </div>
-            </a>
+            </StartLink>
           </Reveal>
         ))}
       </ul>

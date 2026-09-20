@@ -3,6 +3,7 @@ import { Section, SectionHeading } from "@/components/landing/section"
 import { Reveal } from "@/components/landing/reveal"
 import { TopicIcon } from "@/components/landing/topic-icon"
 import { getPolicyAreas } from "@/lib/landing/queries"
+import { StartLink } from "@/components/ballot/start-link"
 
 /**
  * Policy explorer. Denser and flatter than the trending cards on purpose —
@@ -22,10 +23,7 @@ export async function PolicyExplorer() {
       <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {policyAreas.map((area, index) => (
           <Reveal as="li" key={area.id} delay={(index % 4) * 0.05}>
-            <a
-              href="#for-me"
-              className="group flex h-full items-start gap-4 rounded-card border border-hairline bg-sheet p-5 transition-colors duration-150 hover:border-brand/35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
-            >
+            <StartLink className="group flex h-full items-start gap-4 rounded-card border border-hairline bg-sheet p-5 transition-colors duration-150 hover:border-brand/35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
               <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-mist text-navy transition-colors group-hover:bg-brand group-hover:text-white">
                 <TopicIcon name={area.icon} className="size-5" />
               </span>
@@ -45,7 +43,7 @@ export async function PolicyExplorer() {
                   {area.trackedCount} positions tracked
                 </span>
               </span>
-            </a>
+            </StartLink>
           </Reveal>
         ))}
       </ul>

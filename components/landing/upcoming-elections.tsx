@@ -7,6 +7,7 @@ import {
   formatElectionDate,
   type ElectionLevel,
 } from "@/lib/landing/content"
+import { StartLink } from "@/components/ballot/start-link"
 import { getElections } from "@/lib/landing/queries"
 
 const LEVEL_LABELS: Record<ElectionLevel, string> = {
@@ -83,9 +84,7 @@ export async function UpcomingElections() {
                   size="lg"
                   className="mt-7 h-12 rounded-full bg-sheet px-6 text-base text-navy hover:bg-brand-bright hover:text-white"
                 >
-                  <a href="#for-me">
-                    View your ballot
-                  </a>
+                  <StartLink>View your ballot</StartLink>
                 </Button>
               </div>
 
@@ -97,10 +96,7 @@ export async function UpcomingElections() {
                 <ul className="mt-4 divide-y divide-white/10 border-t border-white/10">
                   {rest.map((election) => (
                     <li key={election.id}>
-                      <a
-                        href="#for-me"
-                        className="group flex items-center gap-4 py-4 transition-colors hover:text-brand-bright focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-bright"
-                      >
+                      <StartLink className="group flex items-center gap-4 py-4 transition-colors hover:text-brand-bright focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-bright">
                         <span className="w-20 shrink-0 font-mono text-xs tracking-wider text-white/55">
                           {formatElectionDate(election.date, true)}
                         </span>
@@ -114,7 +110,7 @@ export async function UpcomingElections() {
                               .join(" · ")}
                           </span>
                         </span>
-                      </a>
+                      </StartLink>
                     </li>
                   ))}
                 </ul>

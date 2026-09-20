@@ -1,11 +1,23 @@
-import Link from "next/link"
-
-import { Button } from "@/components/ui/button"
 import { Container } from "@/components/landing/section"
 import { Reveal } from "@/components/landing/reveal"
 import { VotrMark } from "@/components/brand/votr-logo"
+import { LocationForm } from "@/components/ballot/location-form"
 
-export function FinalCta() {
+/**
+ * The closing band.
+ *
+ * It asks the same question the hero does, with the same form, rather than
+ * offering a second "Get started" button that scrolled back up the page. A
+ * reader who has scrolled the whole way should be able to start from where
+ * they are.
+ */
+export function FinalCta({
+  availableStates,
+  savedState,
+}: {
+  availableStates: string[]
+  savedState?: string | null
+}) {
   return (
     <section className="py-20 sm:py-28">
       <Container>
@@ -29,25 +41,11 @@ export function FinalCta() {
                 than the conclusion.
               </p>
 
-              <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                <Button
-                  asChild
-                  size="lg"
-                  className="h-12 w-full rounded-full bg-navy px-7 text-base text-white hover:bg-brand sm:w-auto"
-                >
-                  <a href="#for-me">
-                    Get started
-                  </a>
-                </Button>
-
-                <Button
-                  asChild
-                  variant="outline"
-                  size="lg"
-                  className="h-12 w-full rounded-full border-hairline bg-sheet px-7 text-base text-navy hover:border-brand/40 hover:bg-sheet sm:w-auto"
-                >
-                  <Link href="/feed">Read verified quotes</Link>
-                </Button>
+              <div className="mt-9 text-left">
+                <LocationForm
+                  available={availableStates}
+                  defaultState={savedState}
+                />
               </div>
             </div>
           </div>

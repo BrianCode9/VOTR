@@ -1,4 +1,5 @@
 import Image from "next/image"
+import Link from "next/link"
 
 import type { Candidate } from "@/lib/landing/content"
 
@@ -12,8 +13,8 @@ import type { Candidate } from "@/lib/landing/content"
  */
 export function CandidateCard({ candidate }: { candidate: Candidate }) {
   return (
-    <a
-      href="#for-me"
+    <Link
+      href={`/candidate/${candidate.id}`}
       className="group flex h-full flex-col rounded-card border border-hairline bg-sheet p-5 transition-colors duration-150 hover:border-brand/35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
     >
       <div className="flex items-center gap-4">
@@ -45,7 +46,7 @@ export function CandidateCard({ candidate }: { candidate: Candidate }) {
       <span className="mt-5 inline-flex items-center gap-1.5 border-t border-hairline pt-4 text-sm font-medium text-brand">
         View profile
       </span>
-    </a>
+    </Link>
   )
 }
 

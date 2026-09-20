@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Section, Eyebrow, NeutralityNote } from "@/components/landing/section"
 import { Reveal } from "@/components/landing/reveal"
 import { CandidateCard } from "@/components/landing/candidate-card"
+import { StartLink } from "@/components/ballot/start-link"
 import { getLocalCandidates } from "@/lib/landing/queries"
 
 const OFFICE_TYPES = [
@@ -60,9 +61,7 @@ export async function LocalCandidates() {
               size="lg"
               className="mt-8 h-12 rounded-full bg-navy px-6 text-base text-white hover:bg-brand"
             >
-              <a href="#for-me">
-                Find my local races
-              </a>
+              <StartLink>Find my local races</StartLink>
             </Button>
           </div>
         </Reveal>

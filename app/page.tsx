@@ -7,19 +7,35 @@ import { FederalCandidates } from "@/components/landing/federal-candidates"
 import { LocalCandidates } from "@/components/landing/local-candidates"
 import { PolicyExplorer } from "@/components/landing/policy-explorer"
 import { ForMe } from "@/components/landing/for-me"
-import { getIssues } from "@/lib/landing/queries"
 import { FinalCta } from "@/components/landing/final-cta"
 import { SiteFooter } from "@/components/landing/site-footer"
+import { startHref } from "@/components/ballot/start-link"
+import { readLocation } from "@/lib/location/cookie"
+import { getStatesWithBallots } from "@/lib/queries/ballot"
 
 /**
- * The landing page is fully static apart from the election countdown, which
- * only needs to be right to the day. An hour of staleness is fine and keeps
- * the page a cached document rather than a render per visitor.
+ * The entry point, and now the only question the site asks: where do you vote?
+ *
+ * Everything below the hero is context for that question rather than an
+ * alternative to it. The page used to be ten marketing bands whose sixteen
+ * calls to action all pointed at each other; every one of them now leads to
+ * the ballot, either directly or through the form at `#start`.
+ *
+ * Dynamic rather than revalidated, because the page reads the saved location
+ * to decide whether to greet a returning reader with their ballot. That is
+ * worth more than an hour of edge cache on a page that is one form.
  */
-export const revalidate = 3600
+export const dynamic = "force-dynamic"
 
-export default async function LandingPage() {
-  const issues = await getIssues()
+export default async function LandingPage({ searchParams }: PageProps<"/">) {
+  const [states, location, href, query] = await Promise.all([
+    getStatesWithBallots(),
+    readLocation(),
+    startHref(),
+    searchParams,
+  ])
+
+  const available = states.map((state) => state.state)
 
   return (
     <div className="flex min-h-dvh flex-col bg-sheet">
@@ -30,18 +46,22 @@ export default async function LandingPage() {
         Skip to content
       </a>
 
-      <SiteNav />
+      <SiteNav startHref={href} />
 
       <main id="main" className="flex-1">
-        <Hero />
+        <Hero
+          availableStates={available}
+          savedState={location?.state}
+          unresolved={query.unresolved === "1"}
+        />
         <UpcomingElections />
         <PartyBeliefs />
         <TrendingTopics />
         <FederalCandidates />
         <LocalCandidates />
         <PolicyExplorer />
-        <ForMe issues={issues} />
-        <FinalCta />
+        <ForMe />
+        <FinalCta availableStates={available} savedState={location?.state} />
       </main>
 
       <SiteFooter />

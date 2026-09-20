@@ -17,7 +17,7 @@ while it moves, so inside `/api/v1` changes are additive only.
 | 4 | Quote verification with character offsets | **done** |
 | 5 | Nemotron verification judge plus routing | **blocked** - NVIDIA key invalid |
 | 6 | Card feed from verified insights, tokens and type in place | **done** |
-| 7 | Address to district resolution | not started |
+| 7 | Address to district resolution | **done** - Census geocoder, no API key |
 | 8 | Voting mechanics tab | not started |
 | 9 | Source tab and "why am I seeing this" | **partial** - why-am-I-seeing-this ships on the card; `/api/v1/insights/:id/source` returns everything the tab needs, no UI yet |
 | 10 | Scribe transcription and timestamp jump | not started - ELEVENLABS_API_KEY empty |
@@ -27,6 +27,30 @@ while it moves, so inside `/api/v1` changes are additive only.
 | 14 | Audio briefing | not started |
 | 15 | Compare view, share image, timeline, add-a-source | **partial** - share image done; timeline API done (`/api/v1/speakers/:id/timeline`); compare view and add-a-source not started |
 | 16 | Conversational agent | not started |
+
+## The reader's flow
+
+The site is four routes and one question. Every call to action on every
+surface leads into this and nowhere else; before the refactor, fourteen of the
+sixteen CTAs were fragment links to other sections of the landing page.
+
+| Route | What it is |
+|---|---|
+| `/` | Asks where you vote. The form is the hero, not section eight. |
+| `/ballot/[state]?district=N` | Your races, your candidates. The dashboard. |
+| `/candidate/[id]` | One person, their verified quotes, their certified filing. |
+| `/ballot/[state]/topic/[slug]` | One issue across your whole ballot. |
+
+`/feed` still serves every verified insight and is reachable from the footer.
+It is no longer a competing entry point.
+
+Location lives in the `votr_location` cookie (`CA`, or `TX-7`), so the promise
+that it works without an account is literally true. `user_profiles` stays the
+home for an account-backed profile when there is an account to back it.
+
+The form posts to a Server Action and works with JavaScript disabled: the state
+select is the floor, the address is the refinement, and no path through it ends
+without a ballot.
 
 ## Setup
 
@@ -69,8 +93,17 @@ once step 5 can run.
 has no press-freedom tag and the current documents are mostly about press
 access. Two-line fix, left open because it is a product taxonomy call.
 
-**Candidate resolution is by name only**, into one demo race. Real resolution is
-step 7.
+**Candidate resolution is by name only**, into one demo race, for rows written
+by extraction. The ballot surfaces do not read those: `lib/queries/ballot.ts`
+inner-joins `candidate_sources`, so only certified filings appear and the demo
+district is excluded by geo_id. Address to district resolution (step 7) is
+done, and lives in `lib/location/`.
+
+**Verified quotes exist for CA and MD only.** Every state draws a correct
+ballot from 4,496 certified filings, but a reader outside those two sees
+"Nothing on the record yet" on every candidate. That is the honest state and
+the pages say so plainly rather than hiding the candidate. Closing it is an
+ingest run, not a frontend change.
 
 **Repeated phrases are not collapsed** by the verification ladder, only repeated
 words, per the spec wording. A transcript stutter like "we will we will" fails

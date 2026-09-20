@@ -15,14 +15,24 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 
+/**
+ * Absolute, not "#trending".
+ *
+ * The nav now renders on the ballot, candidate and topic pages too, where
+ * those sections do not exist. A bare fragment there is a link that visibly
+ * does nothing, which is the failure this refactor is about.
+ */
 const LINKS = [
-  { href: "#trending", label: "Trending" },
-  { href: "#local", label: "Local" },
-  { href: "#for-me", label: "For Me" },
-  { href: "#policy", label: "Policy" },
+  { href: "/#trending", label: "Trending" },
+  { href: "/#local", label: "Local" },
+  { href: "/#policy", label: "Policy" },
 ] as const
 
-export function SiteNav() {
+/**
+ * `startHref` is resolved on the server and handed down, because this is a
+ * Client Component and cannot read the location cookie itself.
+ */
+export function SiteNav({ startHref = "/#start" }: { startHref?: string }) {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
 
@@ -60,12 +70,12 @@ export function SiteNav() {
         <ul className="ml-4 hidden items-center gap-1 md:flex">
           {LINKS.map((link) => (
             <li key={link.href}>
-              <a
+              <Link
                 href={link.href}
                 className="rounded-lg px-3 py-2 text-sm font-medium text-slate-ink transition-colors hover:bg-brand-tint hover:text-brand-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
               >
                 {link.label}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
@@ -73,22 +83,20 @@ export function SiteNav() {
         <div className="ml-auto flex items-center gap-2">
           {/* Jumps to the real address lookup rather than pretending to be a
               live search field. */}
-          <a
-            href="#for-me"
+          <Link
+            href={startHref}
             className="hidden items-center gap-2 rounded-full border border-hairline bg-sheet/70 py-2 pr-4 pl-3 text-sm text-slate-ink/80 transition-colors hover:border-brand/40 hover:text-navy focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand lg:inline-flex"
           >
             <Search className="size-4" aria-hidden="true" />
             Find your ballot
-          </a>
+          </Link>
 
           <Button
             asChild
             size="lg"
             className="hidden h-10 rounded-full bg-navy px-4 text-white hover:bg-brand sm:inline-flex"
           >
-            <a href="#ballot">
-              Explore your ballot
-            </a>
+            <Link href={startHref}>Explore your ballot</Link>
           </Button>
 
           <Sheet open={open} onOpenChange={setOpen}>
@@ -116,12 +124,12 @@ export function SiteNav() {
                 {LINKS.map((link) => (
                   <li key={link.href}>
                     <SheetClose asChild>
-                      <a
+                      <Link
                         href={link.href}
                         className="flex items-center justify-between rounded-xl px-3 py-3 font-heading text-lg font-medium text-navy transition-colors hover:bg-brand-tint focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
                       >
                         {link.label}
-                      </a>
+                      </Link>
                     </SheetClose>
                   </li>
                 ))}
@@ -134,9 +142,7 @@ export function SiteNav() {
                     size="lg"
                     className="h-11 w-full rounded-full bg-brand text-white hover:bg-brand-deep"
                   >
-                    <a href="#ballot">
-                      Explore your ballot
-                    </a>
+                    <Link href={startHref}>Explore your ballot</Link>
                   </Button>
                 </SheetClose>
               </div>

@@ -1,7 +1,7 @@
 import { BadgeCheck, MapPin, Sparkles } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { Container } from "@/components/landing/section"
 import { BallotPreview } from "@/components/landing/ballot-preview"
+import { LocationForm } from "@/components/ballot/location-form"
 
 /**
  * Hero.
@@ -10,6 +10,12 @@ import { BallotPreview } from "@/components/landing/ballot-preview"
  * Motion, so the first thing a user sees costs no JavaScript and cannot flash
  * unstyled while a client bundle loads. Motion is reserved for the scroll
  * reveals further down, where the cost is paid after the page is usable.
+ *
+ * The hero used to carry two buttons, "Explore your ballot" and "Explore
+ * issues", both of which scrolled to another section of this same page. They
+ * are now the one form that actually starts the product. Asking the reader
+ * where they vote is the entire entry flow, so it belongs above the fold and
+ * not eight sections down.
  */
 
 const PROOF = [
@@ -18,7 +24,16 @@ const PROOF = [
   { icon: Sparkles, label: "No endorsements, ever" },
 ]
 
-export function Hero() {
+export function Hero({
+  availableStates,
+  savedState,
+  unresolved = false,
+}: {
+  availableStates: string[]
+  savedState?: string | null
+  /** The action bounced the reader back because it could read no location. */
+  unresolved?: boolean
+}) {
   return (
     <section className="relative overflow-hidden pt-10 pb-20 sm:pt-16 sm:pb-28">
       <HeroBackdrop />
@@ -52,25 +67,29 @@ export function Hero() {
               you do with it is up to you.
             </p>
 
-            <div className="animate-in fade-in slide-in-from-bottom-3 fill-mode-both mt-8 flex flex-col gap-3 delay-200 duration-700 sm:flex-row sm:items-center">
-              <Button
-                asChild
-                size="lg"
-                className="h-12 rounded-full bg-brand px-6 text-base text-white shadow-[0_12px_30px_-12px_var(--color-brand)] hover:bg-brand-deep"
-              >
-                <a href="#ballot">
-                  Explore your ballot
-                </a>
-              </Button>
+            <div
+              id="start"
+              className="animate-in fade-in slide-in-from-bottom-3 fill-mode-both mt-8 delay-200 duration-700"
+            >
+              {/* Only reachable without JavaScript, where the select's
+                  `required` cannot stop an empty submit. Silence there would
+                  look like a button that does nothing, which is the bug this
+                  whole refactor is about. */}
+              {unresolved ? (
+                <p
+                  role="status"
+                  className="mb-3 rounded-2xl border border-signal/30 bg-signal-tint px-4 py-2.5 text-sm text-signal-ink"
+                >
+                  We could not tell where you vote. Choose a state below and try
+                  again.
+                </p>
+              ) : null}
 
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="h-12 rounded-full border-hairline bg-sheet px-6 text-base text-navy hover:border-brand/40 hover:bg-sheet"
-              >
-                <a href="#trending">Explore issues</a>
-              </Button>
+              <LocationForm
+                available={availableStates}
+                defaultState={savedState}
+                className="shadow-[0_18px_40px_-28px_var(--color-navy)]"
+              />
             </div>
 
             <ul className="animate-in fade-in fill-mode-both mt-10 flex flex-col gap-3 delay-300 duration-700 sm:flex-row sm:flex-wrap sm:gap-x-6">
@@ -108,7 +127,7 @@ export function Hero() {
               className="absolute -right-4 -bottom-5 hidden items-center gap-2 rounded-2xl border border-hairline bg-navy px-3.5 py-2.5 text-white sm:flex"
             >
               <BadgeCheck className="size-4 text-brand-bright" />
-              <span className="text-sm font-medium">15 verified quotes today</span>
+              <span className="text-sm font-medium">Quotes checked to the character</span>
             </div>
           </div>
         </div>

@@ -3,6 +3,7 @@ import { Section, SectionHeading, NeutralityNote } from "@/components/landing/se
 import { Reveal } from "@/components/landing/reveal"
 import { CandidateCard } from "@/components/landing/candidate-card"
 import { getFederalCandidates } from "@/lib/landing/queries"
+import { StartLink } from "@/components/ballot/start-link"
 
 export async function FederalCandidates() {
   const federalCandidates = await getFederalCandidates(4)
@@ -14,12 +15,9 @@ export async function FederalCandidates() {
         title="The names on the national ballot."
         lede="U.S. Senate and U.S. House races for your state and district, with what each candidate is actually running on."
         action={
-          <a
-            href="#for-me"
-            className="inline-flex items-center gap-1.5 rounded-lg text-sm font-medium text-brand transition-colors hover:text-brand-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
-          >
+          <StartLink className="inline-flex items-center gap-1.5 rounded-lg text-sm font-medium text-brand transition-colors hover:text-brand-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
             See all federal races
-          </a>
+          </StartLink>
         }
       />
 
