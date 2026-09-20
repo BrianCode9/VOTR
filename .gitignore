@@ -50,3 +50,7 @@ next-env.d.ts
 /data/candidates/schema-extension.txt
 /data/candidates/candidate-photo-progress.json
 /scripts/__pycache__/
+
+# Worktrees other sessions check out inside the repo. Each is a second working
+# tree with its own .git file, so it is never repo content.
+/.claude/worktrees/
