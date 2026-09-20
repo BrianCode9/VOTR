@@ -9,7 +9,7 @@ import type { BallotCandidate } from "@/lib/queries/ballot"
  *
  * Every tile is identical in weight. No party-coloured fills, no badges that
  * one candidate can earn and another cannot, and the only number on the card
- * is how many of their positions we have verified — which is a fact about our
+ * is how many of their positions we have verified, which is a fact about our
  * coverage, not about them. The moment one tile looks better than the one next
  * to it, the page has made a recommendation.
  *

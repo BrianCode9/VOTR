@@ -18,7 +18,7 @@ import { stateName } from "../location/states"
  *    holds things like "Trump administration". Those have no certified filing
  *    behind them and are not people you can vote for.
  * 2. The demo district is excluded. It is stored under the fake state "US", so
- *    filtering on a real two-letter state already drops it — but the predicate
+ *    filtering on a real two-letter state already drops it, but the predicate
  *    is written explicitly because that is a coincidence, not a guarantee.
  *
  * Ordering is level, then office, then name as certified. There is no ranking
@@ -82,7 +82,7 @@ export interface Ballot {
    * Every other race in the state.
    *
    * Kept and returned rather than dropped, because they are real elections
-   * happening to real neighbours — but held apart from `races`, because
+   * happening to real neighbours, but held apart from `races`, because
    * presenting a race someone cannot vote in as "your ballot" is the same
    * class of error as inventing a candidate.
    *
@@ -244,8 +244,8 @@ export async function getBallot(
 
   if (rows.length === 0) return null
 
-  // A district that resolved but is not in the data — a delegate seat, a map
-  // we have not imported — must not empty the ballot. It only applies when it
+  // A district that resolved but is not in the data (a delegate seat, a map
+  // we have not imported) must not empty the ballot. It only applies when it
   // actually matches rows.
   const districtMatched =
     districtGeoId !== null && rows.some((row) => row.district_geo_id === districtGeoId)

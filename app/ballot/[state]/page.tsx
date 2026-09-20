@@ -138,7 +138,7 @@ export default async function BallotPage({
                 <Info className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
                 <span>
                   {ballot.certification === "filings"
-                    ? `No state authority has certified a ${ballot.stateName} ballot to us yet. Everyone below has filed a federal campaign-finance declaration to run — that is a statement of intent, not a confirmed place on the ballot, and some of them will not appear on it.`
+                    ? `No state authority has certified a ${ballot.stateName} ballot to us yet. Everyone below has filed a federal campaign-finance declaration to run. That is a statement of intent, not a confirmed place on the ballot, and some of them will not appear on it.`
                     : `Some candidates below were certified by a state election authority and some are federal campaign-finance filings, which are declarations of intent rather than a confirmed place on the ballot. Each card says which.`}
                 </span>
               </p>
@@ -263,7 +263,7 @@ function RaceBlock({ race }: { race: BallotRace }) {
  *
  * A native `<details>` so the section costs no JavaScript and is open to
  * find-in-page. These are real elections with real candidates, so they are not
- * dropped — but they are held behind a disclosure and labelled as someone
+ * dropped, but they are held behind a disclosure and labelled as someone
  * else's, because listing them as "your ballot" would be false.
  */
 function OtherRaces({ races, stateName }: { races: BallotRace[]; stateName: string }) {

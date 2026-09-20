@@ -14,7 +14,7 @@ const martianMono = Martian_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Votr — Politics, made easier to understand",
+    default: "Votr: Politics made easier to understand",
     template: "%s · Votr",
   },
   description:
@@ -27,9 +27,9 @@ export const metadata: Metadata = {
     ],
   },
   openGraph: {
-    title: "Votr — Politics, made easier to understand",
+    title: "Votr: Politics made easier to understand",
     description:
-      "Candidates, issues and elections — federal to local — in one place. No endorsements, no rankings.",
+      "Candidates, issues and elections, federal to local, in one place. No endorsements, no rankings.",
     siteName: "Votr",
     type: "website",
   },

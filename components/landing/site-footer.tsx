@@ -4,7 +4,7 @@ import { VotrMark } from "@/components/brand/votr-logo"
  * The footer, deliberately one line.
  *
  * It was three columns of links across a navy band, which read as another
- * content section rather than as the end of the page — and most of those
+ * content section rather than as the end of the page, and most of those
  * links pointed at anchors that no longer exist. A footer's job here is to
  * close the page and carry the one disclaimer that has to appear everywhere.
  */

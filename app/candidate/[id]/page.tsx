@@ -23,7 +23,7 @@ export async function generateMetadata({
   if (!candidate) return { title: "Candidate not found" }
 
   return {
-    title: `${candidate.name} — ${candidate.office}`,
+    title: `${candidate.name}, ${candidate.office}`,
     description: `What ${candidate.name} has said, quoted from the source and verified character for character.`,
   }
 }

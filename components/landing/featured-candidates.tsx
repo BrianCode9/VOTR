@@ -7,9 +7,9 @@ import { getFeaturedCandidates } from "@/lib/landing/queries"
  * Featured candidates.
  *
  * Portrait-led, unlike the other candidate rows, because faces are the reason
- * this row exists. Every candidate here has a real licensed photo — the query
- * inner-joins candidate_photos — so there is no initials fallback to design
- * around.
+ * this row exists. Every candidate here has a real licensed photo, because the
+ * query inner-joins candidate_photos, so there is no initials fallback to
+ * design around.
  *
  * Identical cards, no badges, no scores. See getFeaturedCandidates for why the
  * order is what it is.

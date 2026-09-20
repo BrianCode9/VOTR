@@ -46,7 +46,7 @@ export async function readLocation(): Promise<StoredLocation | null> {
 /**
  * Remembers a location.
  *
- * Only callable from a Server Function or Route Handler — HTTP cannot set a
+ * Only callable from a Server Function or Route Handler. HTTP cannot set a
  * cookie once the response has started streaming, so a Server Component
  * cannot do this. See the cookies() reference.
  */

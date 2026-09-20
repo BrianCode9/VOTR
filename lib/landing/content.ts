@@ -169,7 +169,7 @@ export const topics: Topic[] = [
     title: "AI & Technology",
     icon: "cpu",
     blurb:
-      "Rules for AI systems, data privacy, and platform liability — moving faster than most legislatures.",
+      "Rules for AI systems, data privacy, and platform liability. Moving faster than most legislatures.",
     meta: "New this month",
     trending: true,
   },
@@ -219,7 +219,7 @@ export const topics: Topic[] = [
     title: "Criminal Justice",
     icon: "scale",
     blurb:
-      "Policing, sentencing, and pretrial rules — set mostly by states, enforced by people you elect.",
+      "Policing, sentencing, and pretrial rules, set mostly by states and enforced by people you elect.",
     meta: "17 bills tracked",
   },
 ]
@@ -394,7 +394,7 @@ export function daysUntil(isoDate: string, from: Date = new Date()): number {
   return Math.max(0, Math.round((target - start) / 86_400_000))
 }
 
-/** "Nov 3" / "Nov 3, 2026" — stable across server and client, no locale drift. */
+/** "Nov 3" / "Nov 3, 2026". Stable across server and client, no locale drift. */
 const MONTHS = [
   "Jan",
   "Feb",

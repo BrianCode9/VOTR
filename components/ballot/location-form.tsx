@@ -104,7 +104,7 @@ export function LocationForm({
             )}
           >
             Street address{" "}
-            <span className="font-normal opacity-60">— optional</span>
+            <span className="font-normal opacity-60">(optional)</span>
           </label>
 
           <div className="relative mt-2">

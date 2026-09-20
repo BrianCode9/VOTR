@@ -7,8 +7,8 @@ import type { Candidate } from "@/lib/landing/content"
  * One candidate.
  *
  * Every card is identical in weight, and they are never ordered by anything
- * but office then surname. No scores, no badges, no party-coloured fills —
- * the moment a card looks better than its neighbour, the page has made a
+ * but office then surname. No scores, no badges, no party-coloured fills. The
+ * moment a card looks better than its neighbour, the page has made a
  * recommendation Votr has no business making.
  */
 export function CandidateCard({ candidate }: { candidate: Candidate }) {

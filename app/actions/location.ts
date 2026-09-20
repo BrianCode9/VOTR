@@ -13,8 +13,8 @@ import { resolveLocation } from "@/lib/location/resolve"
  * address only ever reaches the Census geocoder.
  *
  * It always redirects. There is no failure branch that leaves the reader on
- * the form wondering, because the floor — a state they picked from a list of
- * states that have ballots — is always enough to draw a ballot.
+ * the form wondering, because the floor (a state they picked from a list of
+ * states that have ballots) is always enough to draw a ballot.
  */
 export async function goToBallot(formData: FormData): Promise<void> {
   const state = formData.get("state")

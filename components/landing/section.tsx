@@ -4,7 +4,7 @@ import { Reveal } from "@/components/landing/reveal"
 
 /**
  * Shared section furniture. Every band on the landing page uses the same
- * container width, the same rhythm, and the same heading scale — that
+ * container width, the same rhythm, and the same heading scale. That
  * repetition is most of what makes the page read as one product rather than
  * eight stacked templates.
  */

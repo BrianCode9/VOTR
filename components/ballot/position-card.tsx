@@ -153,7 +153,7 @@ export function NoPositions({
       </p>
       <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-slate-ink">
         We have not verified any quotes from {name}. That means our scan has not
-        reached them — not that they have said nothing. Every position here is
+        reached them, not that they have said nothing. Every position here is
         checked character for character against its source before it appears,
         which is slower than repeating what a campaign says about itself.
       </p>

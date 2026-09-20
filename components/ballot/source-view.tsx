@@ -215,8 +215,8 @@ function SourcePanel({ data }: { data: SourcePayload }) {
 
       <p className="mt-2 font-mono text-[9px] leading-relaxed text-slate-ink/70">
         The text above is our copy, stored when we read the page. If the
-        publisher has edited it since, the live page and this copy will differ —
-        and the quote we checked is still the one we checked.
+        publisher has edited it since, the live page and this copy will
+        differ, and the quote we checked is still the one we checked.
       </p>
     </div>
   )
