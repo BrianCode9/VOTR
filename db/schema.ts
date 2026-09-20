@@ -78,6 +78,30 @@ export const insightStatus = pgEnum("insight_status", [
   "verify_yourself",
   "rejected",
 ])
+
+/**
+ * How strongly the quote supports the claim the card makes from it.
+ *
+ * Distinct from `quote_verified` (did the model copy the quote correctly) and
+ * from the stance-change confidence that gates FLIP_FLOP (did a change of
+ * position actually happen). See lib/confidence/score.ts, which is the only
+ * place the thresholds live.
+ */
+export const confidenceLabel = pgEnum("confidence_label", ["high", "medium", "low"])
+
+/**
+ * What the client is allowed to do with the card.
+ *
+ * A stored column rather than a rule the frontend re-derives from the float.
+ * The whole point is that "never present this as flatly stated fact" is one
+ * decision made in one place: moving a threshold then changes every surface at
+ * once, and two clients cannot disagree about where the line sits.
+ *
+ * Note the name collision with `insight_status.verify_yourself`, which is a
+ * different thing: that value routes a row away from the feed entirely, while
+ * this one is about how a published row is worded.
+ */
+export const presentationMode = pgEnum("presentation_mode", ["stated", "nudge_verify"])
 export const reactionKind = pgEnum("reaction_kind", [
   "helpful",
   "not_helpful",
@@ -114,6 +138,51 @@ export const races = pgTable(
   (t) => [index("races_district_idx").on(t.districtId)],
 )
 
+/**
+ * A person who says things, independent of any ballot.
+ *
+ * `candidates` is scoped to a race, which makes it the wrong key for a
+ * person's record: someone running in two races is two candidate rows, and two
+ * outlets spelling a name two ways produce two more. A stance timeline grouped
+ * by candidate therefore shows half of a person's history and calls it all of
+ * it, and the NEW / FLIP_FLOP rules - which ask "has this speaker been on
+ * record about this topic before" - inherit the same split.
+ *
+ * So identity lives here and `candidates.speaker_id` points at it. A candidate
+ * row remains what it always was: this person's appearance on one ballot line.
+ *
+ * `normalizedAliases` is every spelling seen for this person, normalized by
+ * lib/speakers/normalize.ts. Matching an incoming name means normalizing it
+ * with the same function and testing membership, which is why the column
+ * stores the normalized forms and not the raw ones.
+ */
+export const speakers = pgTable(
+  "speakers",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    /** The spelling to display. The fullest one seen, not the first. */
+    name: text("name").notNull(),
+    /** `name` run through normalizeSpeakerName. The identity key. */
+    normalizedName: text("normalized_name").notNull(),
+    /** Every normalized spelling seen, including `normalizedName`. */
+    normalizedAliases: text("normalized_aliases")
+      .array()
+      .notNull()
+      .default(sql`'{}'::text[]`),
+    party: text("party"),
+    /** Free text, e.g. "U.S. House, PA-12". Display only. */
+    role: text("role"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("speakers_normalized_name_key").on(t.normalizedName),
+    // `normalized_aliases && array['jane doe']` is an array-overlap test, which
+    // only an inverted index can answer without reading every row.
+    index("speakers_aliases_idx").using("gin", t.normalizedAliases),
+  ],
+)
+
 export const candidates = pgTable(
   "candidates",
   {
@@ -124,8 +193,19 @@ export const candidates = pgTable(
     name: text("name").notNull(),
     party: text("party"),
     incumbent: boolean("incumbent").notNull().default(false),
+    /**
+     * Which person this ballot line is.
+     *
+     * Nullable so the column could be added without a backfill window, and so
+     * a candidate created before `speakers` existed is not a broken row. New
+     * writes always set it; see lib/storage/ballot.ts.
+     */
+    speakerId: uuid("speaker_id").references(() => speakers.id, { onDelete: "set null" }),
   },
-  (t) => [index("candidates_race_idx").on(t.raceId)],
+  (t) => [
+    index("candidates_race_idx").on(t.raceId),
+    index("candidates_speaker_idx").on(t.speakerId),
+  ],
 )
 
 /* topics */
@@ -180,6 +260,7 @@ export const documents = pgTable(
     sourceType: text("source_type").notNull(), // rss | gdelt | transcript | user
     sourceName: text("source_name").notNull(),
     title: text("title").notNull(),
+    imageUrl: text("image_url"),
     publishedAt: timestamp("published_at", { withTimezone: true }),
     rawText: text("raw_text").notNull(),
     fetchedAt: timestamp("fetched_at", { withTimezone: true }).notNull().defaultNow(),
@@ -231,6 +312,16 @@ export const insights = pgTable(
     candidateId: uuid("candidate_id").references(() => candidates.id, {
       onDelete: "cascade",
     }),
+    /**
+     * The person, as opposed to the ballot line.
+     *
+     * Nullable for the same two reasons `candidate_id` is: an unattributed
+     * claim has no speaker, and rows written before this column existed have
+     * no value to backfill from beyond their candidate. Stance history, the
+     * timeline, and corroboration all group on this rather than on
+     * `candidate_id`, because a candidate row is per-race and a person is not.
+     */
+    speakerId: uuid("speaker_id").references(() => speakers.id, { onDelete: "set null" }),
     /** Which of the four card kinds this row is. See insightCardType. */
     cardType: insightCardType("card_type").notNull().default("stance"),
     issueTag: text("issue_tag").notNull(),
@@ -301,6 +392,63 @@ export const insights = pgTable(
     factCheckSource: text("fact_check_source"),
     factCheckedAt: timestamp("fact_checked_at", { withTimezone: true }),
     extractorConfidence: real("extractor_confidence"),
+    /**
+     * How directly the quote supports this card's claim, 0 to 1, self-rated
+     * by the extractor.
+     *
+     * The third and last confidence number in the schema, and the only one a
+     * reader sees. Not the same as `quote_similarity` (textual: was the quote
+     * copied correctly) and not the same as the stance-change confidence in
+     * `extractor_confidence` (eventive: did a change of position occur).
+     * lib/confidence/score.ts has the full distinction.
+     *
+     * Nullable because a row written before this column existed was never
+     * rated. A null reads as `low`, not as `medium`: an unrated inference is
+     * exactly the case the verify-yourself nudge exists for.
+     */
+    claimSupportConfidence: real("claim_support_confidence"),
+    /**
+     * The bucketed form, and the queryable one.
+     *
+     * A real column rather than a read-time derivation for the same reason
+     * `flags` is one: the feed filters and sorts on it, and deriving it would
+     * put a CASE over a float in the WHERE clause of every page.
+     */
+    confidenceLabel: confidenceLabel("confidence_label").notNull().default("medium"),
+    /** True exactly when confidence_label is `low`. Stored so it is indexable. */
+    verifyYourself: boolean("verify_yourself").notNull().default(false),
+    /**
+     * What a client may do with the card. Derived from the label at write
+     * time, never re-derived from the score by a client.
+     */
+    presentationMode: presentationMode("presentation_mode").notNull().default("stated"),
+    /**
+     * How many INDEPENDENT sources report this insight, including this one.
+     *
+     * Floor of 1: an insight nothing else has confirmed still came from one
+     * outlet, and a 0 here would make "one source" and "not yet scanned"
+     * indistinguishable. Counted by distinct source, not by document, so two
+     * articles from the same outlet are one.
+     *
+     * Maintained incrementally by lib/storage/corroboration.ts as documents
+     * arrive, which is why it is stored rather than computed: the feed sorts
+     * and filters on it, and the join that produces it is over every other
+     * insight by the same speaker on the same topic.
+     */
+    corroborationCount: integer("corroboration_count").notNull().default(1),
+    /**
+     * The distinct source keys behind that count, this insight's own first.
+     *
+     * Source keys, not document ids, because the rule is one outlet one vote.
+     * The document ids live on `insight_corroborations`, which is where a
+     * caller that needs the actual articles looks.
+     */
+    corroboratingSourceIds: text("corroborating_source_ids")
+      .array()
+      .notNull()
+      .default(sql`'{}'::text[]`),
+    /** When the corroboration pass last looked at this row. Null means never. */
+    corroborationCheckedAt: timestamp("corroboration_checked_at", { withTimezone: true }),
     judgeRating: integer("judge_rating"), // Nemotron, 0 to 3
     /**
      * Static ranking weight, computed once at persist time.
@@ -324,6 +472,13 @@ export const insights = pgTable(
     // `flags && '{FLIP_FLOP}'` is an array-overlap test, which only an
     // inverted index can answer without reading every row.
     index("insights_flags_idx").using("gin", t.flags),
+    // The timeline reads "this person's stance changes, oldest first", and the
+    // upstream NEW / FLIP_FLOP rules read "this person on this topic".
+    index("insights_speaker_issue_idx").on(t.speakerId, t.issueTag),
+    index("insights_speaker_created_idx").on(t.speakerId, t.createdAt, t.id),
+    // Confidence and corroboration are both feed filters and both sorts.
+    index("insights_confidence_idx").on(t.confidenceLabel, t.createdAt, t.id),
+    index("insights_corroboration_idx").on(t.corroborationCount, t.id),
     /**
      * One card of a given kind per quote span per document.
      *
@@ -339,6 +494,53 @@ export const insights = pgTable(
       t.quoteCharEnd,
       t.cardType,
     ),
+  ],
+)
+
+/**
+ * "These two insights are the same thing, reported by two outlets."
+ *
+ * Symmetric by construction: the recompute writes both directions, so a
+ * lookup from either side is one index scan rather than an OR over two
+ * columns. That costs two rows per pair and buys a feed query that never has
+ * to union.
+ *
+ * Distinct from `stance_links`, which records that two insights DISAGREE and
+ * is what a flip-flop rests on. Same shape, opposite meaning, and keeping them
+ * in one table with a relation column would mean every read of either had to
+ * remember to filter.
+ *
+ * `source_key` is denormalized onto the row because the count is a count of
+ * distinct sources: answering it from here alone avoids joining documents for
+ * a number that is read on every card.
+ */
+export const insightCorroborations = pgTable(
+  "insight_corroborations",
+  {
+    insightId: uuid("insight_id")
+      .notNull()
+      .references(() => insights.id, { onDelete: "cascade" }),
+    corroboratingInsightId: uuid("corroborating_insight_id")
+      .notNull()
+      .references(() => insights.id, { onDelete: "cascade" }),
+    /** The corroborating insight's document, for "show me the other article". */
+    documentId: uuid("document_id")
+      .notNull()
+      .references(() => documents.id, { onDelete: "cascade" }),
+    /** The corroborating insight's normalized outlet. See lib/pipeline/corroborate.ts. */
+    sourceKey: text("source_key").notNull(),
+    /** The stronger of the two similarity measures that matched them. */
+    matchScore: real("match_score").notNull().default(0),
+    /** Which rule matched, kept so a surprising count can be explained. */
+    matchReason: text("match_reason").notNull().default(""),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("insight_corroborations_key").on(t.insightId, t.corroboratingInsightId),
+    index("insight_corroborations_insight_idx").on(t.insightId),
+    // Read when a corroborating row is deleted or re-scanned from the far side.
+    index("insight_corroborations_other_idx").on(t.corroboratingInsightId),
+    index("insight_corroborations_source_idx").on(t.insightId, t.sourceKey),
   ],
 )
 

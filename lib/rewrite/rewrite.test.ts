@@ -57,6 +57,7 @@ function item(overrides: Partial<VerifiedItem> = {}): VerifiedItem {
     plainLanguage: "She wants to limit how much rents can go up.",
     attribution: "own_words",
     confidence: 0.95,
+    claimSupportConfidence: 0.95,
     quote: QUOTE,
     quoteHint: { start: 0, end: 0 },
     payload: { cardType: "stance" },

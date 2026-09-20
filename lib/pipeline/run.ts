@@ -1,6 +1,7 @@
 import type Anthropic from "@anthropic-ai/sdk"
 import { registry } from "../adapters"
 import type { NormalizedDocument } from "../adapters/types"
+import { confidenceThresholdsFromEnv, type ConfidenceThresholds } from "../confidence/score"
 import { extractInsights, type RejectedItem } from "../extract/extract"
 import type { VerifyOptions } from "../extract/verify"
 import type { FlagOptions } from "../flags/assign"
@@ -8,6 +9,7 @@ import { loadPriorStancesForDocument } from "../queries/prior-stances"
 import { rewriteAll, type RewriteOptions, type RewriteOutcome } from "../rewrite/rewrite"
 import type { VerifiedItem } from "../schemas/insight"
 import { ensureDemoRace } from "../storage/ballot"
+import { corroborateDocument } from "../storage/corroboration"
 import { loadDocument, storeDocuments } from "../storage/documents"
 import { logRejections, persistVerified } from "../storage/insights"
 import { topicVocabulary } from "../topics/taxonomy"
@@ -80,6 +82,13 @@ export interface ProcessResult {
   rewritten: number
   /** Rewrites that failed, with the reason. Never blocks an insight. */
   rewriteFailures: { headline: string; reason: string }[]
+  /** Rows stored as `nudge_verify`: the quote supports the claim only weakly. */
+  lowConfidence: number
+  /**
+   * Insights whose source-diversity count changed because of this document,
+   * including ones in OTHER documents that this one corroborated.
+   */
+  corroborated: number
   priorStanceCount: number
   speakers: string[]
   usage: { inputTokens: number; outputTokens: number; cacheReadTokens: number }
@@ -103,6 +112,17 @@ export interface ProcessOptions {
   rewrite?: RewriteOptions
   /** Threshold overrides for flag assignment. */
   flagOptions?: FlagOptions
+  /** Cut points for the confidence label. Defaults to the environment. */
+  confidenceThresholds?: ConfidenceThresholds
+  /**
+   * Skip the corroboration pass.
+   *
+   * Worth setting when replaying a large backlog, where one full
+   * `npm run corroborate` at the end is cheaper than a pass per document.
+   * The counts are stale until that run, never wrong: an insight nothing has
+   * scanned reads as one source, which is what it is.
+   */
+  skipCorroboration?: boolean
 }
 
 /**
@@ -131,6 +151,8 @@ export async function processDocument(
     unknownTopics: [],
     rewritten: 0,
     rewriteFailures: [],
+    lowConfidence: 0,
+    corroborated: 0,
     priorStanceCount: 0,
     speakers: [],
     usage: { inputTokens: 0, outputTokens: 0, cacheReadTokens: 0 },
@@ -204,6 +226,7 @@ export async function processDocument(
     raceId,
     rewrites,
     flagOptions: options.flagOptions,
+    confidenceThresholds: options.confidenceThresholds ?? confidenceThresholdsFromEnv(),
   })
 
   // Everything the ladder threw away is logged, including the duplicates, so
@@ -213,6 +236,24 @@ export async function processDocument(
     ...dropped.map((d) => ({ reason: `collapsed as duplicate: ${d.reason}` })),
   ])
 
+  // Source diversity, incrementally. Runs after the insert because it scans
+  // rows, including this document's own, and only looks at insights sharing a
+  // speaker and a topic with one of them - never the whole table.
+  //
+  // Its failure is not the document's failure. An insight with a stale count
+  // reads as coming from one source, which is the honest default and exactly
+  // what it said a moment ago; losing the whole document over it would be the
+  // worse trade.
+  let corroborated = 0
+  if (!options.skipCorroboration) {
+    try {
+      const run = await corroborateDocument(doc.id)
+      corroborated = run.updated.length
+    } catch (e) {
+      console.error(`corroboration pass failed for document ${doc.id}`, e)
+    }
+  }
+
   return {
     ...result,
     inserted: persisted.inserted.length,
@@ -221,6 +262,8 @@ export async function processDocument(
     topicLinks: persisted.topicLinks,
     unknownTopics: persisted.unknownTopics,
     rewritten: persisted.rewritten,
+    lowConfidence: persisted.lowConfidence,
+    corroborated,
   }
 }
 
@@ -244,6 +287,8 @@ export async function processStoredDocument(
       unknownTopics: [],
       rewritten: 0,
       rewriteFailures: [],
+      lowConfidence: 0,
+      corroborated: 0,
       priorStanceCount: 0,
       speakers: [],
       usage: { inputTokens: 0, outputTokens: 0, cacheReadTokens: 0 },

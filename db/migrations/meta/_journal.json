@@ -26,15 +26,29 @@
     {
       "idx": 3,
       "version": "7",
-      "when": 1789853515753,
-      "tag": "0003_candidate_sources",
+      "when": 1789856014608,
+      "tag": "0003_confidence_corroboration_speakers",
       "breakpoints": true
     },
     {
       "idx": 4,
       "version": "7",
-      "when": 1789860648718,
-      "tag": "0004_candidate_photos",
+      "when": 1789858555641,
+      "tag": "0004_candidate_sources",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1789859218768,
+      "tag": "0005_secret_random",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1789862944845,
+      "tag": "0006_candidate_photos",
       "breakpoints": true
     }
   ]

@@ -1,4 +1,4 @@
-import { eq, inArray } from "drizzle-orm"
+import { eq, inArray, sql } from "drizzle-orm"
 import { db } from "@/db"
 import { documents } from "@/db/schema"
 import type { MediaType, NormalizedDocument, SourceType } from "../adapters/types"
@@ -10,7 +10,9 @@ import type { MediaType, NormalizedDocument, SourceType } from "../adapters/type
  * quote offset in the database is measured against, so a URL we already have
  * is skipped rather than updated: rewriting raw_text in place would silently
  * repoint every insight on that document at the wrong characters. A publisher
- * who edits their page gets a new row, not an edit.
+ * who edits their page gets a new row, not an edit. The one exception is
+ * metadata we did not capture on the first pass, such as image_url, which is
+ * filled in only where it is still null.
  */
 
 type DocumentRow = typeof documents.$inferSelect
@@ -25,7 +27,11 @@ export async function storeDocuments(
 ): Promise<StoreResult> {
   if (docs.length === 0) return { stored: [], skipped: 0 }
 
-  const rows = docs.map((d) => ({
+  // Two feeds can carry the same article, and the upsert below cannot touch
+  // the same row twice in one statement. Collapse duplicates by URL first.
+  const unique = new Map(docs.map((d) => [d.sourceUrl, d]))
+
+  const rows = [...unique.values()].map((d) => ({
     // The id is a pure function of the URL, so re-ingesting the same page
     // produces the same row rather than a second copy of it.
     id: d.id,
@@ -33,6 +39,7 @@ export async function storeDocuments(
     sourceType: d.sourceType,
     sourceName: d.sourceName,
     title: d.title,
+    imageUrl: d.imageUrl ?? null,
     publishedAt: d.publishedAt,
     fetchedAt: d.fetchedAt,
     rawText: d.rawText,
@@ -43,11 +50,25 @@ export async function storeDocuments(
     rawMetadata: d.rawMetadata,
   }))
 
-  const stored = await db
+  const upserted = await db
     .insert(documents)
     .values(rows)
-    .onConflictDoNothing({ target: documents.url })
-    .returning({ id: documents.id, title: documents.title })
+    // raw_text is never rewritten. coalesce keeps whatever is already stored
+    // and writes image_url only for a row that does not have one yet, so an
+    // existing document gains its image without any offset moving.
+    .onConflictDoUpdate({
+      target: documents.url,
+      set: { imageUrl: sql`coalesce(${documents.imageUrl}, excluded.image_url)` },
+    })
+    .returning({
+      id: documents.id,
+      title: documents.title,
+      // xmax is 0 only on a real insert. Without it a backfilled row would be
+      // reported as newly stored and the skipped count would always be zero.
+      isNew: sql<boolean>`(xmax = 0)`,
+    })
+
+  const stored = upserted.filter((r) => r.isNew).map(({ id, title }) => ({ id, title }))
 
   return { stored, skipped: rows.length - stored.length }
 }
@@ -66,6 +87,7 @@ export function toNormalized(row: DocumentRow): NormalizedDocument {
     sourceType: row.sourceType as SourceType,
     sourceName: row.sourceName,
     title: row.title,
+    imageUrl: row.imageUrl ?? undefined,
     publishedAt: row.publishedAt,
     fetchedAt: row.fetchedAt,
     rawText: row.rawText,

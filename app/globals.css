@@ -133,6 +133,9 @@
    --mark is the highlighter and marks verified spans ONLY, never decoration.
    --stamp appears only on a flag. Never pure #000 or #FFF. */
 @theme {
+  /* Page surface. Not #fff: the design rule is no pure white anywhere, and a
+     hair of warmth keeps large panels from glaring next to the navy. */
+  --color-sheet: #fcfdff;
   --color-ink: #131820;
   --color-ink-raised: #1C222C;
   --color-paper: #F1EFE9;
@@ -141,4 +144,68 @@
   --color-stamp: #C5342B;
   --color-text-hi: #FAF9F6;
   --color-text-lo: #8E96A3;
+}
+
+/* Votr brand palette. Used by the marketing surfaces (landing page, nav,
+   footer), not by the verified-insight feed, which keeps the tokens above.
+
+   Blue is the only dominant accent. --color-signal is the red and it is
+   rationed on purpose: a date, a live pill, one underline. Give red equal
+   weight to navy anywhere and the page starts reading as a flag, which is the
+   one thing this brand is not. */
+@theme {
+  --color-navy: #0a1124;
+  --color-navy-raised: #111a32;
+  --color-navy-line: #1e2b4a;
+  --color-brand: #2456e6;
+  --color-brand-bright: #4c82ff;
+  --color-brand-deep: #14318f;
+  --color-brand-tint: #edf3ff;
+  --color-signal: #d93b47;
+  /* --signal itself only clears ~4:1 on --signal-tint, so small red text uses
+     this darker step and --signal stays for fills, dots and rules. */
+  --color-signal-ink: #b02a35;
+  --color-signal-tint: #fdeff0;
+  --color-mist: #f6f8fc;
+  --color-hairline: #e3e8f1;
+  --color-slate-ink: #44506b;
+
+  --radius-card: 1.25rem;
+
+  --animate-drift: drift 11s ease-in-out infinite;
+
+  @keyframes drift {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+    50% {
+      transform: translate3d(0, -10px, 0);
+    }
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Anchored sections have to clear the sticky navbar. */
+  [id] {
+    scroll-margin-top: 5.5rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }

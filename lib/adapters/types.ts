@@ -45,6 +45,8 @@ export interface NormalizedDocument {
 
   sourceType: SourceType
   title: string
+  /** Lead image for the document, when the source exposes one. */
+  imageUrl?: string
   mediaType: MediaType
   /** Transcripts only. */
   durationSeconds?: number
