@@ -48,7 +48,7 @@ next-env.d.ts
 /data/candidates/raw/
 /data/candidates/policy-source-sections.json
 /data/candidates/schema-extension.txt
-/data/candidates/candidate-photo-progress.json
+/data/candidates/candidate-photo-progress*.json
 /scripts/__pycache__/
 
 # Worktrees other sessions check out inside the repo. Each is a second working
