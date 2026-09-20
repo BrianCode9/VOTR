@@ -1,6 +1,6 @@
 {
-  "id": "eb9b4a1d-8bf6-4238-b5f6-35ea6128a0a2",
-  "prevId": "f74f1b10-9a6a-4d3e-aecf-5266deee7e10",
+  "id": "4f413827-b49a-4d19-b6fa-5aa804281d90",
+  "prevId": "e69049b7-21f4-47a4-963f-bb58efde50cb",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -148,6 +148,12 @@
           "primaryKey": false,
           "notNull": true,
           "default": false
+        },
+        "speaker_id": {
+          "name": "speaker_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {
@@ -156,6 +162,21 @@
           "columns": [
             {
               "expression": "race_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "candidates_speaker_idx": {
+          "name": "candidates_speaker_idx",
+          "columns": [
+            {
+              "expression": "speaker_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -179,6 +200,19 @@
             "id"
           ],
           "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "candidates_speaker_id_speakers_id_fk": {
+          "name": "candidates_speaker_id_speakers_id_fk",
+          "tableFrom": "candidates",
+          "tableTo": "speakers",
+          "columnsFrom": [
+            "speaker_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },
@@ -406,12 +440,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "image_url": {
-          "name": "image_url",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
         "published_at": {
           "name": "published_at",
           "type": "timestamp with time zone",
@@ -498,6 +526,177 @@
         }
       },
       "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.insight_corroborations": {
+      "name": "insight_corroborations",
+      "schema": "",
+      "columns": {
+        "insight_id": {
+          "name": "insight_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "corroborating_insight_id": {
+          "name": "corroborating_insight_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "document_id": {
+          "name": "document_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source_key": {
+          "name": "source_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "match_score": {
+          "name": "match_score",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "match_reason": {
+          "name": "match_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "insight_corroborations_key": {
+          "name": "insight_corroborations_key",
+          "columns": [
+            {
+              "expression": "insight_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "corroborating_insight_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "insight_corroborations_insight_idx": {
+          "name": "insight_corroborations_insight_idx",
+          "columns": [
+            {
+              "expression": "insight_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "insight_corroborations_other_idx": {
+          "name": "insight_corroborations_other_idx",
+          "columns": [
+            {
+              "expression": "corroborating_insight_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "insight_corroborations_source_idx": {
+          "name": "insight_corroborations_source_idx",
+          "columns": [
+            {
+              "expression": "insight_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "source_key",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "insight_corroborations_insight_id_insights_id_fk": {
+          "name": "insight_corroborations_insight_id_insights_id_fk",
+          "tableFrom": "insight_corroborations",
+          "tableTo": "insights",
+          "columnsFrom": [
+            "insight_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "insight_corroborations_corroborating_insight_id_insights_id_fk": {
+          "name": "insight_corroborations_corroborating_insight_id_insights_id_fk",
+          "tableFrom": "insight_corroborations",
+          "tableTo": "insights",
+          "columnsFrom": [
+            "corroborating_insight_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "insight_corroborations_document_id_documents_id_fk": {
+          "name": "insight_corroborations_document_id_documents_id_fk",
+          "tableFrom": "insight_corroborations",
+          "tableTo": "documents",
+          "columnsFrom": [
+            "document_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -619,6 +818,12 @@
         },
         "candidate_id": {
           "name": "candidate_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "speaker_id": {
+          "name": "speaker_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": false
@@ -751,6 +956,55 @@
         "extractor_confidence": {
           "name": "extractor_confidence",
           "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "claim_support_confidence": {
+          "name": "claim_support_confidence",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "confidence_label": {
+          "name": "confidence_label",
+          "type": "confidence_label",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'medium'"
+        },
+        "verify_yourself": {
+          "name": "verify_yourself",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "presentation_mode": {
+          "name": "presentation_mode",
+          "type": "presentation_mode",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'stated'"
+        },
+        "corroboration_count": {
+          "name": "corroboration_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "corroborating_source_ids": {
+          "name": "corroborating_source_ids",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::text[]"
+        },
+        "corroboration_checked_at": {
+          "name": "corroboration_checked_at",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
         },
@@ -891,6 +1145,102 @@
           "method": "gin",
           "with": {}
         },
+        "insights_speaker_issue_idx": {
+          "name": "insights_speaker_issue_idx",
+          "columns": [
+            {
+              "expression": "speaker_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "issue_tag",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "insights_speaker_created_idx": {
+          "name": "insights_speaker_created_idx",
+          "columns": [
+            {
+              "expression": "speaker_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "insights_confidence_idx": {
+          "name": "insights_confidence_idx",
+          "columns": [
+            {
+              "expression": "confidence_label",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "insights_corroboration_idx": {
+          "name": "insights_corroboration_idx",
+          "columns": [
+            {
+              "expression": "corroboration_count",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
         "insights_dedup_key": {
           "name": "insights_dedup_key",
           "columns": [
@@ -950,6 +1300,19 @@
             "id"
           ],
           "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "insights_speaker_id_speakers_id_fk": {
+          "name": "insights_speaker_id_speakers_id_fk",
+          "tableFrom": "insights",
+          "tableTo": "speakers",
+          "columnsFrom": [
+            "speaker_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },
@@ -1512,6 +1875,102 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.speakers": {
+      "name": "speakers",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "normalized_name": {
+          "name": "normalized_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "normalized_aliases": {
+          "name": "normalized_aliases",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::text[]"
+        },
+        "party": {
+          "name": "party",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "speakers_normalized_name_key": {
+          "name": "speakers_normalized_name_key",
+          "columns": [
+            {
+              "expression": "normalized_name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "speakers_aliases_idx": {
+          "name": "speakers_aliases_idx",
+          "columns": [
+            {
+              "expression": "normalized_aliases",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "gin",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.stance_links": {
       "name": "stance_links",
       "schema": "",
@@ -1743,6 +2202,15 @@
         "characterization"
       ]
     },
+    "public.confidence_label": {
+      "name": "confidence_label",
+      "schema": "public",
+      "values": [
+        "high",
+        "medium",
+        "low"
+      ]
+    },
     "public.district_level": {
       "name": "district_level",
       "schema": "public",
@@ -1805,6 +2273,14 @@
         "publish",
         "hold",
         "reject"
+      ]
+    },
+    "public.presentation_mode": {
+      "name": "presentation_mode",
+      "schema": "public",
+      "values": [
+        "stated",
+        "nudge_verify"
       ]
     },
     "public.quote_verified": {

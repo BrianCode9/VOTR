@@ -22,7 +22,10 @@
     "data:verify": "tsx scripts/verify-candidate-import.ts",
     "data:fetch": "node scripts/fetch-candidate-sources.mjs",
     "feed": "tsx scripts/feed.ts",
-    "verify:core": "tsx scripts/verify-core.ts"
+    "verify:core": "tsx scripts/verify-core.ts",
+    "seed:demo": "tsx scripts/seed-demo.ts",
+    "corroborate": "tsx scripts/corroborate.ts",
+    "backfill": "tsx scripts/backfill.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.127.0",

@@ -1,0 +1,1492 @@
+openapi: 3.1.0
+
+info:
+  title: VOTR API
+  version: "1.0.0"
+  description: |
+    Every position, traceable to the receipt.
+
+    ## The one property everything else rests on
+
+    A quote is never stored as text. Insights store character offsets into
+    `documents.raw_text`, and every `quote` in this document is produced by
+    slicing the stored document at those offsets at read time. That is why
+    `span` is on every card: it is the receipt, not decoration. An insight
+    whose quote could not be located in its source was never written.
+
+    ## Versioning, and what "additive only" commits to
+
+    Everything lives under `/api/v1`. The unversioned paths (`/api/feed`,
+    `/api/topics`, `/api/profile`, `/api/saved`, `/api/insights/{id}/source`,
+    `/api/insights/{id}/share`, `/api/share/{id}`) still work and are the
+    same handler object, so they cannot drift apart from the versioned ones.
+    They are not documented separately below; they are frozen aliases.
+
+    Within v1:
+
+    - A new field may appear on any response at any time. Ignore what you do
+      not recognise.
+    - An existing field will not change type, change meaning, or disappear.
+    - A new value may be added to any enum here. **Branch with a default
+      case**, never exhaustively.
+    - A new query parameter may appear. Omitting it keeps the old behaviour.
+
+    Anything that cannot be done additively gets `/api/v2`, and v1 keeps
+    answering until the frontend has moved.
+
+    ## Identifying a reader
+
+    There is no account system. Endpoints that need a reader take an
+    anonymous session string, in this order of precedence: the
+    `x-votr-session` header, the `votr_session` cookie, or a `userId` query
+    parameter. It must be 8 to 128 characters of `[A-Za-z0-9_-]`. The server
+    never mints one: an endpoint that needs a reader and does not get one
+    returns 400 `missing_user` rather than inventing a user and writing rows
+    under it.
+
+    ## The three confidences, which are not the same number
+
+    - `quoteSimilarity` - **textual**. Was the quote copied correctly? 1 on
+      the lossless verification rungs, a measured ratio on `fuzzy`.
+    - `claimSupportConfidence` - **semantic**. Given that the quote is real,
+      how directly does it support this card's claim? This is the one a
+      reader sees, via `confidenceLabel` and `presentationMode`.
+    - The stance-change confidence that gates the `FLIP_FLOP` badge -
+      **eventive**. Did a change of position occur, as opposed to a
+      rewording? Not exposed as a number; its outcome is the badge.
+
+    **Branch on `presentationMode`, not on `claimSupportConfidence`.** The
+    threshold lives on the server so it can be moved without a client
+    release, and so two surfaces cannot disagree about where the line is.
+
+servers:
+  - url: http://localhost:3000
+    description: Local development
+  - url: /
+    description: Same origin as the app
+
+tags:
+  - name: feed
+    description: The card feed and one card's provenance.
+  - name: speakers
+    description: People, and their stance history over time.
+  - name: reader
+    description: Topic picks and saved cards for one anonymous reader.
+  - name: share
+    description: Generated share cards.
+  - name: jobs
+    description: Background maintenance. Never creates or edits an insight.
+  - name: fixtures
+    description: Demo data. Disabled in production unless explicitly enabled.
+
+paths:
+  /api/v1/feed:
+    get:
+      tags: [feed]
+      operationId: getFeed
+      summary: The insight feed, cursor-paginated
+      description: |
+        Cards that cite the same quote from the same document are collapsed to
+        one, with the rest listed in `alsoCited`. The collapse happens in SQL
+        before the page limit, so a page of 20 is 20 cards.
+
+        Personalization is keyed off the reader id. With a stored profile the
+        reader's issues are ranked first and the rest of the feed follows;
+        `topicMode=strict` hides the rest instead. Without a profile this is
+        the unpersonalized feed, never an empty one.
+
+        Pagination is keyset, not offset: pass `nextCursor` back as `cursor`.
+        A stale or malformed cursor restarts the feed rather than erroring.
+      parameters:
+        - name: cursor
+          in: query
+          schema: { type: string }
+          description: From the previous response. Absent for the first page.
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 50, default: 20 }
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [recent, relevant, confidence, corroboration, saved]
+            default: recent
+          description: |
+            `saved` requires a reader and orders by when they saved the card;
+            without one it degrades to `recent` rather than failing.
+        - name: topics
+          in: query
+          schema: { type: string }
+          description: Comma-separated issue slugs. Unknown slugs are dropped.
+          example: housing,climate
+        - name: cardTypes
+          in: query
+          schema: { type: string }
+          example: stance_change,factual_claim
+        - name: flags
+          in: query
+          schema: { type: string }
+          description: Cards carrying at least one of these badges.
+          example: FLIP_FLOP,NEW
+        - name: confidence
+          in: query
+          schema: { type: string }
+          description: Comma-separated confidence labels.
+          example: high,medium
+        - name: verifyYourself
+          in: query
+          schema: { type: boolean }
+          description: |
+            Tri-state. `true` returns only the nudge cards, `false` only the
+            rest, and omitting it returns both. `false` is not the same as
+            leaving it out.
+        - name: minCorroboration
+          in: query
+          schema: { type: integer, minimum: 1 }
+          description: Only cards confirmed by at least this many independent sources.
+        - name: candidateId
+          in: query
+          schema: { type: string, format: uuid }
+          description: One ballot line. See `speakerId` for one person.
+        - name: speakerId
+          in: query
+          schema: { type: string, format: uuid }
+          description: |
+            One person, across every race and every spelling of their name.
+            Prefer this over `candidateId` for anything about a human being.
+        - name: sourceDiversityLimit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 10, default: 3 }
+          description: How many corroborating sources to inline per card.
+        - name: topicMode
+          in: query
+          schema: { type: string, enum: [boost, strict], default: boost }
+        - name: selectedTopics
+          in: query
+          schema: { type: string }
+          description: Overrides the stored profile for this request only.
+        - $ref: "#/components/parameters/SessionHeader"
+      responses:
+        "200":
+          description: A page of cards.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/FeedPage" }
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /api/v1/insights/{id}/source:
+    get:
+      tags: [feed]
+      operationId: getInsightSource
+      summary: See original - the stored document with the quote located in it
+      description: |
+        Returns the copy of the document stored at ingest, not a re-fetch of
+        the URL. That is what makes the highlight survive a publisher editing
+        their page.
+
+        `segments` is the document already split at the highlight, so a
+        renderer never redoes the offset arithmetic and cannot get it wrong.
+      parameters:
+        - $ref: "#/components/parameters/InsightId"
+        - name: full
+          in: query
+          schema: { type: boolean, default: true }
+          description: |
+            `false` omits `rawText` and `segments` and returns only the
+            excerpt window. Worth setting for a preview: a whole article per
+            card is a lot of payload.
+      responses:
+        "200":
+          description: The insight inside its document.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SourceContext" }
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /api/v1/insights/{id}/sources:
+    get:
+      tags: [feed]
+      operationId: getInsightCorroboratingSources
+      summary: The full source-diversity list for one card
+      description: |
+        For when the sources inlined on the feed item are not enough.
+
+        `sources` lists the OTHER outlets; `count` includes this card's own,
+        so it matches `sourceDiversity.count` on the feed item and the two
+        numbers a client shows never disagree.
+      parameters:
+        - $ref: "#/components/parameters/InsightId"
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 50, default: 10 }
+      responses:
+        "200":
+          description: Corroborating sources.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [insightId, count, sources]
+                properties:
+                  insightId: { type: string, format: uuid }
+                  count:
+                    type: integer
+                    minimum: 1
+                    description: Distinct sources, this card's own included.
+                  sources:
+                    type: array
+                    items: { $ref: "#/components/schemas/CorroboratingSource" }
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /api/v1/speakers:
+    get:
+      tags: [speakers]
+      operationId: listSpeakers
+      summary: The people with anything on record
+      description: |
+        Most-covered first. Counts are of PUBLISHED insights only: a reader is
+        being told how much is on the record, and a row held back from the
+        feed is not on the record.
+      parameters:
+        - name: search
+          in: query
+          schema: { type: string }
+          description: |
+            Matched against the normalized name and every recorded spelling,
+            so "rep maya chen" finds Maya Chen.
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+      responses:
+        "200":
+          description: The speaker directory.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [speakers]
+                properties:
+                  speakers:
+                    type: array
+                    items: { $ref: "#/components/schemas/SpeakerSummary" }
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /api/v1/speakers/{id}:
+    get:
+      tags: [speakers]
+      operationId: getSpeaker
+      summary: One person
+      parameters:
+        - $ref: "#/components/parameters/SpeakerId"
+      responses:
+        "200":
+          description: The speaker.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [speaker]
+                properties:
+                  speaker: { $ref: "#/components/schemas/Speaker" }
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /api/v1/speakers/{id}/timeline:
+    get:
+      tags: [speakers]
+      operationId: getCandidateTimeline
+      summary: One person's stance history, in the order it happened
+      description: |
+        Grouped on the PERSON, not on a ballot line, so a timeline spans every
+        race and every spelling of a name.
+
+        `include` defaults to `flip_flops`, which is the conservative reading:
+        the badge means a change was detected AND cleared the confidence bar.
+        `stance_changes` widens it to every recorded shift, including the ones
+        this app is not willing to call a flip-flop. **A client showing that
+        mode must not label the extra entries as flip-flops.** Every entry
+        carries `flags` so it can tell which is which.
+
+        Ordered by the source's publication date, falling back to when the row
+        was written; `dateIsApproximate` says which. Ordering by insertion
+        would put a decade-old transcript ingested this morning after last
+        week's article, which is the one ordering a reader would read as a lie.
+
+        An unknown speaker is a 404. An unknown `topicId` is an empty
+        timeline, not an error: it is a filter that matches nothing, which is
+        a true answer, and `filters` echoes what was applied.
+      parameters:
+        - $ref: "#/components/parameters/SpeakerId"
+        - name: topicId
+          in: query
+          schema: { type: string }
+          description: |
+            A `topics.id` uuid or a topic slug. A slug works so a client
+            holding one from a feed card need not look the uuid up first.
+          example: housing
+        - name: from
+          in: query
+          schema: { type: string, format: date-time }
+          description: Inclusive. A bare date is read as UTC midnight.
+        - name: to
+          in: query
+          schema: { type: string, format: date-time }
+          description: Inclusive.
+        - name: include
+          in: query
+          schema:
+            type: string
+            enum: [flip_flops, stance_changes]
+            default: flip_flops
+        - name: order
+          in: query
+          schema: { type: string, enum: [asc, desc], default: asc }
+          description: "`asc` is what chronological means, and is the default."
+        - name: cursor
+          in: query
+          schema: { type: string }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 25 }
+      responses:
+        "200":
+          description: |
+            A page of the timeline. An empty `entries` with a real `speaker`
+            means a person with nothing on record yet, which is different from
+            a 404 and a client has to be able to tell them apart.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CandidateTimeline" }
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /api/v1/topics:
+    get:
+      tags: [reader]
+      operationId: listTopics
+      summary: The issue taxonomy, for the onboarding picker
+      description: |
+        The pick bounds come back alongside the list rather than being
+        hardcoded in the client, so the rule the API enforces and the rule the
+        UI shows cannot drift apart.
+      parameters:
+        - name: includeInactive
+          in: query
+          schema: { type: boolean, default: false }
+          description: Retired topics stay resolvable but are not offered as a pick.
+      responses:
+        "200":
+          description: The taxonomy.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [topics, selection]
+                properties:
+                  topics:
+                    type: array
+                    items: { $ref: "#/components/schemas/Topic" }
+                  selection:
+                    type: object
+                    required: [min, max]
+                    properties:
+                      min: { type: integer, example: 2 }
+                      max: { type: integer, example: 3 }
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /api/v1/profile:
+    get:
+      tags: [reader]
+      operationId: getProfile
+      summary: The reader's selected topics
+      parameters:
+        - $ref: "#/components/parameters/SessionHeader"
+      responses:
+        "200":
+          description: |
+            `profile: null` means the reader has not onboarded. That is not an
+            error - they get the default feed - and the client needs to be
+            able to tell it from a failure.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [profile]
+                properties:
+                  profile:
+                    oneOf:
+                      - $ref: "#/components/schemas/Profile"
+                      - type: "null"
+        "400":
+          $ref: "#/components/responses/MissingUser"
+        "500":
+          $ref: "#/components/responses/ServerError"
+    put:
+      tags: [reader]
+      operationId: setProfile
+      summary: Replace the reader's topic selection
+      parameters:
+        - $ref: "#/components/parameters/SessionHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [topics]
+              properties:
+                topics:
+                  type: array
+                  items: { type: string }
+                  example: [housing, climate]
+      responses:
+        "200":
+          description: The saved profile.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [profile]
+                properties:
+                  profile: { $ref: "#/components/schemas/Profile" }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "422":
+          description: |
+            Well-formed, but the selection breaks the pick rule or names a
+            topic that does not exist. A 422 rather than a 500 because it is a
+            thing the client can fix and should be told how to.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Error"
+                  - type: object
+                    properties:
+                      unknown:
+                        type: array
+                        items: { type: string }
+                        description: Slugs that are not in the taxonomy.
+        "500":
+          $ref: "#/components/responses/ServerError"
+    delete:
+      tags: [reader]
+      operationId: clearProfile
+      summary: Clear the selection, back to the unpersonalized feed
+      parameters:
+        - $ref: "#/components/parameters/SessionHeader"
+      responses:
+        "200":
+          description: Whether anything was cleared.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cleared: { type: boolean }
+        "400":
+          $ref: "#/components/responses/MissingUser"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /api/v1/saved:
+    get:
+      tags: [reader]
+      operationId: listSaved
+      summary: The reader's saved cards, newest save first
+      parameters:
+        - $ref: "#/components/parameters/SessionHeader"
+        - name: cursor
+          in: query
+          schema: { type: string }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 50, default: 20 }
+      responses:
+        "200":
+          description: |
+            The same card shape the feed returns, plus `savedAt` and a `total`.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/FeedPage"
+                  - type: object
+                    properties:
+                      total: { type: integer }
+        "400":
+          $ref: "#/components/responses/MissingUser"
+        "500":
+          $ref: "#/components/responses/ServerError"
+    post:
+      tags: [reader]
+      operationId: saveInsight
+      summary: Save a card
+      description: |
+        Idempotent by design, because the client is a swipe on a phone: a
+        double-tap, a retry after a dropped connection, and a second tab must
+        all converge on one row. A repeat save is 200, a first save is 201, and
+        a client retrying after a timeout does not have to tell them apart.
+      parameters:
+        - $ref: "#/components/parameters/SessionHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [insightId]
+              properties:
+                insightId: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Already saved.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SaveResult" }
+        "201":
+          description: Newly saved.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SaveResult" }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+    delete:
+      tags: [reader]
+      operationId: unsaveInsight
+      summary: Unsave a card
+      description: |
+        Removing a save that is not there is a 200, not a 404: the caller
+        asked for this card not to be saved, and after this request it is not
+        saved.
+      parameters:
+        - $ref: "#/components/parameters/SessionHeader"
+        - name: insightId
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Whether a row was removed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  removed: { type: boolean }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /api/v1/insights/{id}/share:
+    get:
+      tags: [share]
+      operationId: getShareCard
+      summary: A card's share image, generating it if needed
+      description: |
+        Generation is cached on (insight, template), which doubles as the rate
+        limit: however many people share a card, it renders once.
+      parameters:
+        - $ref: "#/components/parameters/InsightId"
+        - name: raw
+          in: query
+          schema: { type: boolean, default: false }
+          description: Respond with the image bytes instead of the JSON.
+      responses:
+        "200":
+          description: The share card's metadata, or its bytes with `raw=true`.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ShareImage" }
+            image/svg+xml:
+              schema: { type: string, format: binary }
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+    post:
+      tags: [share]
+      operationId: regenerateShareCard
+      summary: The same, with the option to re-render
+      parameters:
+        - $ref: "#/components/parameters/InsightId"
+        - name: force
+          in: query
+          schema: { type: boolean, default: false }
+          description: Re-render instead of using the cache.
+        - name: raw
+          in: query
+          schema: { type: boolean, default: false }
+      responses:
+        "200":
+          description: The share card.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ShareImage" }
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /api/v1/share/{id}:
+    get:
+      tags: [share]
+      operationId: serveShareImage
+      summary: Serve a generated share card
+      description: |
+        The id may carry the format's extension (`<uuid>.svg`), because this
+        URL ends up in an `og:image` tag and some clients decide whether to
+        render a link by looking at the path rather than the content type.
+
+        Immutably cacheable: an id is derived from an insight and a template
+        version, so the bytes behind a given id never change.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+          description: A share image uuid, optionally with a file extension.
+      responses:
+        "200":
+          description: The image.
+          content:
+            image/svg+xml:
+              schema: { type: string, format: binary }
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /api/v1/jobs/corroborate:
+    post:
+      tags: [jobs]
+      operationId: runCorroborationJob
+      summary: Re-scan and update source-diversity counts
+      description: |
+        The background hook for when a new corroborating document arrives.
+        The pipeline already calls the `documentId` form after every ingest, so
+        this endpoint is for replaying a document whose corroborating articles
+        arrived later, and for a cron catching up after a failed run.
+
+        `documentId` and `insightId` are incremental: they look only at
+        insights sharing a speaker and a primary topic with the subject, which
+        is the only set that can contain a match. `all` reads every published
+        insight and is what the other two exist to avoid - it is for the
+        one-time backfill and the demo reseed.
+
+        It never creates, edits, or deletes an insight. The worst a stray call
+        can do is recompute a count to the value it already had.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Exactly one of these.
+              properties:
+                documentId: { type: string, format: uuid }
+                insightId: { type: string, format: uuid }
+                all:
+                  type: boolean
+                  description: Recompute the whole table. Expensive.
+      responses:
+        "200":
+          description: |
+            `updated` lists only the rows whose count actually moved, so a
+            cron's log is a diff rather than a dump of everything it looked at.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [scope, scanned, linksWritten, updated]
+                properties:
+                  scope: { type: string, enum: [document, insight, all] }
+                  scanned: { type: integer }
+                  linksWritten: { type: integer }
+                  updated:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        insightId: { type: string, format: uuid }
+                        count: { type: integer, minimum: 1 }
+                        sourceKeys:
+                          type: array
+                          items: { type: string }
+                        linksWritten: { type: integer }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /api/v1/dev/seed:
+    get:
+      tags: [fixtures]
+      operationId: getDemoDataStatus
+      summary: What the fixture set contains and whether it is installed
+      description: |
+        Writes nothing. Returns 404 in production unless `ALLOW_DEMO_SEED` is
+        `true`, which is the honest answer: the endpoint does not exist there.
+      responses:
+        "200":
+          description: Fixture status.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DemoStatus" }
+        "404":
+          description: Seeding is disabled in this environment.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "500":
+          $ref: "#/components/responses/ServerError"
+    post:
+      tags: [fixtures]
+      operationId: seedDemoData
+      summary: Install the demo fixtures
+      description: |
+        Idempotent. Documents are keyed by a fixed URL and insights by the
+        existing (document, span, card type) dedup index, so calling it twice
+        converges rather than duplicating.
+
+        `reset: true` deletes the fixture rows first. It removes only rows this
+        fixture set created and never truncates a table, because this has to be
+        safe to point at the shared database the rest of the team's real data
+        lives in.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reset: { type: boolean, default: false }
+      responses:
+        "200":
+          description: What was installed.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SeedResult" }
+        "404":
+          description: Seeding is disabled in this environment.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "500":
+          $ref: "#/components/responses/ServerError"
+    delete:
+      tags: [fixtures]
+      operationId: clearDemoData
+      summary: Remove the fixture rows and install nothing
+      responses:
+        "200":
+          description: What was removed.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SeedResult" }
+        "404":
+          description: Seeding is disabled in this environment.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+components:
+  parameters:
+    SessionHeader:
+      name: x-votr-session
+      in: header
+      required: false
+      schema: { type: string, minLength: 8, maxLength: 128, pattern: "^[A-Za-z0-9_-]+$" }
+      description: |
+        The anonymous reader id. Also accepted as the `votr_session` cookie or
+        a `userId` query parameter, in that order of precedence.
+    InsightId:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    SpeakerId:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+
+  responses:
+    BadRequest:
+      description: The request is malformed.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    MissingUser:
+      description: |
+        No reader id. Send an `x-votr-session` header, a `votr_session`
+        cookie, or a `userId` query parameter.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    NotFound:
+      description: No such thing, or it is not published.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    ServerError:
+      description: The server failed. Retrying is reasonable.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+
+  schemas:
+    Error:
+      type: object
+      required: [error, code]
+      properties:
+        error:
+          type: string
+          description: For a human. The wording may change; the code will not.
+        code:
+          type: string
+          enum: [bad_request, missing_user, not_found, unprocessable, server_error]
+          description: For a switch statement.
+        details:
+          type: object
+          additionalProperties: true
+          description: Field-level detail, when the failure is about one input.
+
+    # ---------------------------------------------------------------- enums
+
+    CardType:
+      type: string
+      enum: [stance, stance_change, factual_claim, voter_relevance]
+      description: |
+        The feed discriminator, and what `payload` narrows on.
+
+        - `stance` - a position a named person holds.
+        - `stance_change` - a position that differs from one already on
+          record. Only produced when prior verified stances were given to the
+          extractor, so the model cannot decide on its own to allege a change.
+        - `factual_claim` - a checkable assertion about the world.
+        - `voter_relevance` - a concrete risk or opportunity for a named group.
+
+    InsightFlag:
+      type: string
+      enum: [NEW, FLIP_FLOP, UNVERIFIED_CLAIM]
+      description: |
+        The "what changed" badges. A card can carry several: a first-ever
+        stance change on a topic is both `NEW` and `FLIP_FLOP`.
+
+        - `NEW` - the first thing on record for this speaker on this topic.
+          Assigned at write time and never recomputed, so a card that was the
+          first of its kind keeps the badge once later ones arrive. That is
+          what a reader scrolling a feed means by "new". Requires a named
+          speaker; unattributed cards never carry it.
+        - `FLIP_FLOP` - a recorded change of position that cleared the
+          confidence bar. Three things must all hold: the pipeline produced a
+          `stance_change` card, the two positions are substantively different
+          rather than reworded, and the extractor's confidence that a change
+          occurred cleared the threshold. A `stance_change` card WITHOUT this
+          badge is a shift this app is not willing to call a flip-flop; do not
+          label it as one.
+        - `UNVERIFIED_CLAIM` - a factual assertion a reader should not take on
+          trust: either it is not the kind of thing that can be settled
+          quickly, or nothing has settled it yet. Note the gap: a claim checked
+          and found FALSE loses this badge, because it is no longer unverified.
+          Read `factCheckStatus` for that.
+
+    FactCheckStatus:
+      type: string
+      enum: [unresolved, supported, disputed, "false"]
+      description: |
+        Where a factual claim stands against an external checker. Only
+        meaningful on `factual_claim` cards; other card types carry
+        `unresolved` and nothing should read it.
+
+        - `unresolved` - nothing has checked it. The honest default, and today
+          the common case.
+        - `supported` - a checker found it holds up.
+        - `disputed` - checkers disagree, or it holds up only in part.
+        - `false` - a checker found it does not hold up.
+
+        `unresolved` and `supported` are not interchangeable. A claim nobody
+        has checked is not a claim that checked out, and collapsing the two is
+        the error this app exists to avoid.
+
+    Checkability:
+      type: string
+      enum: [easily_checkable, requires_expertise, unverifiable]
+      description: |
+        On `factual_claim` payloads: how settleable the assertion is.
+
+        - `easily_checkable` - a named source could settle it in minutes, such
+          as a public statistic or a vote record.
+        - `requires_expertise` - settling it needs domain analysis or modelling.
+        - `unverifiable` - a prediction, a statement about intent, or a value
+          judgment. Not a failure to check it; it is not the kind of thing that
+          can be checked, and saying so is useful.
+
+    ConfidenceLabel:
+      type: string
+      enum: [high, medium, low]
+      description: |
+        The bucketed `claimSupportConfidence`: how directly the quote supports
+        this card's claim. Default cut points are `high >= 0.8`,
+        `medium >= 0.5`, `low` below, and they are configurable server-side.
+
+        `low` is the one that changes how a card reads, and it is also what an
+        UNRATED card gets - an insight nothing rated is exactly the case the
+        nudge exists for. Prefer `presentationMode` over branching on this.
+
+    PresentationMode:
+      type: string
+      enum: [stated, nudge_verify]
+      description: |
+        What a client may do with the card. Derived from `confidenceLabel` on
+        the server so a threshold change ships without a client release.
+
+        - `stated` - render the claim as the card states it.
+        - `nudge_verify` - **never present it as flatly stated fact.** Lead
+          with the quote, show the check-it-yourself affordance, and link the
+          source. This is the contract the API is making on the reader's
+          behalf, not a styling hint.
+
+    QuoteVerification:
+      type: string
+      enum: [exact, normalized, transcript, fuzzy]
+      description: |
+        Which rung of the verification ladder located this quote in its
+        document. There is deliberately no failure value: a quote that could
+        not be located was never stored as an insight.
+
+        `fuzzy` means the model's string had to be corrected to match the
+        document, and `quoteSimilarity` says by how much.
+
+    Attribution:
+      type: string
+      enum: [own_words, characterization]
+      description: |
+        `own_words` when the quote is the person speaking or writing;
+        `characterization` when a reporter or third party is describing them.
+        Worth surfacing: "reported to support X" is a weaker thing than "said
+        X", and the card should not flatten the difference.
+
+    # ---------------------------------------------------------------- feed
+
+    FeedPage:
+      type: object
+      required: [items, nextCursor, sort]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/FeedItem" }
+        nextCursor:
+          oneOf: [{ type: string }, { type: "null" }]
+          description: Pass back as `cursor`. Null means the run is over.
+        sort: { type: string }
+        personalization:
+          type: object
+          properties:
+            userId:
+              oneOf: [{ type: string }, { type: "null" }]
+            selectedTopics:
+              type: array
+              items: { type: string }
+            topicMode: { type: string, enum: [boost, strict] }
+            applied:
+              type: boolean
+              description: False means no profile, so nothing was re-ranked.
+
+    FeedItem:
+      type: object
+      required:
+        [id, cardType, payload, headline, plainLanguage, quote, span,
+         quoteVerified, issueTag, topics, attribution, flags, factCheckStatus,
+         confidenceLabel, verifyYourself, presentationMode, sourceDiversity,
+         documentId, sourceName, sourceUrl, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        cardType: { $ref: "#/components/schemas/CardType" }
+        payload:
+          description: Kind-specific fields. Narrow on `cardType`.
+          oneOf:
+            - $ref: "#/components/schemas/StancePayload"
+            - $ref: "#/components/schemas/StanceChangePayload"
+            - $ref: "#/components/schemas/FactualClaimPayload"
+            - $ref: "#/components/schemas/VoterRelevancePayload"
+          discriminator:
+            propertyName: cardType
+        headline:
+          type: string
+          description: The card's headline claim, whatever its kind.
+        positionText:
+          type: string
+          description: Alias of `headline`, for the name the first UI used.
+        plainLanguage:
+          type: string
+          description: One neutral sentence at a low reading level.
+        plainLanguageSummary:
+          oneOf: [{ type: string }, { type: "null" }]
+          description: |
+            The rewrite pass's sentence, or null when it did not run or did not
+            produce something usable. Never a silent copy of `plainLanguage`: a
+            client has to be able to tell "not rewritten" from "rewritten".
+        readingLevelEstimate:
+          oneOf: [{ type: number }, { type: "null" }]
+        quote:
+          type: string
+          description: |
+            Sliced out of the stored document at `span` at read time. There is
+            no stored quote string anywhere in this system to drift.
+        span:
+          type: object
+          required: [start, end]
+          description: Character offsets into the stored document. The receipt.
+          properties:
+            start: { type: integer }
+            end: { type: integer }
+        quoteVerified: { $ref: "#/components/schemas/QuoteVerification" }
+        quoteSimilarity:
+          oneOf: [{ type: number }, { type: "null" }]
+          description: 1 on the lossless rungs, the measured ratio on `fuzzy`.
+        issueTag:
+          type: string
+          description: The primary issue slug. Also present in `topics`.
+        topics:
+          type: array
+          items: { type: string }
+          description: Every issue this insight is tagged with, primary first.
+        attribution: { $ref: "#/components/schemas/Attribution" }
+        flag:
+          description: |
+            Legacy mirror of `flags[0]`. New code reads `flags`.
+          oneOf:
+            - $ref: "#/components/schemas/InsightFlag"
+            - type: "null"
+        flags:
+          type: array
+          items: { $ref: "#/components/schemas/InsightFlag" }
+        factCheckStatus: { $ref: "#/components/schemas/FactCheckStatus" }
+        claimSupportConfidence:
+          oneOf: [{ type: number, minimum: 0, maximum: 1 }, { type: "null" }]
+          description: |
+            How directly the quote supports this card's claim. Null on a row
+            written before the extractor was asked. **Branch on
+            `presentationMode`, not on this.**
+        confidenceLabel: { $ref: "#/components/schemas/ConfidenceLabel" }
+        verifyYourself:
+          type: boolean
+          description: True exactly when `confidenceLabel` is `low`.
+        presentationMode: { $ref: "#/components/schemas/PresentationMode" }
+        sourceDiversity:
+          type: object
+          required: [count, sources]
+          description: |
+            How many independent outlets report this insight.
+          properties:
+            count:
+              type: integer
+              minimum: 1
+              description: |
+                Distinct sources INCLUDING this card's own, so 1 means "one
+                outlet, nothing has confirmed it" and there is no 0. Counted
+                by source, not by document: two articles from one outlet are
+                one. `count` can exceed `sources.length`, which is capped by
+                `sourceDiversityLimit`; render "+N more" from the count.
+            sources:
+              type: array
+              description: The OTHER outlets, capped.
+              items:
+                type: object
+                properties:
+                  sourceName: { type: string }
+                  sourceUrl: { type: string, format: uri }
+        matchesInterests:
+          type: boolean
+          description: |
+            Whether this card matched the reader's selected topics. Returned so
+            "because you follow housing" can be shown honestly rather than
+            guessed at.
+        judgeRating:
+          oneOf: [{ type: integer }, { type: "null" }]
+        relevanceScore: { type: number }
+        candidateName:
+          oneOf: [{ type: string }, { type: "null" }]
+          description: Null when the document names no one, as claims often do.
+        speakerId:
+          oneOf: [{ type: string, format: uuid }, { type: "null" }]
+          description: |
+            The person, not the ballot line. This is the id the timeline
+            endpoint takes. Null on an unattributed card.
+        documentId: { type: string, format: uuid }
+        documentTitle: { type: string }
+        sourceName: { type: string }
+        sourceUrl: { type: string, format: uri }
+        publishedAt:
+          oneOf: [{ type: string, format: date-time }, { type: "null" }]
+        createdAt: { type: string, format: date-time }
+        isSynthetic:
+          type: boolean
+          description: |
+            True for demo and fixture documents. Badge it: a synthetic source
+            must never be mistaken for real coverage.
+        alsoCited:
+          type: array
+          description: |
+            Other insights citing this exact quote, collapsed into this card.
+            Non-empty means the same words support more than one kind of
+            insight and the feed is showing the most informative one.
+          items:
+            type: object
+            properties:
+              id: { type: string, format: uuid }
+              cardType: { $ref: "#/components/schemas/CardType" }
+        saved:
+          type: boolean
+          description: Present only when the request carried a reader id.
+        savedAt:
+          oneOf: [{ type: string, format: date-time }, { type: "null" }]
+          description: Set only on a saved-list query.
+
+    StancePayload:
+      type: object
+      required: [cardType]
+      properties:
+        cardType: { type: string, const: stance }
+
+    StanceChangePayload:
+      type: object
+      required: [cardType, previousPosition]
+      properties:
+        cardType: { type: string, const: stance_change }
+        previousPosition:
+          type: string
+          description: |
+            Taken from the prior verified record the extractor was shown, never
+            from the model's own knowledge.
+        priorInsightId:
+          oneOf: [{ type: string, format: uuid }, { type: "null" }]
+          description: |
+            The prior insight this was measured against, when the model named
+            one that resolved to a real row. Null otherwise: the card still
+            stands on its own verified quote, it just loses that edge.
+
+    FactualClaimPayload:
+      type: object
+      required: [cardType, checkability]
+      properties:
+        cardType: { type: string, const: factual_claim }
+        checkability: { $ref: "#/components/schemas/Checkability" }
+
+    VoterRelevancePayload:
+      type: object
+      required: [cardType, relevanceKind, affectedGroup]
+      properties:
+        cardType: { type: string, const: voter_relevance }
+        relevanceKind: { type: string, enum: [risk, opportunity] }
+        affectedGroup:
+          type: string
+          description: As specific as the document supports. Never "everyone".
+
+    SourceContext:
+      type: object
+      required: [insightId, documentId, rawText, span, quote, segments]
+      properties:
+        insightId: { type: string, format: uuid }
+        cardType: { $ref: "#/components/schemas/CardType" }
+        headline: { type: string }
+        plainLanguage: { type: string }
+        issueTag: { type: string }
+        candidateName:
+          oneOf: [{ type: string }, { type: "null" }]
+        documentId: { type: string, format: uuid }
+        sourceUrl: { type: string, format: uri }
+        sourceName: { type: string }
+        documentTitle: { type: string }
+        publishedAt:
+          oneOf: [{ type: string, format: date-time }, { type: "null" }]
+        fetchedAt: { type: string, format: date-time }
+        isSynthetic: { type: boolean }
+        mediaType: { type: string, enum: [article, transcript] }
+        rawText:
+          type: string
+          description: |
+            The full stored document. Omitted when `full=false`. The highlight
+            offsets index into this exact string.
+        span:
+          type: object
+          properties:
+            start: { type: integer }
+            end: { type: integer }
+        quote: { type: string }
+        quoteVerified: { $ref: "#/components/schemas/QuoteVerification" }
+        quoteSimilarity:
+          oneOf: [{ type: number }, { type: "null" }]
+        segments:
+          type: object
+          description: |
+            The document already split at the highlight, so a renderer does not
+            redo the offset arithmetic and cannot get it wrong. Omitted when
+            `full=false`.
+          properties:
+            before: { type: string }
+            highlight: { type: string }
+            after: { type: string }
+        excerpt:
+          type: object
+          description: A paragraph-sized window around the quote.
+          properties:
+            text: { type: string }
+            start: { type: integer }
+            end: { type: integer }
+            highlightStart: { type: integer }
+            highlightEnd: { type: integer }
+        timestamp:
+          description: "Transcripts only: the moment to jump to, in seconds."
+          oneOf:
+            - type: object
+              properties:
+                start: { type: number }
+                end: { type: number }
+            - type: "null"
+
+    CorroboratingSource:
+      type: object
+      properties:
+        sourceName: { type: string }
+        sourceUrl: { type: string, format: uri }
+        documentId: { type: string, format: uuid }
+        insightId:
+          type: string
+          format: uuid
+          description: The corroborating insight, if you want to show its card.
+        publishedAt:
+          oneOf: [{ type: string, format: date-time }, { type: "null" }]
+
+    # ------------------------------------------------------------ speakers
+
+    Speaker:
+      type: object
+      required: [id, name]
+      properties:
+        id: { type: string, format: uuid }
+        name:
+          type: string
+          description: |
+            The spelling to display: the fullest one seen, not the first.
+        normalizedName: { type: string }
+        normalizedAliases:
+          type: array
+          items: { type: string }
+          description: |
+            Every spelling seen for this person, normalized. Exposed so a
+            client can explain why two spellings resolved to one person.
+        party:
+          oneOf: [{ type: string }, { type: "null" }]
+        role:
+          oneOf: [{ type: string }, { type: "null" }]
+
+    SpeakerSummary:
+      allOf:
+        - $ref: "#/components/schemas/Speaker"
+        - type: object
+          properties:
+            insightCount:
+              type: integer
+              description: Published insights attributed to this person.
+            flipFlopCount:
+              type: integer
+              description: Of those, how many carry FLIP_FLOP.
+            lastSeenAt:
+              oneOf: [{ type: string, format: date-time }, { type: "null" }]
+
+    CandidateTimeline:
+      type: object
+      required: [speaker, entries, nextCursor, order, include, filters]
+      properties:
+        speaker: { $ref: "#/components/schemas/Speaker" }
+        entries:
+          type: array
+          items: { $ref: "#/components/schemas/TimelineEntry" }
+        nextCursor:
+          oneOf: [{ type: string }, { type: "null" }]
+        order: { type: string, enum: [asc, desc] }
+        include: { type: string, enum: [flip_flops, stance_changes] }
+        filters:
+          type: object
+          description: Echoed back, so a client can show what it filtered by.
+          properties:
+            topicId:
+              oneOf: [{ type: string, format: uuid }, { type: "null" }]
+            topicSlug:
+              oneOf: [{ type: string }, { type: "null" }]
+            from:
+              oneOf: [{ type: string, format: date-time }, { type: "null" }]
+            to:
+              oneOf: [{ type: string, format: date-time }, { type: "null" }]
+
+    TimelineEntry:
+      type: object
+      required:
+        [id, date, topic, currentPosition, quote, sourceUrl, confidenceLabel,
+         corroborationCount, flags]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The insight this entry renders.
+        date:
+          type: string
+          format: date-time
+          description: |
+            The source's publication date, falling back to when the row was
+            written. What the ordering uses.
+        dateIsApproximate:
+          type: boolean
+          description: True when `date` is the fallback because the source had none.
+        topic: { type: string, description: Primary issue slug. }
+        topicLabel:
+          type: string
+          description: Human label, falling back to the slug.
+        topicId:
+          oneOf: [{ type: string, format: uuid }, { type: "null" }]
+        previousPosition:
+          oneOf: [{ type: string }, { type: "null" }]
+          description: |
+            Where the person stood before. Null on an entry that is not a
+            stance change, and on one whose extraction recorded no prior.
+        currentPosition:
+          type: string
+          description: Where they stand in this document. Always present.
+        quote:
+          type: string
+          description: Sliced from the stored document at the verified offsets.
+        sourceUrl: { type: string, format: uri }
+        sourceName: { type: string }
+        documentId: { type: string, format: uuid }
+        documentTitle: { type: string }
+        publishedAt:
+          oneOf: [{ type: string, format: date-time }, { type: "null" }]
+        confidenceLabel: { $ref: "#/components/schemas/ConfidenceLabel" }
+        presentationMode: { $ref: "#/components/schemas/PresentationMode" }
+        verifyYourself: { type: boolean }
+        corroborationCount:
+          type: integer
+          minimum: 1
+          description: Independent sources reporting this, this one included.
+        flags:
+          type: array
+          items: { $ref: "#/components/schemas/InsightFlag" }
+          description: |
+            Read this before labelling an entry. With `include=stance_changes`
+            an entry WITHOUT `FLIP_FLOP` is a shift that did not clear the
+            confidence bar and must not be called a flip-flop.
+        priorInsightId:
+          oneOf: [{ type: string, format: uuid }, { type: "null" }]
+
+    # -------------------------------------------------------------- reader
+
+    Topic:
+      type: object
+      required: [id, slug, label]
+      properties:
+        id: { type: string, format: uuid }
+        slug: { type: string, example: housing }
+        label: { type: string, example: Housing }
+        description: { type: string }
+        active:
+          type: boolean
+          description: Retired topics still resolve but are not offered as a pick.
+
+    Profile:
+      type: object
+      required: [userId, topics]
+      properties:
+        userId: { type: string }
+        topics:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string, format: uuid }
+              slug: { type: string }
+              label: { type: string }
+        updatedAt: { type: string, format: date-time }
+
+    SaveResult:
+      type: object
+      properties:
+        insightId: { type: string, format: uuid }
+        savedAt: { type: string, format: date-time }
+        alreadySaved:
+          type: boolean
+          description: True on a repeat save, which is a 200 rather than a 201.
+
+    ShareImage:
+      type: object
+      properties:
+        insightId: { type: string, format: uuid }
+        shareImageId: { type: string, format: uuid }
+        url: { type: string }
+        contentType: { type: string, example: image/svg+xml }
+        width: { type: integer }
+        height: { type: integer }
+        template:
+          type: string
+          description: Bumped when the template changes, which busts the cache.
+        cached:
+          type: boolean
+          description: False means this request paid for the render.
+
+    # ------------------------------------------------------------ fixtures
+
+    DemoStatus:
+      type: object
+      properties:
+        installed: { type: boolean }
+        documents: { type: integer }
+        insights: { type: integer }
+        speakers: { type: integer }
+        expected:
+          type: object
+          properties:
+            documents: { type: integer }
+            insights: { type: integer }
+            speakers: { type: integer }
+        urlPrefix:
+          type: string
+          description: |
+            Every fixture document's URL starts with this, which is how a reset
+            finds exactly the rows it created and nothing else.
+
+    SeedResult:
+      type: object
+      properties:
+        speakers: { type: integer }
+        documents: { type: integer }
+        insights: { type: integer }
+        topicLinks: { type: integer }
+        corroborationLinks: { type: integer }
+        corroborated:
+          type: integer
+          description: Insights confirmed by more than one source after seeding.
+        reset: { type: boolean }
+        deletedDocuments: { type: integer }
+        deletedSpeakers: { type: integer }

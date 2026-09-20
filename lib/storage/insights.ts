@@ -1,6 +1,7 @@
 import { and, eq, inArray } from "drizzle-orm"
 import { db } from "@/db"
 import { insightTopics, insights, rejections, stanceLinks } from "@/db/schema"
+import { confidenceFields, type ConfidenceThresholds } from "../confidence/score"
 import { assignFlags, primaryFlag, type FlagOptions } from "../flags/assign"
 import { checkClaim, type FactCheckProvider } from "../flags/fact-check"
 import type { FactCheckStatus, InsightFlag } from "../flags/types"
@@ -37,12 +38,23 @@ export interface PersistOptions {
   rewrites?: Map<VerifiedItem, RewriteOutcome>
   /** Threshold overrides for flag assignment. */
   flagOptions?: FlagOptions
+  /**
+   * Cut points for the confidence label. Defaults to the environment, which
+   * defaults to lib/confidence/score.ts.
+   *
+   * Passed in rather than read here so that one persist call cannot be
+   * labelled by one threshold pair and the next by another mid-run: the
+   * pipeline resolves it once and hands the same object down.
+   */
+  confidenceThresholds?: ConfidenceThresholds
   /** Override the registered fact-check provider, for tests. */
   factCheckProvider?: FactCheckProvider
 }
 
 export interface PersistResult {
   inserted: { id: string; cardType: string; flags: InsightFlag[] }[]
+  /** How many rows landed as `nudge_verify`, i.e. low claim support. */
+  lowConfidence: number
   /** Rows the dedup index already had. Re-running a document is idempotent. */
   duplicates: number
   links: number
@@ -70,6 +82,7 @@ export async function persistVerified(
 ): Promise<PersistResult> {
   const empty: PersistResult = {
     inserted: [],
+    lowConfidence: 0,
     duplicates: 0,
     links: 0,
     topicLinks: 0,
@@ -80,13 +93,16 @@ export async function persistVerified(
 
   // Resolve every distinct speaker once rather than per item.
   const names = [...new Set(items.map((i) => i.candidateName).filter((n): n is string => !!n))]
-  const candidateIds = new Map<string, string>()
+  const resolved = new Map<string, { candidateId: string; speakerId: string | null }>()
   for (const name of names) {
-    candidateIds.set(name, await resolveCandidate(options.raceId, name))
+    resolved.set(name, await resolveCandidate(options.raceId, name))
   }
 
   const candidateIdFor = (item: VerifiedItem): string | null =>
-    item.candidateName ? (candidateIds.get(item.candidateName) ?? null) : null
+    item.candidateName ? (resolved.get(item.candidateName)?.candidateId ?? null) : null
+
+  const speakerIdFor = (item: VerifiedItem): string | null =>
+    item.candidateName ? (resolved.get(item.candidateName)?.speakerId ?? null) : null
 
   const { topicsByItem, unknownTopics } = await resolveItemTopics(items)
   const factChecks = await checkFactualClaims(items, options.factCheckProvider)
@@ -100,10 +116,15 @@ export async function persistVerified(
   const rows = items.map((item) => {
     const rewrite = options.rewrites?.get(item)
     const flags = flagsByItem.get(item) ?? []
+    // The label, the verify-yourself flag, and the presentation mode are
+    // derived together from one score so a row cannot be stored labelled
+    // `low` and presented as `stated`. See lib/confidence/score.ts.
+    const confidence = confidenceFields(item.claimSupportConfidence, options.confidenceThresholds)
 
     return {
       documentId,
       candidateId: candidateIdFor(item),
+      speakerId: speakerIdFor(item),
       cardType: item.cardType,
       issueTag: item.topic,
       positionText: item.headline,
@@ -126,6 +147,10 @@ export async function persistVerified(
       factCheckSource: factChecks.get(item)?.source ?? null,
       factCheckedAt: factChecks.get(item) ? new Date() : null,
       extractorConfidence: item.confidence,
+      claimSupportConfidence: confidence.claimSupportConfidence,
+      confidenceLabel: confidence.confidenceLabel,
+      verifyYourself: confidence.verifyYourself,
+      presentationMode: confidence.presentationMode,
       judgeRating: null,
       relevanceScore: relevanceScore(item),
       status: options.status ?? ("published" as const),
@@ -166,6 +191,7 @@ export async function persistVerified(
       cardType: r.cardType,
       flags: flagsForKey(items, flagsByItem, rowKey(r)),
     })),
+    lowConfidence: rows.filter((r) => r.verifyYourself).length,
     duplicates: rows.length - inserted.length,
     links,
     topicLinks,

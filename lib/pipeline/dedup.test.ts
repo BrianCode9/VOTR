@@ -22,6 +22,7 @@ function item(overrides: Partial<VerifiedItem> = {}): VerifiedItem {
     plainLanguage: "She wants to limit rent increases.",
     attribution: "own_words",
     confidence: 0.9,
+    claimSupportConfidence: 0.9,
     quote: "we will cap rent increases",
     quoteHint: { start: 0, end: 0 },
     payload: { cardType: "stance" },

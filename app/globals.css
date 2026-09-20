@@ -133,6 +133,9 @@
    --mark is the highlighter and marks verified spans ONLY, never decoration.
    --stamp appears only on a flag. Never pure #000 or #FFF. */
 @theme {
+  /* Page surface. Not #fff: the design rule is no pure white anywhere, and a
+     hair of warmth keeps large panels from glaring next to the navy. */
+  --color-sheet: #fcfdff;
   --color-ink: #131820;
   --color-ink-raised: #1C222C;
   --color-paper: #F1EFE9;

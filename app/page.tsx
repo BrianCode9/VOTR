@@ -7,6 +7,7 @@ import { FederalCandidates } from "@/components/landing/federal-candidates"
 import { LocalCandidates } from "@/components/landing/local-candidates"
 import { PolicyExplorer } from "@/components/landing/policy-explorer"
 import { ForMe } from "@/components/landing/for-me"
+import { getIssues } from "@/lib/landing/queries"
 import { FinalCta } from "@/components/landing/final-cta"
 import { SiteFooter } from "@/components/landing/site-footer"
 
@@ -17,9 +18,11 @@ import { SiteFooter } from "@/components/landing/site-footer"
  */
 export const revalidate = 3600
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const issues = await getIssues()
+
   return (
-    <div className="flex min-h-dvh flex-col bg-white">
+    <div className="flex min-h-dvh flex-col bg-sheet">
       <a
         href="#main"
         className="sr-only rounded-full bg-navy px-4 py-2 text-sm font-medium text-white focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-[100]"
@@ -37,7 +40,7 @@ export default function LandingPage() {
         <FederalCandidates />
         <LocalCandidates />
         <PolicyExplorer />
-        <ForMe />
+        <ForMe issues={issues} />
         <FinalCta />
       </main>
 

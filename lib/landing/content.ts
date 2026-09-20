@@ -57,7 +57,12 @@ export type Candidate = {
   id: string
   name: string
   office: string
-  party: "Democrat" | "Republican" | "Independent" | "Nonpartisan"
+  /**
+   * Printed as-is. Real ballots carry more than four parties (Libertarian,
+   * Green, No Party Preference), and collapsing them into a tidy union would
+   * mean relabelling a candidate's actual registration.
+   */
+  party: string
   jurisdiction: string
   bio: string
   /** Null until a real photo is attached; the card falls back to initials. */

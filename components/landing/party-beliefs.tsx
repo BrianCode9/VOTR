@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react"
+
 import { cn } from "cn"
 import { Section, SectionHeading, NeutralityNote } from "@/components/landing/section"
 import { Reveal } from "@/components/landing/reveal"
@@ -24,7 +24,7 @@ export function PartyBeliefs() {
       <div className="mt-12 grid gap-5 md:grid-cols-3">
         {partyViews.map((party, index) => (
           <Reveal key={party.id} delay={index * 0.07}>
-            <article className="group flex h-full flex-col rounded-card border border-hairline bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-brand/35 hover:shadow-[0_24px_50px_-30px_rgba(10,17,36,0.4)]">
+            <article className="group flex h-full flex-col rounded-card border border-hairline bg-sheet p-6 transition-colors duration-150 hover:border-brand/35">
               <PositionMarker index={index} label={party.shortName} />
 
               <h3 className="mt-5 font-heading text-xl font-semibold tracking-[-0.02em] text-navy">
@@ -38,7 +38,7 @@ export function PartyBeliefs() {
               <dl className="mt-6 space-y-3 border-t border-hairline pt-5">
                 {party.positions.map((position) => (
                   <div key={position.issue} className="flex gap-3">
-                    <dt className="w-24 shrink-0 font-mono text-[10px] tracking-wider text-slate-ink/80 uppercase">
+                    <dt className="w-24 shrink-0 font-mono text-[10px] tracking-wider text-slate-ink/80">
                       {position.issue}
                     </dt>
                     <dd className="flex-1 text-sm leading-snug text-navy">
@@ -53,10 +53,6 @@ export function PartyBeliefs() {
                 className="mt-6 inline-flex items-center gap-1.5 self-start rounded-lg text-sm font-medium text-brand transition-colors hover:text-brand-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
               >
                 Learn more
-                <ArrowRight
-                  className="size-4 transition-transform group-hover:translate-x-0.5"
-                  aria-hidden="true"
-                />
               </a>
             </article>
           </Reveal>
@@ -89,7 +85,7 @@ function PositionMarker({ index, label }: { index: number; label: string }) {
           />
         ))}
       </div>
-      <span className="font-mono text-[10px] tracking-[0.18em] text-slate-ink/80 uppercase">
+      <span className="font-mono text-[10px] tracking-[-0.01em] text-slate-ink/80">
         {label}
       </span>
     </div>

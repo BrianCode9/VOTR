@@ -121,6 +121,44 @@ const topicField = issueTagSchema.describe(
 )
 
 /**
+ * The reader-facing confidence, asked of every family.
+ *
+ * Deliberately named for what it measures rather than `confidence`, because
+ * this schema now carries two different confidences and the database carries
+ * a third:
+ *
+ *   claimSupportConfidence  - SEMANTIC. Does the quote actually support what
+ *                             the card says it supports? This field.
+ *   stanceChange.confidence - EVENTIVE. Did a change of position occur, as
+ *                             opposed to a rewording? Gates FLIP_FLOP.
+ *   quote_similarity        - TEXTUAL. Was the quote copied correctly? Not
+ *                             asked of the model at all; measured against the
+ *                             document afterwards.
+ *
+ * A model given one field called "confidence" and three questions answers an
+ * average of them, and the average is the one number that means nothing.
+ *
+ * See lib/confidence/score.ts, which turns this into the stored label, the
+ * verify-yourself flag, and the presentation mode.
+ */
+const claimSupportField = z
+  .number()
+  .min(0)
+  .max(1)
+  .describe(
+    "How DIRECTLY the quote supports this item, 0 to 1, and nothing else. " +
+      "1.0 means the quote states it outright, in these words. " +
+      "0.7 means the quote clearly implies it but a reader has to join one step. " +
+      "0.4 means it takes real inference, or the quote is about an adjacent " +
+      "subject and this is your reading of it. " +
+      "Below 0.5 the app will not present the item as something the person " +
+      "plainly said; it will show the quote and ask the reader to judge. " +
+      "That outcome is correct and useful, so rate honestly rather than high. " +
+      "This is NOT about whether the statement is true, whether the position " +
+      "is a good one, or whether you copied the quote correctly.",
+  )
+
+/**
  * The secondary tags, as free strings rather than an enum.
  *
  * Deliberately not `z.array(issueTagSchema)`. The taxonomy lives in the
@@ -157,15 +195,13 @@ export const stanceSchema = z.object({
     ),
   plainLanguage: plainLanguageField,
   attribution: attributionField,
-  confidence: z
-    .number()
-    .min(0)
-    .max(1)
-    .describe(
-      "How directly the quote supports the stated position, 0 to 1. " +
-        "Low when the connection requires inference. This is about the " +
-        "quote-to-position link only, not about whether the position is correct.",
-    ),
+  /**
+   * Replaces the old `confidence` field, which asked this same question under
+   * a name three other things also answer to. A stance has exactly one
+   * confidence and this is it: `ExtractedItem.confidence` is populated from
+   * here, so relevance scoring and the flag rules are unchanged.
+   */
+  claimSupportConfidence: claimSupportField,
   ...quoteFields,
 })
 
@@ -192,8 +228,12 @@ export const stanceChangeSchema = z.object({
     .max(1)
     .describe(
       "How confident you are that this is a real change rather than a difference " +
-        "in wording, emphasis, or the question being answered, 0 to 1.",
+        "in wording, emphasis, or the question being answered, 0 to 1. " +
+        "This is about WHETHER THE CHANGE HAPPENED. It is a different question " +
+        "from claimSupportConfidence, which is about whether the quote supports " +
+        "the current position. Answer both separately.",
     ),
+  claimSupportConfidence: claimSupportField,
   priorInsightId: z
     .string()
     .describe(
@@ -221,6 +261,7 @@ export const factualClaimSchema = z.object({
       "requires_expertise: settling it needs domain analysis or modelling. " +
       "unverifiable: a prediction, a statement about intent, or a value judgment.",
   ),
+  claimSupportConfidence: claimSupportField,
   ...quoteFields,
 })
 
@@ -249,6 +290,7 @@ export const voterRelevanceSchema = z.object({
     ),
   plainLanguage: plainLanguageField,
   attribution: attributionField,
+  claimSupportConfidence: claimSupportField,
   ...quoteFields,
 })
 
@@ -318,7 +360,26 @@ export interface ExtractedItem {
   headline: string
   plainLanguage: string
   attribution: Attribution
+  /**
+   * The family's own confidence, whatever it means for that family.
+   *
+   * stance: the quote-to-position link (same value as claimSupportConfidence).
+   * stance_change: whether the change of position is real, which is what the
+   * FLIP_FLOP threshold reads. factual_claim and voter_relevance: 1, because
+   * those families are not asked an eventive question and `relevanceScore`
+   * multiplies by this.
+   *
+   * Left exactly as it was so flag assignment and ranking are unchanged. New
+   * code that wants "how well does the quote back this up" wants
+   * `claimSupportConfidence` instead.
+   */
   confidence: number
+  /**
+   * How directly the quote supports the card's claim, 0 to 1. Present on all
+   * four families. This is the one a reader sees, via the label and the
+   * presentation mode. See lib/confidence/score.ts.
+   */
+  claimSupportConfidence: number
   quote: string
   /** The model's own guess at the offsets, kept only to compare against truth. */
   quoteHint: { start: number; end: number }
@@ -370,7 +431,8 @@ export function flattenExtraction(result: ExtractionResult): ExtractedItem[] {
       headline: s.positionSummary,
       plainLanguage: s.plainLanguage,
       attribution: s.attribution,
-      confidence: s.confidence,
+      confidence: s.claimSupportConfidence,
+      claimSupportConfidence: s.claimSupportConfidence,
       quote: s.quote,
       quoteHint: { start: s.quoteCharStart, end: s.quoteCharEnd },
       payload: { cardType: "stance" },
@@ -387,6 +449,7 @@ export function flattenExtraction(result: ExtractionResult): ExtractedItem[] {
       plainLanguage: c.plainLanguage,
       attribution: c.attribution,
       confidence: c.confidence,
+      claimSupportConfidence: c.claimSupportConfidence,
       quote: c.quote,
       quoteHint: { start: c.quoteCharStart, end: c.quoteCharEnd },
       payload: {
@@ -406,9 +469,12 @@ export function flattenExtraction(result: ExtractionResult): ExtractedItem[] {
       headline: f.claimText,
       plainLanguage: f.plainLanguage,
       attribution: f.attribution,
-      // A claim carries no quote-to-position inference step, so there is no
-      // confidence to self-rate. Checkability is the signal that matters here.
+      // Left at 1 so `relevanceScore` and the flag rules behave exactly as
+      // they did: for this family `confidence` was never a rating, and turning
+      // it into one now would silently re-rank every stored claim. The real
+      // rating lives in claimSupportConfidence, which the card reads.
       confidence: 1,
+      claimSupportConfidence: f.claimSupportConfidence,
       quote: f.quote,
       quoteHint: { start: f.quoteCharStart, end: f.quoteCharEnd },
       payload: { cardType: "factual_claim", checkability: f.checkability },
@@ -425,6 +491,7 @@ export function flattenExtraction(result: ExtractionResult): ExtractedItem[] {
       plainLanguage: v.plainLanguage,
       attribution: v.attribution,
       confidence: 1,
+      claimSupportConfidence: v.claimSupportConfidence,
       quote: v.quote,
       quoteHint: { start: v.quoteCharStart, end: v.quoteCharEnd },
       payload: {

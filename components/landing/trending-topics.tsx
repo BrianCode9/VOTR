@@ -1,8 +1,8 @@
-import { ArrowRight, Flame } from "lucide-react"
+import { Flame } from "lucide-react"
 import { Section, SectionHeading } from "@/components/landing/section"
 import { Reveal } from "@/components/landing/reveal"
 import { TopicIcon } from "@/components/landing/topic-icon"
-import { topics } from "@/lib/landing/content"
+import { getTopics } from "@/lib/landing/queries"
 
 /**
  * Trending topics.
@@ -11,7 +11,9 @@ import { topics } from "@/lib/landing/content"
  * container with negative gutters so cards bleed to the screen edge the way a
  * native app's would, without the page itself ever scrolling sideways.
  */
-export function TrendingTopics() {
+export async function TrendingTopics() {
+  const topics = (await getTopics()).slice(0, 6)
+
   return (
     <Section id="trending">
       <SectionHeading
@@ -24,7 +26,6 @@ export function TrendingTopics() {
             className="inline-flex items-center gap-1.5 rounded-lg text-sm font-medium text-brand transition-colors hover:text-brand-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
           >
             Browse all issues
-            <ArrowRight className="size-4" aria-hidden="true" />
           </a>
         }
       />
@@ -39,7 +40,7 @@ export function TrendingTopics() {
           >
             <a
               href="#policy"
-              className="group flex h-full flex-col rounded-card border border-hairline bg-white p-5 transition-all duration-300 hover:-translate-y-1 hover:border-brand/35 hover:shadow-[0_24px_50px_-30px_rgba(10,17,36,0.4)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+              className="group flex h-full flex-col rounded-card border border-hairline bg-sheet p-5 transition-colors duration-150 hover:border-brand/35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
             >
               <div className="flex items-start justify-between gap-3">
                 <span className="grid size-11 place-items-center rounded-xl bg-brand-tint text-brand transition-colors group-hover:bg-brand group-hover:text-white">
@@ -47,7 +48,7 @@ export function TrendingTopics() {
                 </span>
 
                 {topic.trending ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-signal-tint px-2 py-0.5 font-mono text-[9px] tracking-[0.15em] text-signal-ink uppercase">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-signal-tint px-2 py-0.5 font-mono text-[9px] tracking-[-0.01em] text-signal-ink">
                     <Flame className="size-3" aria-hidden="true" />
                     Hot
                   </span>
@@ -63,15 +64,11 @@ export function TrendingTopics() {
               </p>
 
               <div className="mt-5 flex items-center justify-between border-t border-hairline pt-4">
-                <span className="font-mono text-[10px] tracking-wider text-slate-ink/80 uppercase">
+                <span className="font-mono text-[10px] tracking-wider text-slate-ink/80">
                   {topic.meta}
                 </span>
                 <span className="inline-flex items-center gap-1 text-sm font-medium text-brand">
                   Explore
-                  <ArrowRight
-                    className="size-3.5 transition-transform group-hover:translate-x-0.5"
-                    aria-hidden="true"
-                  />
                 </span>
               </div>
             </a>

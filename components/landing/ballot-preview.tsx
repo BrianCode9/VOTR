@@ -1,4 +1,4 @@
-import { ChevronRight, MapPin } from "lucide-react"
+import { MapPin } from "lucide-react"
 import {
   ballotPreview,
   daysUntil,
@@ -18,17 +18,17 @@ export function BallotPreview() {
       {/* Stacked sheets behind the card: depth without a drop-shadow pile-up. */}
       <div
         aria-hidden="true"
-        className="absolute -top-3 right-3 left-3 h-full rounded-[1.75rem] border border-hairline bg-white/60"
+        className="absolute -top-3 right-3 left-3 h-full rounded-[1.75rem] border border-hairline bg-sheet/60"
       />
       <div
         aria-hidden="true"
-        className="absolute -top-6 right-7 left-7 h-full rounded-[1.75rem] border border-hairline bg-white/35"
+        className="absolute -top-6 right-7 left-7 h-full rounded-[1.75rem] border border-hairline bg-sheet/35"
       />
 
-      <div className="relative rounded-[1.75rem] border border-hairline bg-white p-5 shadow-[0_40px_80px_-45px_rgba(10,17,36,0.5)] sm:p-6">
+      <div className="relative rounded-[1.75rem] border border-hairline bg-sheet p-5 sm:p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="font-mono text-[10px] tracking-[0.2em] text-slate-ink/80 uppercase">
+            <p className="font-mono text-[10px] tracking-[-0.01em] text-slate-ink/80">
               Your ballot
             </p>
             <p className="mt-2 font-heading text-lg leading-tight font-semibold text-navy">
@@ -36,7 +36,7 @@ export function BallotPreview() {
             </p>
           </div>
 
-          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-signal-tint px-2.5 py-1 font-mono text-[10px] tracking-wider text-signal-ink uppercase">
+          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-signal-tint px-2.5 py-1 font-mono text-[10px] tracking-wider text-signal-ink">
             <span className="size-1.5 rounded-full bg-signal" aria-hidden="true" />
             {formatElectionDate(ballotPreview.date)}
           </span>
@@ -55,10 +55,6 @@ export function BallotPreview() {
               <span className="text-sm text-slate-ink/80">
                 {race.count} candidates
               </span>
-              <ChevronRight
-                className="size-4 shrink-0 text-slate-ink/40 transition-transform group-hover:translate-x-0.5 group-hover:text-brand"
-                aria-hidden="true"
-              />
             </a>
           ))}
         </div>
@@ -70,7 +66,7 @@ export function BallotPreview() {
           </span>
         </div>
 
-        <p className="mt-4 font-mono text-[10px] tracking-wider text-slate-ink/80 uppercase">
+        <p className="mt-4 font-mono text-[10px] tracking-wider text-slate-ink/80">
           {days} days out · sample ballot
         </p>
       </div>

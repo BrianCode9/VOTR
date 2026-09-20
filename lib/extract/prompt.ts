@@ -41,6 +41,7 @@ VOTER RELEVANCE. A concrete risk or opportunity for an identifiable group of peo
 Rules that apply to all four:
 
 - plainLanguage restates the item for a first-time voter, neutral, one sentence, no loaded words.
+- claimSupportConfidence rates ONE thing: how directly the quote you chose supports the item you attached it to. Not whether the statement is true, not whether the position is sensible, not how well you copied the quote. Rate it honestly and use the whole range. An item below 0.5 is still shown, with the quote and a prompt for the reader to check it themselves, which is a better card than a weak inference presented as a plain fact. Inflating this number is the one way to make this app assert something the source does not.
 - attribution is own_words only when the quote is the person speaking or writing. If a reporter is describing their position, it is characterization.
 - topic must be one of the given issue tags. Use "other" rather than forcing a bad fit.
 - candidateName is copied from the document. Use an empty string when the document names no one, rather than guessing.
