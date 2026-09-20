@@ -1,0 +1,19 @@
+{
+  "applied": true,
+  "reviewedPages": 111,
+  "candidates": 35,
+  "claimsValidated": 201,
+  "documentsInserted": 0,
+  "insightsInserted": 0,
+  "profilesUpdated": 111,
+  "byState": {
+    "PA": {
+      "candidates": 28,
+      "claims": 163
+    },
+    "WV": {
+      "candidates": 7,
+      "claims": 38
+    }
+  }
+}

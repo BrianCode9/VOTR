@@ -1,0 +1,1917 @@
+[
+  {
+    "sourceKey": "fec:2026:H6PA01181",
+    "url": "https://bobharvieforcongress.com/meet-bob/",
+    "claims": [],
+    "biography": {
+      "text": "Harvie's campaign says he worked as a social studies teacher for 26 years.",
+      "quote": "social studies teacher, a career he maintained for 26 years"
+    },
+    "sha256": "06215ac19cbe29f3dd899932e46116569627509f0fdacc30bc1cc39b3fad6850"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA01181",
+    "url": "https://bobharvieforcongress.com/priorities/",
+    "claims": [
+      {
+        "issueTag": "healthcare",
+        "quote": "buy into Medicare from 65 to 55",
+        "positionText": "Supports letting adults buy into Medicare starting at age 55.",
+        "issueTag2": null
+      },
+      {
+        "issueTag": "jobs_and_labor",
+        "quote": "raise the minimum wage to $15 per hour",
+        "positionText": "Supports raising the federal minimum wage to $15 per hour."
+      }
+    ],
+    "sha256": "ff5c7dc56687fa23acda71a69dc76846d83af288afc1be46f3a400136d3799a9"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA03203",
+    "url": "https://www.chrisrabb.com/about",
+    "claims": [],
+    "biography": {
+      "text": "Rabb's campaign describes him as a five-term Pennsylvania state representative.",
+      "quote": "a 5-term state representative"
+    },
+    "sha256": "8b8a719b54a9aaf5ad5872232b8c4d3db68a8536e662f82e67c6934db396b271"
+  },
+  {
+    "sourceKey": "fec:2026:H4PA13199",
+    "url": "https://voteboyle.com/about-brendan/",
+    "claims": [
+      {
+        "issueTag": "jobs_and_labor",
+        "quote": "addressing wage stagnation, job insecurity, trade, offshoring",
+        "positionText": "Supports legislation addressing stagnant wages, job insecurity, trade, and offshoring.",
+        "positionText_note": null
+      }
+    ],
+    "biography": {
+      "text": "Boyle's campaign describes his service in the U.S. House of Representatives.",
+      "quote": "elected to serve in the U.S. House of Representatives"
+    },
+    "sha256": "300d99ddad5b515db277008cbd5ccd51b779847f1eee41d1bd2946eb67e766ad"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA06156",
+    "url": "https://www.voteyoung.com/",
+    "claims": [],
+    "biography": {
+      "text": "Young's campaign says he graduated from West Point in 1993.",
+      "quote": "attended West Point and graduated in 1993"
+    },
+    "sha256": "2f4d5abfa69853f57b7d5e08c22444cc15477b291881dbed19ada27d629ed4c4"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA08277",
+    "url": "https://www.brianfitzpatrick.com/",
+    "claims": [],
+    "biography": {
+      "text": "Fitzpatrick's campaign says he previously worked as an FBI special agent and federal prosecutor.",
+      "quote": "As a former FBI Special Agent and Federal Prosecutor"
+    },
+    "sha256": "b217b6f00fc984f4945e33010b4fee0e642672c2f3c01b7bbf10034f5438d282"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA04116",
+    "url": "https://mad4pa.com/about/",
+    "claims": [],
+    "biography": {
+      "text": "Dean's campaign says she earned her law degree from Delaware Law School.",
+      "quote": "her law degree from Delaware Law School"
+    },
+    "sha256": "d40eca675fd5a562aef2499a854a545e1df28f8466eee1b007693e4f1ad3e6f3"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA06087",
+    "url": "https://chrissyhoulahanforcongress.com/",
+    "claims": [
+      {
+        "issueTag": "healthcare",
+        "quote": "healthcare is a right",
+        "positionText": "Says healthcare should be a right.",
+        "positionText_note": ""
+      }
+    ],
+    "sha256": "9b895afa86bafa73fd6bce5a0fe24d66caf1c750312005dc224f432e0870d032"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA07200",
+    "url": "https://www.scanlonforcongress.com/about",
+    "claims": [
+      {
+        "issueTag": "voting_rights",
+        "quote": "combat voter suppression and gerrymandering",
+        "positionText": "Opposes voter suppression and gerrymandering."
+      },
+      {
+        "issueTag": "education",
+        "quote": "ill-effects of zero-tolerance policies",
+        "positionText": "Opposes zero-tolerance school discipline policies."
+      }
+    ],
+    "biography": {
+      "text": "Scanlon's campaign says she graduated from Colgate University and the University of Pennsylvania Law School.",
+      "quote": "graduate of Colgate University and the University of Pennsylvania Law School"
+    },
+    "sha256": "7b2ec3e24d5a968177b2600bb4ac8296d8018dc0e2cd5df9ab0a452c159154a3"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA04116",
+    "url": "https://mad4pa.com/issues/",
+    "claims": [
+      {
+        "issueTag": "healthcare",
+        "quote": "every person has a right to affordable, accessible, quality healthcare",
+        "positionText": "Supports a right to affordable, accessible, quality healthcare."
+      },
+      {
+        "issueTag": "immigration",
+        "quote": "supports a strong legal immigration system and humane treatment",
+        "positionText": "Supports legal immigration and humane treatment of people seeking citizenship."
+      }
+    ],
+    "sha256": "6befb3b63d043d1ff5a9ddead654e1c6ed7eaa0bf1f32d6ae6bfad816e7d3d9e"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA06087",
+    "url": "https://chrissyhoulahanforcongress.com/about-chrissy/",
+    "claims": [],
+    "biography": {
+      "text": "Houlahan's campaign says she served as a captain in the U.S. Air Force Reserve.",
+      "quote": "I served as a Captain in the USAFR"
+    },
+    "sha256": "0e25400ac6ba42a71f9dab4c70b36430d985a9efd6c334571d111d6b42bb5691"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA15195",
+    "url": "https://www.mackenzieforcongress.com/issues",
+    "claims": [
+      {
+        "issueTag": "housing",
+        "quote": "expansion of affordable housing tax credits",
+        "positionText": "Supports expanding affordable housing tax credits.",
+        "summary": "Campaign says he supports expanding affordable housing tax credits and bipartisan policies aimed at improving housing affordability in his district."
+      },
+      {
+        "issueTag": "other",
+        "quote": "leading the charge to crack down on congressional stock trading",
+        "positionText": "Supports restricting stock trading by members of Congress.",
+        "summary": "Campaign states he supports restricting congressional stock trading and has backed legislation establishing term limits for members of Congress."
+      }
+    ],
+    "sha256": "9fbf9a67470bf089e1caa0fc786f4c9d4923eb16ee761304f759a1b763626929"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA07188",
+    "url": "https://www.brooksforcongress.com/meet-bob/",
+    "claims": [],
+    "biography": {
+      "text": "Brooks's campaign says he worked as a firefighter for 20 years.",
+      "quote": "20 years as a firefighter"
+    },
+    "sha256": "9777a55dbc9b216b935ee40bcc164f7e54241754d754c8e16be62b011d596212"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA07188",
+    "url": "https://www.brooksforcongress.com/on-the-issues/",
+    "claims": [
+      {
+        "issueTag": "healthcare",
+        "quote": "I support Medicare for All",
+        "positionText": "Supports Medicare for All.",
+        "issueTag_note": null
+      },
+      {
+        "issueTag": "housing",
+        "quote": "crack down on corporate landlords and rent gouging",
+        "positionText": "Supports restrictions on corporate landlords and rent gouging."
+      }
+    ],
+    "sha256": "447d740d3882e59242113741ffa07ab70c553c1130f682803efeae319e07f155"
+  },
+  {
+    "sourceKey": "fec:2026:H4PA08124",
+    "url": "https://robforpa.com/",
+    "claims": [
+      {
+        "issueTag": "immigration",
+        "quote": "We must secure the border, build the wall",
+        "positionText": "Supports securing the border and building a border wall.",
+        "positionText2": null
+      },
+      {
+        "issueTag": "healthcare",
+        "quote": "not support raising the retirement age or any benefit cuts",
+        "positionText": "Opposes raising the retirement age or cutting Social Security and Medicare benefits."
+      }
+    ],
+    "sha256": "19a5203b84c3ca984508e06cca91284e012fe119ce03091f1f0c9344243f16f7"
+  },
+  {
+    "sourceKey": "fec:2026:H4PA08124",
+    "url": "https://robforpa.com/about/",
+    "claims": [],
+    "biography": {
+      "text": "Bresnahan's campaign says he became chief financial officer of his family business, Kuharchik Construction, at age 19.",
+      "quote": "At just 19, Rob became CFO of his family’s third-generation business, Kuharchik Construction."
+    },
+    "sha256": "f7e443ed9c4a78396a40d89f02ae720353fc01c516f957e99d63f6ebf016dbe3"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA08277",
+    "url": "https://www.brianfitzpatrick.com/issues/protecting-our-families/",
+    "claims": [
+      {
+        "issueTag": "immigration",
+        "quote": "supported $25 billion in securing the border through a physical barrier",
+        "positionText": "Supported $25 billion for border security, including physical barriers."
+      },
+      {
+        "issueTag": "foreign_policy",
+        "quote": "supported tougher sanctions on North Korea to cut off the flow of money",
+        "positionText": "Supports tougher sanctions on North Korea to restrict its funding."
+      }
+    ],
+    "sha256": "566486ff119d88fbcf73916c3649bcc5732278a93a6b956f9d8b8f8b2d45c8c6"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA04116",
+    "url": "https://mad4pa.com/issues/healthcare/",
+    "claims": [
+      {
+        "issueTag": "healthcare",
+        "quote": "support universal healthcare that is economically balanced",
+        "positionText": "Supports universal healthcare that is economically balanced."
+      },
+      {
+        "issueTag": "other",
+        "quote": "protect and expand Social Security and Medicare",
+        "positionText": "Supports protecting and expanding Social Security and Medicare."
+      }
+    ],
+    "sha256": "ebfa462772746e0c81f0e1c4e5c45228334f89d0c93ccc004ec217ef72c69cca"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA10147",
+    "url": "https://www.meuserforcongress.com/about",
+    "claims": [
+      {
+        "issueTag": "taxes_and_budget",
+        "quote": "fight for lower taxes, less regulation",
+        "positionText": "Supports lower taxes and less regulation.",
+        "positionText2": ""
+      },
+      {
+        "issueTag": "climate",
+        "quote": "domestic energy production, regulatory reform",
+        "positionText": "Supports domestic energy production and regulatory reform."
+      }
+    ],
+    "sha256": "c4c96058059af84522e00b501299f57f5e848980cfebdc95e6c41590cbb868b0"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA09127",
+    "url": "https://www.wallaceforcongress.com/issues/lower-costs",
+    "claims": [
+      {
+        "issueTag": "healthcare",
+        "quote": "Ban prior authorization by insurance companies",
+        "positionText": "Supports banning insurance prior authorization requirements.",
+        "issueTag2": null
+      },
+      {
+        "issueTag": "housing",
+        "quote": "Establish a new first-time homebuyer credit and a starter home construction credit.",
+        "positionText": "Supports tax credits for first-time homebuyers and starter-home construction."
+      }
+    ],
+    "sha256": "3887970570707760639b30ce4b155bbec3503a00771b394b0f1032a2e0eb5098"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA09127",
+    "url": "https://www.wallaceforcongress.com/issues/local-problems",
+    "claims": [
+      {
+        "issueTag": "other",
+        "quote": "a ban on members of Congress trading individual stocks",
+        "positionText": "Supports banning individual stock trading by members of Congress."
+      },
+      {
+        "issueTag": "other",
+        "quote": "a 6-term, 12-year limit for members of Congress",
+        "positionText": "Supports a six-term, twelve-year limit for members of Congress."
+      }
+    ],
+    "sha256": "86c01be08ec92b46941000f8f8b517199fedeb4a2ce814b0b37de3efafe59dda"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA04116",
+    "url": "https://mad4pa.com/issues/womens-issues/",
+    "claims": [
+      {
+        "issueTag": "reproductive_rights",
+        "quote": "safe, accessible, quality reproductive health is a fundamental right",
+        "positionText": "Supports access to reproductive healthcare as a fundamental right."
+      },
+      {
+        "issueTag": "jobs_and_labor",
+        "quote": "supporting initiatives for pay equity, workforce development programs, universal preschool, and affordable childcare",
+        "positionText": "Supports pay equity, workforce development, universal preschool, and affordable childcare."
+      }
+    ],
+    "sha256": "f7dfc719a933a04b1a562b9465414e739b3c2245104811ebef2bc4c221373f1d"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA09127",
+    "url": "https://www.wallaceforcongress.com/issues/childcare",
+    "claims": [
+      {
+        "issueTag": "technology_and_privacy",
+        "quote": "oppose efforts to establish national permitting laws",
+        "positionText": "Opposes national permitting laws for data centers.",
+        "positionText_note": null
+      },
+      {
+        "issueTag": "public_safety",
+        "quote": "ban dangerously bright vehicle headlights to reduce glare",
+        "positionText": "Supports banning dangerously bright vehicle headlights to reduce glare."
+      }
+    ],
+    "sha256": "137997dc5377a3d4fd20c61b83a515e72991971ef1972838a59d99eda9e099e8"
+  },
+  {
+    "sourceKey": "fec:2026:H2PA04135",
+    "url": "https://patriotsforperry.com/about/",
+    "claims": [],
+    "biography": {
+      "text": "Perry's campaign says he served three terms in the Pennsylvania House of Representatives.",
+      "quote": "Perry served three terms in Harrisburg as a Pennsylvania State Representative"
+    },
+    "sha256": "ef623d59d0d75e4728850f4fdf911233653b5b7eb2d4a3d42f5663a7aa71300c"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA04116",
+    "url": "https://mad4pa.com/issues/economy/",
+    "claims": [
+      {
+        "issueTag": "taxes_and_budget",
+        "quote": "She opposes massive tax cuts for the wealthy",
+        "positionText": "Opposes large tax cuts for wealthy people."
+      },
+      {
+        "issueTag": "jobs_and_labor",
+        "quote": "supporting legislation to raise the federal minimum wage",
+        "positionText": "Supports raising the federal minimum wage."
+      }
+    ],
+    "sha256": "56ba30abca8d0263cd259918361b9c54010e67bbba319deed47fa7b1ab2cbe3c"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA08277",
+    "url": "https://www.brianfitzpatrick.com/issues/government-reform/",
+    "claims": [
+      {
+        "issueTag": "other",
+        "quote": "impose term limits, and abolish congressional pensions",
+        "positionText": "Supports congressional term limits and ending congressional pensions.",
+        "positionText2": null
+      },
+      {
+        "issueTag": "taxes_and_budget",
+        "quote": "supported a Balanced-Budget Amendment to our Constitution",
+        "positionText": "Supports a constitutional balanced-budget amendment."
+      }
+    ],
+    "sha256": "beac544ece9bd729d5bfe67ff2480085c0feb16f757735147da05d3646523140"
+  },
+  {
+    "sourceKey": "fec:2026:H2PA04135",
+    "url": "https://patriotsforperry.com/issues/",
+    "claims": [
+      {
+        "issueTag": "immigration",
+        "quote": "Securing our borders;",
+        "positionText": "Supports securing the border.",
+        "issueTag2": null
+      },
+      {
+        "issueTag": "healthcare",
+        "quote": "Ensure coverage of pre-existing conditions;",
+        "positionText": "Supports insurance coverage for people with pre-existing conditions."
+      }
+    ],
+    "sha256": "c581dcaa7c8e430e55c244d799cfc73fc008b1ff3349abcf0677dcb134e66bdd"
+  },
+  {
+    "sourceKey": "fec:2026:H4PA10104",
+    "url": "https://janellestelson.com/",
+    "claims": [],
+    "biography": {
+      "text": "Stelson's campaign describes her prior work as a longtime television news anchor.",
+      "quote": "longtime news anchor"
+    },
+    "sha256": "384dee2a1c04bab12920f5a142e9b948f661e85797231467336d02260881dad5"
+  },
+  {
+    "sourceKey": "fec:2026:H4PA10104",
+    "url": "https://janellestelson.com/priorities/",
+    "claims": [
+      {
+        "issueTag": "taxes_and_budget",
+        "quote": "I support no tax on tips or overtime",
+        "positionText": "Supports exempting tips and overtime pay from federal taxes.",
+        "issueTag_note": null
+      },
+      {
+        "issueTag": "reproductive_rights",
+        "quote": "protections guaranteed under Roe are once again the law of the land",
+        "positionText": "Supports restoring federal abortion protections under Roe v. Wade."
+      }
+    ],
+    "sha256": "be73a0cce9845061ba08d16e364713d78079fb5c7fb519ddeb12bcedacd2f1ed"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA04116",
+    "url": "https://mad4pa.com/issues/gun-violence/",
+    "claims": [
+      {
+        "issueTag": "guns",
+        "quote": "requires a background check for every firearm sale",
+        "positionText": "Supports requiring background checks for every firearm sale.",
+        "positionText_note": null
+      },
+      {
+        "issueTag": "guns",
+        "quote": "repeal federal laws that bar funding for research on gun violence",
+        "positionText": "Supports repealing restrictions on federal funding for gun-violence research."
+      }
+    ],
+    "sha256": "27fc75b54065b87bb6e84a977c978b7e72b765de51da4aff1d37573f20667f33"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA16320",
+    "url": "https://www.electsmucker.com/issues",
+    "claims": [
+      {
+        "issueTag": "climate",
+        "quote": "increase domestic oil and gas production",
+        "positionText": "Supports increasing domestic oil and gas production."
+      }
+    ],
+    "sha256": "ad68953e6d9752bedf0d070a053604303f9d436ef76252e50cc4c0ffa1436e34"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA04116",
+    "url": "https://mad4pa.com/issues/solving-the-opioid-epidemic/",
+    "claims": [
+      {
+        "issueTag": "healthcare",
+        "quote": "increasing access to medicated assisted treatment",
+        "positionText": "Supports expanding access to medication-assisted addiction treatment."
+      },
+      {
+        "issueTag": "healthcare",
+        "quote": "promotes affordable access to evidence-based opioid treatments under the Medicare program",
+        "positionText": "Supports affordable opioid-use-disorder treatment under Medicare."
+      }
+    ],
+    "sha256": "1e412e2ef3d8544692b767a944b9dc54418b73f07e499a2f1cb37b5b6f97b83f"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA11099",
+    "url": "https://www.nancymannion.com/Priorities/",
+    "claims": [
+      {
+        "issueTag": "jobs_and_labor",
+        "quote": "fight to raise the federal minimum wage",
+        "positionText": "Supports raising the federal minimum wage."
+      },
+      {
+        "issueTag": "voting_rights",
+        "quote": "options such as early voting and mail-in voting",
+        "positionText": "Supports early voting and mail-in voting options."
+      }
+    ],
+    "sha256": "1fdab77c6bfb7ce8e46645307886d13d2e79c33b405ba4813d82ea035d8cb5e8"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA11099",
+    "url": "https://www.nancymannion.com/Meet-Nancy/",
+    "claims": [],
+    "biography": {
+      "text": "Mannion's campaign describes her as a registered nurse and healthcare leader.",
+      "quote": "registered nurse and healthcare leader"
+    },
+    "sha256": "2f4cc7abb1f3830181cc244cef7df8ee16d6cd217ed3fec56e29db1187abfdd5"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA04116",
+    "url": "https://mad4pa.com/issues/racial-equity/",
+    "claims": [
+      {
+        "issueTag": "public_safety",
+        "quote": "Madeleine supports the Justice in Policing Act of 2020",
+        "positionText": "Supported the Justice in Policing Act of 2020."
+      },
+      {
+        "issueTag": "criminal_justice",
+        "quote": "supports expanding successful special veteran and drug courts, ending the cash bail system",
+        "positionText": "Supports expanding veteran and drug courts and ending cash bail."
+      }
+    ],
+    "sha256": "40b969a8e228655cb309f192bbf4a3fe58fb7b91e2513dd004f6d77fe29f0bef"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA13125",
+    "url": "https://www.johnjoyceforcongress.com/",
+    "claims": [
+      {
+        "issueTag": "healthcare",
+        "quote": "improving Pennsylvanians' access to quality and affordable health care",
+        "positionText": "Supports access to quality, affordable healthcare."
+      }
+    ],
+    "biography": {
+      "text": "Joyce's campaign says he has represented Pennsylvania's 13th District since 2019.",
+      "quote": "served the 13th District of Pennsylvania since 2019"
+    },
+    "sha256": "823529555337dc66cfa9d7c85c8a04daf5a29e0d9764a3d9535a54f6c69db9d1"
+  },
+  {
+    "sourceKey": "fec:2026:H4PA13298",
+    "url": "https://bethfarnhamforcongress.com/",
+    "claims": [
+      {
+        "issueTag": "healthcare",
+        "quote": "Enshrine into federal law a national healthcare program",
+        "positionText": "Supports establishing a national healthcare program in federal law."
+      },
+      {
+        "issueTag": "reproductive_rights",
+        "quote": "we, along with our trusted healthcare professionals, make personal medical decisions",
+        "positionText": "Supports individuals and their healthcare providers making personal reproductive medical decisions."
+      }
+    ],
+    "sha256": "06079f9ee2ebfef5e5652851577df8e4fac0e59aa3003919ec64b9ed0c423ec8"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA14200",
+    "url": "https://www.bradstockforcongress.com/issues",
+    "claims": [
+      {
+        "issueTag": "healthcare",
+        "quote": "health care as a right, not a privilege",
+        "positionText": "Says healthcare should be a right rather than a privilege.",
+        "positionText_note": null
+      },
+      {
+        "issueTag": "other",
+        "quote": "stronger campaign finance laws, greater transparency",
+        "positionText": "Supports stronger campaign-finance laws and greater transparency."
+      }
+    ],
+    "sha256": "bd96fd9971ef294dd4e4bcb5b258ebb8aa7f14333968657131c7bb158d293e6b"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA08277",
+    "url": "https://www.brianfitzpatrick.com/issues/immigration-that-works-for-everyone/",
+    "claims": [
+      {
+        "issueTag": "immigration",
+        "quote": "Congress must act now to secure our borders",
+        "positionText": "Supports congressional action to secure the border."
+      },
+      {
+        "issueTag": "immigration",
+        "quote": "protecting our Dreamers",
+        "positionText": "Supports legal protections for Dreamers."
+      }
+    ],
+    "sha256": "a59193b309356ceee3957107b3bc21ed9730f10c3c362e7972443b2413ae7bf1"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA18199",
+    "url": "https://guyforpa.com/",
+    "claims": [
+      {
+        "issueTag": "immigration",
+        "quote": "End the dangerous practice of sanctuary cities",
+        "positionText": "Opposes sanctuary-city policies."
+      },
+      {
+        "issueTag": "taxes_and_budget",
+        "quote": "Make President Trump's tax cuts permanent",
+        "positionText": "Supports making the Trump tax cuts permanent."
+      }
+    ],
+    "sha256": "ece6122fbb9264d750b2aa71a2bdb371af17adccc9e171dac6f5b0130d7241ee"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA14200",
+    "url": "https://www.bradstockforcongress.com/about",
+    "claims": [],
+    "biography": {
+      "text": "Bradstock's campaign says he spent two decades as an FBI agent.",
+      "quote": "two decades as an FBI agent"
+    },
+    "sha256": "11a9863dad0e14e8ba37f0d7830e59efcc6e177653cd154d1f85e6c5c181ab85"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA15181",
+    "url": "https://bilgerforcongress.com/",
+    "claims": [],
+    "biography": {
+      "text": "Bilger's campaign lists prior service as the NSA's technical director for cyber analysis.",
+      "quote": "NSA Technical Director for Cyber Analysis"
+    },
+    "sha256": "486c8132a42a0887556821af8ac1d918c09cd8330a85c7647e01523c6c9485ed"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA15181",
+    "url": "https://bilgerforcongress.com/priorities/",
+    "claims": [
+      {
+        "issueTag": "reproductive_rights",
+        "quote": "The right to abortion should be codified in federal law.",
+        "positionText": "Supports codifying abortion rights in federal law."
+      },
+      {
+        "issueTag": "other",
+        "quote": "banning congressional stock trading",
+        "positionText": "Supports banning stock trading by members of Congress."
+      }
+    ],
+    "sha256": "e213d8a97b6c741e9f65a22f863e1f38d9c837a839ccfdc6125f42c506578cf9"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA08277",
+    "url": "https://www.brianfitzpatrick.com/issues/opioid-addiction-and-mental-health/",
+    "claims": [
+      {
+        "issueTag": "healthcare",
+        "quote": "remove barriers to substance use disorder treatment services under Medicaid",
+        "positionText": "Supports removing Medicaid barriers to substance-use-disorder treatment.",
+        "issueTag_note": null
+      }
+    ],
+    "sha256": "20ec45f8f0001b3bf4002530e1d5401937b3830efdd74777ebea4ce27b8c465d"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA18199",
+    "url": "https://guyforpa.com/about/",
+    "claims": [
+      {
+        "issueTag": "taxes_and_budget",
+        "quote": "cutting spending, lowering taxes",
+        "positionText": "Supports reducing government spending and taxes.",
+        "positionText_note": null
+      },
+      {
+        "issueTag": "economy",
+        "quote": "eliminating job-killing regulations",
+        "positionText": "Supports eliminating regulations the campaign considers harmful to jobs."
+      }
+    ],
+    "biography": {
+      "text": "Reschenthaler's campaign says he graduated from Penn State Behrend and completed law school at Duquesne University.",
+      "quote": "graduated from Penn State’s Behrend campus and completed law school at Duquesne"
+    },
+    "sha256": "c005111446bcc642b290220e245fccae3069a52cb0e705f374025e2b90ba84d3"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA05071",
+    "url": "https://www.friendsofglennthompson.com/",
+    "claims": [
+      {
+        "issueTag": "reproductive_rights",
+        "quote": "FIGHTING FOR THE SANCTITY OF HUMAN LIFE",
+        "positionText": "Opposes abortion, describing human life as protected from conception."
+      },
+      {
+        "issueTag": "healthcare",
+        "quote": "saving Medicare and Social Security",
+        "positionText": "Supports preserving Medicare and Social Security."
+      }
+    ],
+    "biography": {
+      "text": "Thompson's campaign identifies him as chairman of the House Agriculture Committee.",
+      "quote": "Chairman of the House Agriculture Committee"
+    },
+    "sha256": "3d1a2df704eda6ff3fe37c0520ec05d4d510af5f053118042efa599dba7c6b86"
+  },
+  {
+    "sourceKey": "fec:2026:H4PA13298",
+    "url": "https://bethfarnhamforcongress.com/meet-beth/",
+    "claims": [
+      {
+        "issueTag": "taxes_and_budget",
+        "quote": "our tax policies benefit us, not the billionaires",
+        "positionText": "Supports tax policies benefiting ordinary people rather than billionaires.",
+        "issueTagConfidence": 0.9
+      }
+    ],
+    "biography": {
+      "text": "Farnham's campaign says she holds a degree in biology, French, and secondary education.",
+      "quote": "With a degree in Biology, French, and Secondary Education"
+    },
+    "sha256": "539f4f5df83612de0cbf8bc1211f4c3304f84e8ced46c30f08155e5acbaaf598"
+  },
+  {
+    "sourceKey": "fec:2026:H2PA17103",
+    "url": "https://chrisforpa.com/meet-chris/",
+    "claims": [
+      {
+        "issueTag": "transit_and_infrastructure",
+        "quote": "introduced the Railway Safety Act to prevent future disasters",
+        "positionText": "Supports rail-safety legislation, including the Railway Safety Act.",
+        "positionText_note": null
+      },
+      {
+        "issueTag": "other",
+        "quote": "ban Congressional stock trading",
+        "positionText": "Supports banning stock trading by members of Congress."
+      }
+    ],
+    "biography": {
+      "text": "Deluzio's campaign describes him as an Iraq War veteran and voting-rights attorney.",
+      "quote": "Iraq War veteran and voting rights attorney"
+    },
+    "sha256": "dfe8f8c034d23dbe59db9bd7ae4cf39ea036fb59c9b74e0833c1b412b77a1de2"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA16379",
+    "url": "https://www.justinwagnerforcongress.com/",
+    "claims": [
+      {
+        "issueTag": "jobs_and_labor",
+        "quote": "Pro-Union. Pro-Worker.",
+        "positionText": "Describes the campaign as pro-union and pro-worker."
+      }
+    ],
+    "biography": {
+      "text": "Wagner's campaign describes him as a veteran and engineer.",
+      "quote": "Veteran. Engineer."
+    },
+    "sha256": "1691fb7c94657ce7951e6102600ef55c1bae8017af208bd589af3708d9c42d74"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA16379",
+    "url": "https://www.justinwagnerforcongress.com/platform",
+    "claims": [
+      {
+        "issueTag": "healthcare",
+        "quote": "push for a Medicare-for-All system",
+        "positionText": "Supports Medicare for All.",
+        "issueTag_note": null
+      },
+      {
+        "issueTag": "housing",
+        "quote": "ban hedge funds and private equity firms from buying single-family homes",
+        "positionText": "Supports banning hedge funds and private equity firms from buying single-family homes."
+      }
+    ],
+    "sha256": "b6c2debd1cc7b719b23acfc023fe4ff3ee385b437b40661467ee1b122ae59a0a"
+  },
+  {
+    "sourceKey": "fec:2026:H6WV01160",
+    "url": "https://www.vincegeorgeforcongress.com/issues",
+    "claims": [
+      {
+        "issueTag": "jobs_and_labor",
+        "quote": "double the federal minimum wage",
+        "positionText": "Supports doubling the federal minimum wage.",
+        "biography": null
+      },
+      {
+        "issueTag": "healthcare",
+        "quote": "reverse harmful cuts to Medicaid and Medicare",
+        "positionText": "Supports reversing cuts to Medicaid and Medicare."
+      }
+    ],
+    "sha256": "f9ca3233246f8f79adf94af652f7c5e78f3b0db9e88c5df8d83eaee782f4b0d8"
+  },
+  {
+    "sourceKey": "fec:2026:H8WV03097",
+    "url": "https://www.electcarolmiller.com/",
+    "claims": [
+      {
+        "issueTag": "climate",
+        "quote": "Protecting Coal & Gas",
+        "positionText": "Supports protecting the coal and natural gas industries."
+      },
+      {
+        "issueTag": "guns",
+        "quote": "Defending the 2nd Amendment",
+        "positionText": "Supports Second Amendment rights."
+      }
+    ],
+    "sha256": "5e8a052fd72d53ebe7f84bbf54eb32490a9f159c23db95c92b150a1c1976af55"
+  },
+  {
+    "sourceKey": "fec:2026:H6WV01160",
+    "url": "https://www.vincegeorgeforcongress.com/about",
+    "claims": [
+      {
+        "issueTag": "climate",
+        "quote": "fight for clean water and clean air",
+        "positionText": "Supports protecting clean water and clean air."
+      },
+      {
+        "issueTag": "healthcare",
+        "quote": "bringing healthcare to rural communities",
+        "positionText": "Supports expanding healthcare access in rural communities."
+      }
+    ],
+    "biography": {
+      "text": "George's campaign says he worked as a teacher at Fairmont State University.",
+      "quote": "I worked as a teacher at Fairmont State University"
+    },
+    "sha256": "61a04eab90bb86d6fda9aa643afbb208a6fb73a9a25bd3ca3f4970e6b3898339"
+  },
+  {
+    "sourceKey": "fec:2026:H6WV01111",
+    "url": "https://jacksonforwv.com/priorities",
+    "claims": [
+      {
+        "issueTag": "guns",
+        "quote": "Oppose red flag laws that violate due process",
+        "positionText": "Opposes red-flag laws that violate due process."
+      },
+      {
+        "issueTag": "climate",
+        "quote": "Defend coal and natural gas jobs",
+        "positionText": "Supports protecting coal and natural gas jobs."
+      }
+    ],
+    "sha256": "29be108555884fbe3daa32eeeb91471d4b0a218cf1b433765ed2e662165dd7db"
+  },
+  {
+    "sourceKey": "fec:2026:H6WV01111",
+    "url": "https://jacksonforwv.com/about-1",
+    "claims": [
+      {
+        "issueTag": "climate",
+        "quote": "I will fight to cut regulations on coal and gas",
+        "positionText": "Supports reducing regulations on coal and natural gas.",
+        "positionText2": null
+      },
+      {
+        "issueTag": "guns",
+        "quote": "defend our 2nd Amendment rights",
+        "positionText": "Supports Second Amendment rights."
+      }
+    ],
+    "biography": {
+      "text": "Jackson's campaign says he owns and operates Eastern Equipment, LLC.",
+      "quote": "I own and operate Eastern Equipment, LLC"
+    },
+    "sha256": "5a1714a3957b75111a2cebada46deca25fd41e3d9f51dae0f3267feb1bb34567"
+  },
+  {
+    "sourceKey": "fec:2026:H4WV02205",
+    "url": "https://www.mooreforwv.com/",
+    "claims": [
+      {
+        "issueTag": "education",
+        "quote": "fought for school choice",
+        "positionText": "Supports school choice."
+      }
+    ],
+    "sha256": "7c5ec8fc915dfe8b5292ccfd3f859125c036596c899a0f0a23989d5a25d1479d"
+  },
+  {
+    "sourceKey": "fec:2026:H4WV02205",
+    "url": "https://www.mooreforwv.com/about",
+    "claims": [
+      {
+        "issueTag": "guns",
+        "quote": "introduced critical legislation to protect Americans' Second Amendment rights",
+        "positionText": "Supports legislation protecting Second Amendment rights.",
+        "issueTag2": null
+      },
+      {
+        "issueTag": "climate",
+        "quote": "reinstituting the National Coal Council",
+        "positionText": "Supports reinstating the National Coal Council."
+      }
+    ],
+    "biography": {
+      "text": "Moore's campaign says he previously served as West Virginia's 25th state treasurer.",
+      "quote": "served as West Virginia's 25th State Treasurer"
+    },
+    "sha256": "6ba50e73c8b4febb677f4eb8c147110253ee42b01cc87016969aa9b7e0c6d22d"
+  },
+  {
+    "sourceKey": "fec:2026:S6WV00188",
+    "url": "https://www.fettyandersonforsenate.com/issues",
+    "claims": [
+      {
+        "issueTag": "taxes_and_budget",
+        "quote": "I support the elimination of the \"Buy, Borrow, Die\" tax loop-hole",
+        "positionText": "Supports eliminating the \"Buy, Borrow, Die\" tax loophole."
+      },
+      {
+        "issueTag": "technology_and_privacy",
+        "quote": "We will fight for a moratorium on data center development.",
+        "positionText": "Supports a moratorium on data-center development."
+      }
+    ],
+    "sha256": "3e338386f3be53e2033a7a5e6d230a376429c1f66b27d9a449cd51c88ad1de42"
+  },
+  {
+    "sourceKey": "fec:2026:S6WV00188",
+    "url": "https://www.fettyandersonforsenate.com/platform",
+    "claims": [
+      {
+        "issueTag": "healthcare",
+        "quote": "a plan for Medicare, Medicaid and Tricare for all",
+        "positionText": "Proposes expanding Medicare, Medicaid, and Tricare coverage to everyone.",
+        "positionText_note": ""
+      },
+      {
+        "issueTag": "taxes_and_budget",
+        "quote": "requiring audits of the Defense department",
+        "positionText": "Supports requiring audits of the Defense Department."
+      }
+    ],
+    "sha256": "337b770121cdfcf59ebbd40a79b2c290f088735e946c3ef33cf86af7a4c35d3f"
+  },
+  {
+    "sourceKey": "fec:2026:S6WV00188",
+    "url": "https://www.fettyandersonforsenate.com/about",
+    "claims": [],
+    "biography": {
+      "text": "Fetty Anderson's campaign describes her prior election to Morgantown City Council.",
+      "quote": "elected to the Morgantown City Council"
+    },
+    "sha256": "a22819cb9018bca6f339c4ea94ced86bb7932279802ed89d78276975f8197b54"
+  },
+  {
+    "sourceKey": "fec:2026:H4WV02205",
+    "url": "https://www.mooreforwv.com/issues",
+    "claims": [
+      {
+        "issueTag": "immigration",
+        "quote": "finish the border wall",
+        "positionText": "Supports completing the border wall."
+      },
+      {
+        "issueTag": "climate",
+        "quote": "I will stand up for our coal and gas industries",
+        "positionText": "Supports protecting coal and natural gas industries."
+      }
+    ],
+    "sha256": "0f338355ce0961335c258fe021b4425dbe35e1101a762b109fdb1fcbf8d24d8c"
+  },
+  {
+    "sourceKey": "fec:2026:H6WV02184",
+    "url": "https://www.stephanietomana.com/meet-stephanie",
+    "claims": [
+      {
+        "issueTag": "jobs_and_labor",
+        "quote": "ad campaign supporting the THRIVE Act",
+        "positionText": "Supported the THRIVE Act."
+      },
+      {
+        "issueTag": "education",
+        "quote": "to defend public schools",
+        "positionText": "Supports public schools."
+      }
+    ],
+    "biography": {
+      "text": "Tomana's campaign lists degrees and certifications in biology and secondary science education.",
+      "quote": "degrees and certifications in Biology and Secondary Science Education"
+    },
+    "sha256": "023412cac9e156ef9382b78b47af8e856d7b74be63b914bb7d2c92efd90e3751"
+  },
+  {
+    "sourceKey": "fec:2026:H6WV02150",
+    "url": "https://www.aceforcongress.com/aceplatform",
+    "claims": [
+      {
+        "issueTag": "healthcare",
+        "quote": "Fund rural hospitals; pursue a single-payer public option",
+        "positionText": "Supports funding rural hospitals and pursuing what the campaign calls a single-payer public option."
+      },
+      {
+        "issueTag": "technology_and_privacy",
+        "quote": "Ban flock cameras and AI facilitated surveillance by public officials.",
+        "positionText": "Supports banning Flock cameras and AI-facilitated surveillance by public officials."
+      }
+    ],
+    "sha256": "5f7f075b67182b6be3512614a339b97f31ffd181b25a03e9d91552cbbe9f4c68"
+  },
+  {
+    "sourceKey": "fec:2026:H0PA03271",
+    "url": "https://kelly.house.gov/issues",
+    "claims": [
+      {
+        "issueTag": "healthcare",
+        "quote": "I’ve always fought to protect the rights of every American to choose their doctor and get the treatment which works best for them and their family.",
+        "positionText": "Supports protecting patients' ability to choose their own doctor and select the treatment that works best for them and their families."
+      },
+      {
+        "issueTag": "reproductive_rights",
+        "quote": "As long as I represent the 16th District of Pennsylvania, I will continue to defend these unalienable rights, and work to protect the most vulnerable among us, especially the unborn.",
+        "positionText": "Describes himself as pro-life and pledges to work to protect the unborn, framed as defending rights to life and liberty."
+      },
+      {
+        "issueTag": "guns",
+        "quote": "Rep. Kelly is a strong believer in the Second Amendment of the Constitution of the United States.",
+        "positionText": "Supports Second Amendment rights, describing them as protecting law-abiding citizens from government infringement on the right to keep and bear arms."
+      },
+      {
+        "issueTag": "transit_and_infrastructure",
+        "quote": "We must reinvest in our country’s infrastructure today to support the cars, planes, and railroads that move goods and services, and the millions of Americans that use federal roads and highways.",
+        "positionText": "Calls for reinvesting in national infrastructure, including roads, highways, aviation and rail, citing economic and national defense importance."
+      }
+    ],
+    "sha256": "7de258eef28944d6e3b24573c94b09f97e03491367c4caa1aecd7f233b236e84"
+  },
+  {
+    "sourceKey": "fec:2026:H0PA03271",
+    "url": "https://kelly.house.gov/issues/agriculture",
+    "claims": [
+      {
+        "issueTag": "economy",
+        "quote": "Western Pennsylvanians knew that NAFTA was a raw deal for our region, so Rep. Kelly was proud to vote in favor of USMCA, President Trump's new trade agreement with Canada and Mexico that puts our workers and farmers first.",
+        "positionText": "Kelly supported the United States-Mexico-Canada Agreement, saying it replaces NAFTA and benefits regional workers and farmers through increased agricultural exports."
+      },
+      {
+        "issueTag": "other",
+        "quote": "introduced bipartisan legislation to stop the spread of the Spotted Lanternfly, an invasive species that poses a significant threat to the American agricultural economy.",
+        "positionText": "Kelly co-sponsored bipartisan legislation aimed at controlling the spread of the invasive Spotted Lanternfly to protect agriculture."
+      }
+    ],
+    "sha256": "d2141eed6d9e2bdc878fcb3f8811e296546c4f72b094c33e0d9ab111cf79ea02"
+  },
+  {
+    "sourceKey": "fec:2026:H0PA03271",
+    "url": "https://kelly.house.gov/issues/education",
+    "claims": [
+      {
+        "issueTag": "education",
+        "quote": "It is important to enact education reform that empowers teachers and encourages students to succeed. We need to focus on expanding parental choice, enacting accountability, flexibility, and ensuring education is not being micro-managed at the federal level.",
+        "positionText": "Supports education reform emphasizing local control, expanded parental choice, accountability and flexibility, while limiting federal micromanagement of schools."
+      },
+      {
+        "issueTag": "jobs_and_labor",
+        "quote": "In a dynamic, global economy, Americans need to be able to train for the careers of the 21st century, including technical and skilled occupations.",
+        "positionText": "Supports broadening higher education focus beyond traditional colleges to include technical and skilled occupational training for workforce competitiveness."
+      }
+    ],
+    "sha256": "969fe138c94f0d5f5cbd70e1f60762070f281dec7534da3355364ab9b60444e5"
+  },
+  {
+    "sourceKey": "fec:2026:H0PA03271",
+    "url": "https://kelly.house.gov/issues/health-care",
+    "claims": [
+      {
+        "issueTag": "healthcare",
+        "quote": "Healthcare should be affordable, accessible, and free from bureaucratic government interference. I’ve worked for many years to roll back the massively wasteful Obamacare law, and was successful in leading the effort to get the Cadillac Tax repealed.",
+        "positionText": "Supports reducing government involvement in health care, says he worked to roll back the Affordable Care Act and repeal the Cadillac Tax."
+      },
+      {
+        "issueTag": "technology_and_privacy",
+        "quote": "My amendment to repeal the long-standing ban on a unique patient identifier system will eliminate one of the primary barriers to modernizing how patient records are stored and transferred.",
+        "positionText": "Supports repealing the ban on a unique patient identifier to modernize medical record storage and transfer, with patient control over access."
+      },
+      {
+        "issueTag": "healthcare",
+        "quote": "threatening either massive government bailouts or slashed benefits to seniors. I won’t let that happen, and am committed to protecting this important program for generations to come.",
+        "positionText": "Says he is committed to preserving Medicare's solvency and benefits for seniors, opposing benefit cuts and bailouts."
+      }
+    ],
+    "sha256": "f4f471b4e20d55522798d68c0ce9aa8ff1ebf4e0f52c62ccce04124108be485b"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA05071",
+    "url": "https://thompson.house.gov/about-gt",
+    "claims": [
+      {
+        "issueTag": "healthcare",
+        "quote": "he has learned firsthand the importance of access to quality healthcare and has become a strong advocate for increased access, affordability, quality of care, and patient choice",
+        "positionText": "According to his office, Thompson advocates for expanded access to healthcare, greater affordability, improved quality of care, and patient choice."
+      },
+      {
+        "issueTag": "education",
+        "quote": "Thompson introduced the Career and Technical Education for the 21st Century Act which passed the House and Senate unanimously and was signed into law by President Donald Trump",
+        "positionText": "His office states Thompson supports career and technical education, having introduced legislation reauthorizing federal CTE programs that was enacted into law."
+      }
+    ],
+    "biography": {
+      "text": "Thompson, of Howard, Pennsylvania, represents the state's 15th District. His office says he worked 28 years as a therapist, rehabilitation services manager, and licensed nursing home administrator, and holds degrees from Penn State and Temple.",
+      "quote": "GT spent 28 years as a therapist, rehabilitation services manager, and a licensed nursing home administrator"
+    },
+    "sha256": "6da6c20904013b3a7cd8fa02fe9ee30b313b74c1e33083511849d6852289b659"
+  },
+  {
+    "sourceKey": "fec:2026:H0PA03271",
+    "url": "https://kelly.house.gov/issues/pro-life-family-values",
+    "claims": [
+      {
+        "issueTag": "reproductive_rights",
+        "quote": "I strongly believe in protecting the lives of the unborn. As Americans, our rights are derived from the self-evident, fundamental right to life, which promotes equal rights and equal protection for the unborn.",
+        "positionText": "States an anti-abortion position, saying he seeks legal protection and equal rights for unborn children as a legislative priority."
+      },
+      {
+        "issueTag": "reproductive_rights",
+        "quote": "I’ve signed the pledge to vote against any government funding bill which doesn’t include the Hyde Amendment. The Hyde Amendment is a long-standing provision barring the use of federal funds to pay for abortions.",
+        "positionText": "Opposes government funding bills without the Hyde Amendment's restrictions on federal abortion funding."
+      },
+      {
+        "issueTag": "foreign_policy",
+        "quote": "I support the Mexico City policy, which prohibits U.S. taxpayer dollars from funding international organizations which provide abortion services.",
+        "positionText": "Supports the Mexico City policy restricting U.S. foreign aid to international organizations that provide abortion services."
+      }
+    ],
+    "sha256": "8cfcabdae91f6fd3291e8e436b54b8dc8282772a52b8c4e9b29fc7235b24dcc3"
+  },
+  {
+    "sourceKey": "fec:2026:H2PA04135",
+    "url": "https://perry.house.gov/about-scott/mission-statement.htm",
+    "claims": [
+      {
+        "issueTag": "other",
+        "quote": "significantly reduce the role, scope, and influence of the federal government; enhance individual freedoms and personal responsibilities; and champion the spirit of rugged individualism that built America.",
+        "positionText": "States a goal of significantly reducing the federal government's role, scope, and influence while expanding individual freedoms and personal responsibility."
+      }
+    ],
+    "sha256": "48c766a5f987f82d2304461aa981ade35470c0bfbc02b2e246bb82fc5e58cf7d"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA05071",
+    "url": "https://thompson.house.gov/issues/agriculture",
+    "claims": [
+      {
+        "issueTag": "education",
+        "quote": "To reverse this trend, I have introduced legislation that would provide schools the option to once again serve nutritious whole milk to kids.",
+        "positionText": "Supports legislation allowing schools to again serve whole milk options in federal school meal programs, reversing prior restrictions."
+      },
+      {
+        "issueTag": "transit_and_infrastructure",
+        "quote": "Rural Development is one of my top issues as a member of Congress and as a member of the Agriculture Committee. Creating jobs and expanding technology, such as broadband and cell phone coverage, is a major challenge",
+        "positionText": "Prioritizes rural development, including expanding broadband and cell phone coverage and creating jobs in rural Pennsylvania."
+      },
+      {
+        "issueTag": "immigration",
+        "quote": "This legislation makes key improvements to the accessibility and cost of agricultural labor through the H-2A visa program.",
+        "positionText": "Introduced bipartisan legislation to change the H-2A visa program to improve accessibility and reduce costs of agricultural labor."
+      }
+    ],
+    "sha256": "9ea54b202dbe6f6251a24afd174bbb99f201ed5dcdcb934f50e857d557d563f0"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA05071",
+    "url": "https://thompson.house.gov/issues/allegheny-national-forest",
+    "claims": [
+      {
+        "issueTag": "economy",
+        "quote": "However, I remain concerned by the decreased amounts of board feet that have been produced across the national forest system in the past two decades. Increasing management activities, including harvesting, will better support our communities and overall forest health.",
+        "positionText": "Supports increasing timber harvesting and active management in national forests, citing declining board feet production and benefits to local communities and forest health."
+      },
+      {
+        "issueTag": "taxes_and_budget",
+        "quote": "I believe it is essential for the forest to receive adequate funding in order to carry out these core functions. I am a strong advocate for the Service and for appropriate funding",
+        "positionText": "Advocates adequate federal appropriations for the U.S. Forest Service so it can carry out management, research and development functions in national forest regions."
+      },
+      {
+        "issueTag": "other",
+        "quote": "As such, I will continue to support production in the ANF and the rights of mineral owners to access their property.",
+        "positionText": "Supports continued oil and gas production in the Allegheny National Forest and access rights for privately held mineral owners."
+      },
+      {
+        "issueTag": "other",
+        "quote": "As your Member of Congress, I will continue to advocate on behalf of expanded recreation and tourism throughout our region.",
+        "positionText": "Supports expanding outdoor recreation and tourism opportunities, such as camping, hiking, biking and ATV use, on public lands in the district."
+      }
+    ],
+    "sha256": "8adf5ee72f9b549548af66907d7a3ee5f6ee3a8a45dbd2e46baef55cd825a4fb"
+  },
+  {
+    "sourceKey": "fec:2026:H4PA13199",
+    "url": "https://boyle.house.gov/issues/energy-and-environment",
+    "claims": [
+      {
+        "issueTag": "climate",
+        "quote": "his legislation, the Protect Drinking Water from PFAS Act of 2021, was included in a package of bills that successfully passed the House of Representatives today",
+        "positionText": "Sponsored the Protect Drinking Water from PFAS Act of 2021."
+      },
+      {
+        "issueTag": "jobs_and_labor",
+        "quote": "Innovative Energy Manufacturing Act (H.R. 507) a bill that will revive the Advanced Manufacturing Tax Credit (Section 48C)—a program that invests in U.S. manufacturing capacity to supply clean energy projects with American-made equipment",
+        "positionText": "Sponsored legislation to revive clean-energy manufacturing tax credits under Section 48C."
+      }
+    ],
+    "sha256": "56414bead6f44d2228c50c1dd99b9d891fa7f05b873caa0bb292cfb57d11050b"
+  },
+  {
+    "sourceKey": "fec:2026:H2PA04135",
+    "url": "https://perry.house.gov/issues/issue/?IssueID=119132",
+    "claims": [
+      {
+        "issueTag": "other",
+        "quote": "I’ve supported necessary reforms to our traditional farm programs and worked with the agricultural community to identify unnecessary and duplicative federal regulations that hurt their ability to do business. The agriculture policies I supported would provide certainty to Pennsylvania’s farmers, and strengthen the Nation’s agriculture sector by updating our farm policies. \n\nAgriculture remains a key tenet of Pennsylvania’s and our Nation’s economy.",
+        "positionText": "Supports reforming traditional farm programs and eliminating federal regulations he considers unnecessary or duplicative for agricultural producers."
+      }
+    ],
+    "sha256": "aa75eecb8ad88c83105108f33f7b85ec52210b54d121cdd2851a63bf6fdf13df"
+  },
+  {
+    "sourceKey": "fec:2026:H0PA03271",
+    "url": "https://kelly.house.gov/issues/second-amendment-rights",
+    "claims": [
+      {
+        "issueTag": "guns",
+        "quote": "Rep Kelly is an original cosponsored and supporter of H.R. 38, the Concealed Carry Reciprocity Act, which would allow Americans with a license to carry a concealed firearm in one state to possess a concealed handgun in another state that permits concealed carry.",
+        "positionText": "Supports national concealed carry reciprocity, allowing permit holders from one state to carry concealed handguns in other states permitting concealed carry."
+      },
+      {
+        "issueTag": "guns",
+        "quote": "Rep. Kelly is a support and cosponsor of H.R. 1013, the Protect Our Military Families' 2nd Amendment Rights Act, which would allow military spouses to purchase handguns in the state where their husband or wife is permanently stationed for duty",
+        "positionText": "Cosponsors legislation permitting military spouses to purchase handguns in the state where their service member spouse is permanently stationed."
+      },
+      {
+        "issueTag": "guns",
+        "quote": "Rep Kelly is an original cosponsored and supporter of H.R. 1827, the Gun Owner Registration Information Protection Act which would prohibit states, localities, or any other organization from using federal funding to maintain gun registries.",
+        "positionText": "Supports barring states, localities, and other organizations from using federal funding to create or maintain gun owner registries."
+      }
+    ],
+    "sha256": "fcb30a7274156f4f08ea32183ed128f36b82e4d7e929619f24445c263cecd47b"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA02171",
+    "url": "https://evans.house.gov/about",
+    "claims": [
+      {
+        "issueTag": "housing",
+        "quote": "His priorities there include using the tax code to increase affordable housing, repair school buildings, and strengthen the social safety net.",
+        "positionText": "On the Ways and Means Committee, he prioritizes using the tax code to expand affordable housing, repair schools, and strengthen the safety net."
+      }
+    ],
+    "sha256": "8fa9ae564e951bd828c9cf8167406ff9f9736c4ad74a4f3d437af721f9f0edaa"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA02171",
+    "url": "https://evans.house.gov/issues",
+    "claims": [
+      {
+        "issueTag": "healthcare",
+        "quote": "Everyone has a right to affordable and accessible health care. That’s why, since coming to Congress, I have fought alongside my Democratic colleagues to defend, strengthen, and expand the Affordable Care Act, Medicare, and Medicaid.",
+        "positionText": "Supports affordable, accessible health care for all and says he works to defend, strengthen and expand the ACA, Medicare, and Medicaid."
+      },
+      {
+        "issueTag": "other",
+        "quote": "This means fighting to make child care more affordable, ensuring every American has access to paid family and medical leave, pushing for a foster care system that supports all children and families, working to expand the Child Tax Credit",
+        "positionText": "Supports more affordable child care, universal paid family and medical leave, foster care system improvements, and expanding the Child Tax Credit."
+      },
+      {
+        "issueTag": "climate",
+        "quote": "Science is clear: climate change is real and poses a present danger that threatens the health of our communities, our infrastructure, and our economy.",
+        "positionText": "States climate change is real and a present danger to community health, infrastructure, and the economy, disproportionately affecting low-income communities."
+      }
+    ],
+    "sha256": "10f6711a4e4894c136c64e9d6b780659a2c7aae0c85dbc6a1b5472303c147acf"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA02171",
+    "url": "https://evans.house.gov/issues/civil-rights",
+    "claims": [
+      {
+        "issueTag": "voting_rights",
+        "quote": "we must expand and strengthen voting rights on the federal level, not restrict them. That’s why I am a strong supporter of critical legislation like the John Lewis Voting Rights Act and the Freedom to Vote Act.",
+        "positionText": "Supports expanding federal voting rights protections, including the John Lewis Voting Rights Act and the Freedom to Vote Act."
+      },
+      {
+        "issueTag": "other",
+        "quote": "In Congress, I’ve proudly supported legislation to classify lynching as a federal hate crime, bolster anti-hate protections for Asian American and Pacific Islander (AAPI) communities, and expand federal civil rights protections to LGBTQ+ Americans.",
+        "positionText": "Says he backs legislation making lynching a federal hate crime, strengthening AAPI anti-hate protections, and extending civil rights protections to LGBTQ+ Americans."
+      }
+    ],
+    "sha256": "956dac80c0e50d4a80320349eaf1520de532c4293e503161741e0eaa0163c7a0"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA16320",
+    "url": "https://smucker.house.gov/about",
+    "claims": [
+      {
+        "issueTag": "taxes_and_budget",
+        "quote": "Smucker champions policies that make it possible for every person to pursue their American Dream, including increased economic opportunity for everyone, reining in Washington's out-of-control spending, and providing regulatory relief to small businesses so they can expand and create jobs.",
+        "positionText": "Supports reducing federal spending and easing regulations on small businesses to expand economic opportunity and job creation, per his office."
+      },
+      {
+        "issueTag": "education",
+        "quote": "Rep. Smucker is fighting to support America's free enterprise system, to expand apprenticeships and technical education opportunities for students, and help hardworking Americans save for retirement.",
+        "positionText": "Supports expanding apprenticeships and technical education for students, and policies helping Americans save for retirement, according to his office."
+      }
+    ],
+    "sha256": "6bd77e4ed26f35899bc4f778aee2bce4efb388b5580672d4318f543ccbb1bc04"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA16320",
+    "url": "https://smucker.house.gov/",
+    "claims": [
+      {
+        "issueTag": "veterans",
+        "quote": "Smucker has introduced the VA Billing Accountability Act, with Rep. Don Davis (D-NC-01). Additionally, Smucker has again partnered with Rep. Salud Carbajal (D-CA-24) to reintroduce the Home for the Brave Act.",
+        "positionText": "Reintroduced bipartisan veterans legislation, including the VA Billing Accountability Act and the Home for the Brave Act, according to his office."
+      },
+      {
+        "issueTag": "jobs_and_labor",
+        "quote": "The USA Workforce Investment Act and the Essential Workers for Economic Advancement Act create opportunities for American workers to advance their skills and obtain quality jobs, while helping American businesses fill available roles",
+        "positionText": "Backs workforce development legislation his office says would help workers gain skills and help businesses fill open positions."
+      }
+    ],
+    "sha256": "79580f4894036c83c799675d56cf626d7174b3c16278f3852cdea98f30a587f1"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA02171",
+    "url": "https://evans.house.gov/issues/congress",
+    "claims": [
+      {
+        "issueTag": "housing",
+        "quote": "introduced the Visitable Inclusive Tax Credits for Accessible Living (VITAL) Act to strengthen the Low Income Housing Tax Credit (LIHTC) to expand the supply of affordable, accessible housing for older adults and people with disabilities",
+        "positionText": "Supports expanding the Low Income Housing Tax Credit to increase affordable, accessible housing for older adults and people with disabilities.",
+        "issueTagConfidence": "high"
+      }
+    ],
+    "sha256": "03427339819b40442844525873bf6726ef7df45e74711120fd3d1cecee138a76"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA16320",
+    "url": "https://smucker.house.gov/issues/budget",
+    "claims": [
+      {
+        "issueTag": "taxes_and_budget",
+        "quote": "emphasized the need for bipartisanship in establishing a clear tangible goal to stabilize the nation’s debt: reducing the federal deficit to 3 percent of GDP or less by fiscal year 2036.",
+        "positionText": "Supports a bipartisan goal of stabilizing the national debt by reducing the federal deficit to 3 percent of GDP by fiscal year 2036."
+      }
+    ],
+    "sha256": "2d91d3344bfcec72e3e5a97046fa1078fe1005ccadaf525d054c0bf3595c9925"
+  },
+  {
+    "sourceKey": "fec:2026:H6PA16320",
+    "url": "https://smucker.house.gov/issues/congress",
+    "claims": [
+      {
+        "issueTag": "voting_rights",
+        "quote": "voted to pass S. 1383, the SAVE America Act, legislation aimed at strengthening the integrity of our nation’s election process by requiring proof of U.S. citizenship and valid identification to cast a ballot.",
+        "positionText": "Supports requiring documentary proof of U.S. citizenship and valid identification to cast a ballot, voting for the SAVE America Act."
+      },
+      {
+        "issueTag": "taxes_and_budget",
+        "quote": "Rep. Smucker’s legislation cracks down on bad actors who exploit charitable organizations to collect tax-deductible donations without public accountability.",
+        "positionText": "Sponsored the Fiscal Sponsorship Transparency Act, which his office says targets misuse of charitable organizations receiving tax-deductible donations without public accountability."
+      }
+    ],
+    "sha256": "3871889fcb590d23931e5b23d8576c0cbe9f556f5c826d48017c8eee49d0ede8"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA04116",
+    "url": "https://dean.house.gov/biography",
+    "claims": [
+      {
+        "issueTag": "healthcare",
+        "quote": "That means working hard to address issues that affect Americans deeply — including stopping gun violence and guaranteeing health care for all.",
+        "positionText": "Supports guaranteeing health care for all Americans as a central focus of her work in Congress."
+      },
+      {
+        "issueTag": "guns",
+        "quote": "Following the Sandy Hook shooting, Madeleine founded and served as Co-Chair of the PA-SAFE Caucus, an active coalition of legislators and advocates dedicated to ending gun violence.",
+        "positionText": "Supports ending gun violence; her office says she founded and co-chaired a Pennsylvania legislative caucus focused on gun violence prevention."
+      }
+    ],
+    "sha256": "ec7bbfbd1719fb8783fdff6599d77ccfbcae4a84b738307401d1833e15c1c00c"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA04116",
+    "url": "https://dean.house.gov/",
+    "claims": [
+      {
+        "issueTag": "healthcare",
+        "quote": "Congresswoman Dean reintroduced the Maximizing Opioid Recovery Emergency (MORE) Savings Act to lower costs for the more than 20 million Americans seeking treatment for opioid use disorder (OUD), including life-saving medications and outpatient treatment services.",
+        "positionText": "According to her office, Dean reintroduced legislation to reduce out-of-pocket costs for opioid use disorder treatment, including medications and outpatient services."
+      },
+      {
+        "issueTag": "climate",
+        "quote": "Rep. Dean believes that the protection of our planet and environmental stewardship are some of government’s core responsibilities. She values our natural spaces and supports efforts to preserve vulnerable species.",
+        "positionText": "Views environmental protection as a core government responsibility and supports preserving natural spaces and protecting vulnerable species."
+      },
+      {
+        "issueTag": "immigration",
+        "quote": "U.S. Representatives Madeleine Dean (PA-04) and Delia Ramirez (IL-03) introduced the No Shock Act to ban the use of “shock gloves” by U.S. Immigration and Enforcement (ICE) agents.",
+        "positionText": "Co-introduced legislation that would prohibit Immigration and Customs Enforcement agents from using so-called \"shock gloves\" in enforcement operations."
+      }
+    ],
+    "sha256": "1752541d30b3b83cddfde8220bea2ee111e4b8d760bc91bda107c127c623c233"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA10147",
+    "url": "https://meuser.house.gov/",
+    "claims": [
+      {
+        "issueTag": "veterans",
+        "quote": "Congressman Dan Meuser (PA-09) recently announced the introduction of H.R. 10168, the Veterans Housing Opportunity Act, legislation that would increase the availability of housing assistance to veterans experiencing or at risk of homelessness.",
+        "positionText": "Per his office, Meuser introduced legislation to expand housing assistance for veterans who are homeless or at risk of homelessness."
+      },
+      {
+        "issueTag": "healthcare",
+        "quote": "released the following statement commending President Donald Trump, Secretary of Health Robert Kennedy Jr., and Administrator Mehmet Oz on rolling out Most Favored Nation (MFN) drug pricing to Medicaid beneficiaries in all 50 states.",
+        "positionText": "Supports applying Most Favored Nation drug pricing, tying U.S. prices to lower prices abroad, to Medicaid beneficiaries in all states."
+      },
+      {
+        "issueTag": "taxes_and_budget",
+        "quote": "“Since coming to Congress in 2019, I have worked to find a solution to the burdensome rain tax imposed on families and businesses in Luzerne County.",
+        "positionText": "Opposes stormwater management fees, called the \"rain tax,\" charged to residents and businesses in Luzerne County, and sought their removal."
+      }
+    ],
+    "sha256": "786a2cbc3c96ad17fbced8156c0774c921d7dddf599a935ae6b42289ed6d9e32"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA07200",
+    "url": "https://scanlon.house.gov/issues/issue/?IssueID=14977",
+    "claims": [
+      {
+        "issueTag": "transit_and_infrastructure",
+        "quote": "Congresswoman Scanlon is committed to supporting bipartisan solutions to fund the bold transportation and infrastructure investments Pennsylvania so desperately needs.\n\n      Related News",
+        "positionText": "Supports bipartisan funding for transportation and infrastructure investments in Pennsylvania."
+      }
+    ],
+    "sha256": "87dd2126ba31a90b656792574b0df7fe770d86e94db6e9255e4f0e541fd85e72"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA10147",
+    "url": "https://meuser.house.gov/about/dans-priorities",
+    "claims": [
+      {
+        "issueTag": "immigration",
+        "quote": "Stop the flow of illegal immigrants, drugs, and human trafficking from coming across our border. Reimplement Remain in Mexico, end Catch and Release, and ensure Border Patrol agents have the resources necessary to do their jobs safely and effectively.",
+        "positionText": "Supports stricter border enforcement, including reinstating the Remain in Mexico policy, ending catch-and-release, and increasing resources for Border Patrol agents."
+      },
+      {
+        "issueTag": "economy",
+        "quote": "Reduce regulations, promote free-market, pro-growth policies, and foster job creation to ensure that American workers and businesses thrive.",
+        "positionText": "Favors reducing regulations and pursuing free-market, pro-growth economic policies intended to encourage job creation for American workers and businesses."
+      },
+      {
+        "issueTag": "climate",
+        "quote": "Support domestic energy exploration and production, particularly of clean Pennsylvania natural gas, to lower costs for families, create good-paying jobs, and eliminate reliance on foreign adversaries for energy.",
+        "positionText": "Supports expanding domestic energy exploration and production, especially Pennsylvania natural gas, to lower costs, create jobs, and reduce reliance on foreign energy."
+      },
+      {
+        "issueTag": "taxes_and_budget",
+        "quote": "Extend the Trump Tax Cuts and Jobs, including provisions like bonus depreciation, the small business deduction, and the R&D tax credit, which allow entrepreneurs to invest in their businesses, innovate, and create jobs.",
+        "positionText": "Supports extending the 2017 tax law provisions, including bonus depreciation, the small business deduction, and the research and development tax credit."
+      },
+      {
+        "issueTag": "foreign_policy",
+        "quote": "Rebuild our military to ensure it remains the strongest in the world to defend America’s interests at home and abroad. Refocus on war-fighting capabilities and ending political agendas in the armed forces.",
+        "positionText": "Supports rebuilding the military, refocusing the armed forces on war-fighting capabilities, and removing what he describes as political agendas from the military."
+      }
+    ],
+    "sha256": "caf869375f9cfa918fe5368e9d2a74e75cf590ad6ab89d1a39036559e87a35cd"
+  },
+  {
+    "sourceKey": "fec:2026:H0PA03271",
+    "url": "https://kelly.house.gov/full-biography",
+    "claims": [],
+    "biography": {
+      "text": "Per his congressional office, Kelly attended the University of Notre Dame, owned Kelly Chevrolet-Cadillac in Butler, served on Butler City Council, and has represented Pennsylvania in the U.S. House since 2011.",
+      "quote": "After graduating from Butler High School in 1966, Mike attended the University of Notre Dame on a football and academic scholarship. After college, Mike moved back to Butler to work at Kelly Chevrolet-Cadillac, Inc."
+    },
+    "sha256": "3434a6f437a71588f309be928098fcf5d81ffde69789f2b25ae321ccdd7246e8"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA06087",
+    "url": "https://houlahan.house.gov/about/",
+    "claims": [
+      {
+        "issueTag": "healthcare",
+        "quote": "She is committed to fighting for access to quality, affordable health care, common sense gun safety, government accountability and transparency",
+        "positionText": "States commitment to expanding access to quality, affordable health care, alongside government accountability and transparency."
+      },
+      {
+        "issueTag": "guns",
+        "quote": "committed to fighting for access to quality, affordable health care, common sense gun safety, government accountability and transparency, and working to build a strong, stable economy with good jobs",
+        "positionText": "Supports what her office describes as common sense gun safety measures as a legislative priority."
+      },
+      {
+        "issueTag": "economy",
+        "quote": "and working to build a strong, stable economy with good jobs and good benefits for everyone.",
+        "positionText": "Prioritizes building a strong, stable economy featuring good-paying jobs and good benefits for all workers."
+      }
+    ],
+    "sha256": "da92086c6f559161440cdf6acc6440b46fe17a9ab6790f132f1b1f0abbd972cf"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA06087",
+    "url": "https://houlahan.house.gov/about/committees-and-caucuses.htm",
+    "claims": [
+      {
+        "issueTag": "jobs_and_labor",
+        "quote": "She co-chairs the House bipartisan Paid Family Leave Working Group, which is a first-of-its-kind group that is examining federal policy solutions to provide more paid leave to more Americans.",
+        "positionText": "Supports expanding paid family leave through federal policy, co-chairing a bipartisan congressional working group examining solutions to extend paid leave to more Americans."
+      },
+      {
+        "issueTag": "foreign_policy",
+        "quote": "As co-chair of the UXO/Demining Caucus, Chrissy fiercely advocates to support mine removal programs that protect international communities and serve U.S. security, economic, and political interests abroad.",
+        "positionText": "Supports funding programs that remove landmines and unexploded ordnance abroad."
+      },
+      {
+        "issueTag": "technology_and_privacy",
+        "quote": "created to advance bipartisan policy solutions to keep the United States at the forefront of global biotechnology leadership, to engage and learn from sector leaders, and to build awareness and bioliteracy among Members of Congress",
+        "positionText": "Co-founded a caucus promoting bipartisan policies to maintain U.S. leadership in biotechnology and increase congressional understanding of the sector."
+      },
+      {
+        "issueTag": "education",
+        "quote": "She founded and serves as co-chair of the Women in STEM Caucus to help remove these obstacles for the benefit of both women and the country.",
+        "positionText": "Supports removing barriers facing women and underrepresented groups in technical fields to build a STEM workforce reflecting the country's diversity."
+      }
+    ],
+    "sha256": "c4ef4d882ad842675f3e37d05dcfb6f93281efdc76a95081265b1f4c57e583cc"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA07200",
+    "url": "https://scanlon.house.gov/issues/issue/?IssueID=14979",
+    "claims": [
+      {
+        "issueTag": "climate",
+        "quote": "Remaining in the Paris Climate Agreement is step one, but we must go further to reduce carbon emissions and set ourselves on a path that provides for sustainable and affordable renewable energy.\n\nCongresswoman Scanlon will support",
+        "positionText": "Supports remaining in the Paris Climate Agreement and going further to cut carbon emissions and expand sustainable, affordable renewable energy."
+      },
+      {
+        "issueTag": "climate",
+        "quote": "Congresswoman Scanlon will support efforts to protect and strengthen the Clean Air Act and Clean Water Act from attacks by the Trump Administration, and help our nation return to its rightful place as a worldwide environmental protection leader.\n\n      Related News",
+        "positionText": "According to her congressional office, she backs protecting and strengthening the Clean Air Act and Clean Water Act and restoring U.S. environmental leadership."
+      }
+    ],
+    "sha256": "98d54ea6e0fb600a8f84a690bf433d81232b7a1a714ce1d7f1a3e3e850e3b315"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA13125",
+    "url": "https://johnjoyce.house.gov/about",
+    "claims": [
+      {
+        "issueTag": "healthcare",
+        "quote": "Since arriving on Capitol Hill, Congressman Joyce has prioritized and championed legislation and initiatives focused on delivering affordable, quality healthcare in rural communities, lowering energy prices, and expanding access to high-speed internet",
+        "positionText": "According to his congressional office, he prioritizes affordable rural healthcare, lower energy prices, and expanded high-speed internet access in his district."
+      }
+    ],
+    "sha256": "de48112a3358eba3e9fe8b0759a2f0ed771f641e5ef434c667f906ac8d8a1059"
+  },
+  {
+    "sourceKey": "fec:2026:H8WV03097",
+    "url": "https://miller.house.gov/about",
+    "claims": [
+      {
+        "issueTag": "jobs_and_labor",
+        "quote": "Miller’s focus in Congress is creating jobs, diversifying the economy, investing in trade relations, improving access to healthcare for rural and ultra-rural communities",
+        "positionText": "Per her official office, Miller prioritizes job creation, economic diversification, and expanded trade relations as central goals of her congressional work."
+      },
+      {
+        "issueTag": "healthcare",
+        "quote": "improving access to healthcare for rural and ultra-rural communities, and supporting West Virginia’s energy industries like coal, oil, and gas.",
+        "positionText": "Miller's office states she focuses on improving healthcare access in rural and ultra-rural communities and supporting coal, oil, and gas industries."
+      }
+    ],
+    "sha256": "fb97ddd12098224f96eaa380f3c1c42d4df66a699d7191b535c4e088a69872c1"
+  },
+  {
+    "sourceKey": "fec:2026:H2PA18200",
+    "url": "https://summerlee.house.gov/",
+    "claims": [
+      {
+        "issueTag": "voting_rights",
+        "quote": "This includes bills like the Abolish Super PACs Act, which would eliminate the legal loopholes that allow billionaires and dark money groups to drown out the voices of voters",
+        "positionText": "Says she introduced the Abolish Super PACs Act to close loopholes letting billionaires and dark money groups dominate elections.",
+        "issueTag_note": null
+      },
+      {
+        "issueTag": "taxes_and_budget",
+        "quote": "the OLIGARCH Act, which would impose a tax on the extreme wealth of billionaires, tying their tax rates to the vast inequality between their fortunes and the median American household",
+        "positionText": "Supports the OLIGARCH Act, taxing billionaires' extreme wealth with rates tied to inequality relative to the median American household.",
+        "issueTag_note": null
+      },
+      {
+        "issueTag": "voting_rights",
+        "quote": "Building a real democracy means ending Citizens United, banning dark money, and restoring trust in a political system that’s too often sold to the highest bidder.",
+        "positionText": "Calls for overturning Citizens United and banning dark money to reduce wealthy and corporate influence over the political system.",
+        "issueTag_note": null
+      }
+    ],
+    "sha256": "597c8deb1b6955358f4e3c9761980a19791227f5aa44c8f836fb3c3642e8fb46"
+  },
+  {
+    "sourceKey": "fec:2026:H8WV03097",
+    "url": "https://miller.house.gov/issues/economy-0",
+    "claims": [
+      {
+        "issueTag": "healthcare",
+        "quote": "introduced legislation to amend the United States tariff schedule to establish new tariff classifications for silicone breast prosthetics and mastectomy bras.",
+        "positionText": "Co-introduced a bill creating new tariff classifications for silicone breast prosthetics and mastectomy bras, which her office says would lower costs for breast cancer survivors."
+      },
+      {
+        "issueTag": "foreign_policy",
+        "quote": "introduced bipartisan and bicameral legislation that eliminates the outdated Jackson-Vanik Amendment, restoring normal trade relations with key Central Asian partners.",
+        "positionText": "Co-introduced bipartisan legislation to repeal the Jackson-Vanik Amendment and establish normal trade relations with Central Asian countries."
+      },
+      {
+        "issueTag": "economy",
+        "quote": "This bipartisan legislation introduced by Congresswoman Carol Miller (R-WV) and Congressman Brad Schneider (D-IL) will allow utilities to deduct repair costs from the Corporate Alternative Minimum Tax",
+        "positionText": "Introduced the RESILIENCE Act to let utilities deduct infrastructure repair costs from the Corporate Alternative Minimum Tax."
+      }
+    ],
+    "sha256": "f28a68e4059baef979624316dd0b1604be34576ee86bc15fa238f7a7469c761d"
+  },
+  {
+    "sourceKey": "fec:2026:H2PA18200",
+    "url": "https://summerlee.house.gov/about-summer",
+    "claims": [
+      {
+        "issueTag": "jobs_and_labor",
+        "quote": "She is a steadfast champion for workers’ rights, unions, and the fight for a livable wage.",
+        "positionText": "According to her office, Lee supports workers' rights, labor unions, and efforts to establish a livable wage."
+      },
+      {
+        "issueTag": "climate",
+        "quote": "Throughout her time in office, Congresswoman Lee has worked to get money out of politics, advance environmental justice, and advocate for criminal legal reform.",
+        "positionText": "Her office states she works to advance environmental justice and to reduce the influence of money in politics."
+      },
+      {
+        "issueTag": "criminal_justice",
+        "quote": "Lee has worked to get money out of politics, advance environmental justice, and advocate for criminal legal reform.",
+        "positionText": "Her office states she advocates for criminal legal reform during her time in Congress."
+      }
+    ],
+    "biography": {
+      "text": "Attorney and organizer raised in the Mon Valley; served in the Pennsylvania State House beginning 2019 and has represented Pennsylvania's 12th Congressional District since 2022, per her congressional office.",
+      "quote": "Prior to being elected to Congress, Congresswoman Lee served in the Pennsylvania State House since 2019."
+    },
+    "sha256": "d6b634d11164d799f962667205d7d7ba8c45453add50164fc08a0ded00d058bf"
+  },
+  {
+    "sourceKey": "fec:2026:H8WV03097",
+    "url": "https://miller.house.gov/issues/congress-0",
+    "claims": [
+      {
+        "issueTag": "taxes_and_budget",
+        "quote": "This legislation makes permanent the successful 2017 Trump Tax Cuts and builds upon them. As a result, the average working family will pay $1,300 less in taxes in 2026.",
+        "positionText": "Supports making the 2017 federal tax cuts permanent."
+      }
+    ],
+    "sha256": "afbfd79034879387040e48cf42f80457476afec21937a0698aeff1ae4e370339"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA13125",
+    "url": "https://johnjoyce.house.gov/issues",
+    "claims": [
+      {
+        "issueTag": "climate",
+        "quote": "In Congress, Dr. Joyce is working to rollback burdensome regulations, lower energy costs for American families, and create family-sustaining energy jobs in our region.",
+        "positionText": "Seeks to roll back energy regulations he considers burdensome, lower energy costs for families, and expand regional energy jobs."
+      },
+      {
+        "issueTag": "healthcare",
+        "quote": "From protecting Medicare and investing in American medical innovation to combating the drug crisis and strengthening the pipeline of doctors entering our community through his Homegrown Health Care Initiative",
+        "positionText": "Backs protecting Medicare, funding medical innovation, addressing the drug crisis, and expanding the physician pipeline through his Homegrown Health Care Initiative."
+      },
+      {
+        "issueTag": "foreign_policy",
+        "quote": "We must continue to rebuild our military and ensure that our troops have the resources and training they need to defend our nation at home and abroad.",
+        "positionText": "Supports rebuilding the military and providing troops with resources and training for domestic and overseas defense."
+      },
+      {
+        "issueTag": "veterans",
+        "quote": "From improving veterans' access to quality health care at the VA to helping our heroes cut through red tape with the federal government, Dr. Joyce is fighting every day for Pennsylvania veterans.",
+        "positionText": "Prioritizes improving veterans' access to VA health care and assisting veterans navigating federal government bureaucracy."
+      }
+    ],
+    "sha256": "f5983e9aae6fc47f2dc4f4e4dfd2898ba625e17ae41ee17564779cc379c867c7"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA13125",
+    "url": "https://johnjoyce.house.gov/issues/economy",
+    "claims": [
+      {
+        "issueTag": "jobs_and_labor",
+        "quote": "he is committed to creating American jobs for American workers and bringing family-sustaining jobs home to Pennsylvania. On the House Small Business Committee, Dr. Joyce is working to support American workers, entrepreneurs, and small businesses.",
+        "positionText": "Prioritizes domestic job creation and returning family-sustaining jobs to Pennsylvania, and says he works through the House Small Business Committee to support entrepreneurs."
+      },
+      {
+        "issueTag": "economy",
+        "quote": "Joyce's proposal, H.R. 2142, would make it easier for small businesses to comply with onerous federal regulations.",
+        "positionText": "Sponsored bipartisan legislation intended to reduce the burden of federal regulatory compliance for small businesses."
+      }
+    ],
+    "sha256": "fb88da10b7813e98e3b10b381ab983833d2f0ba6d9faa9a22b3058cf1f8d3f16"
+  },
+  {
+    "sourceKey": "fec:2026:H2PA18200",
+    "url": "https://summerlee.house.gov/about/community-safety-caucus",
+    "claims": [
+      {
+        "issueTag": "public_safety",
+        "quote": "we are committed to embracing a multidisciplinary public health approach to safety that stops violence and harm before they happen while offering caring, equitable responses to behavioral health and other crises.",
+        "positionText": "As a Community Safety Caucus co-chair, supports a public health approach to safety emphasizing violence prevention and caring responses to behavioral health crises."
+      }
+    ],
+    "sha256": "0dcede3594e59e73121558d74f18631a21be331b7c3b20645ab0769356db73e5"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA13125",
+    "url": "https://johnjoyce.house.gov/issues/energy",
+    "claims": [
+      {
+        "issueTag": "climate",
+        "quote": "legislation introduced by Congressman John Joyce, M.D., (PA-13) to reverse California’s electric vehicle mandate and protect consumer choice and the American auto industry.",
+        "positionText": "Joyce introduced legislation reversing California's electric vehicle mandate, framing it as protecting consumer vehicle choice and the domestic auto industry."
+      }
+    ],
+    "sha256": "08dd2d2a54de66c62ca1e3b5849aafc6a976b9b2f2a4a5e26f9254276daccafe"
+  },
+  {
+    "sourceKey": "fec:2026:H2PA18200",
+    "url": "https://summerlee.house.gov/about/fact-sheet-delivering-for-the-district",
+    "claims": [
+      {
+        "issueTag": "healthcare",
+        "quote": "Medicare for All Act to expands Medicare to provide comprehensive benefits to every person in the United States, free of copays, premiums, and deductibles.",
+        "positionText": "Per her office, Lee was an original co-sponsor of Medicare for All, extending comprehensive Medicare coverage to everyone without copays, premiums, or deductibles."
+      },
+      {
+        "issueTag": "jobs_and_labor",
+        "quote": "Raise the Wage Act to raise the minimum wage to $17 by 2028 for nearly 28 million Americans.",
+        "positionText": "Her office states Lee originally co-sponsored the Raise the Wage Act to increase the federal minimum wage to $17 by 2028."
+      },
+      {
+        "issueTag": "reproductive_rights",
+        "quote": "Womens Health Protection Act to enshrine the right for health care professionals to administer and patients to receive abortion care across the country, free from bans and unnecessary restrictions",
+        "positionText": "Her office states Lee co-sponsored the Women's Health Protection Act to establish a nationwide statutory right to provide and receive abortion care."
+      }
+    ],
+    "sha256": "80916b00eaa14a484b9dc58644396125ef7725bb9685e7b72ee7dd1adbe032f8"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA15195",
+    "url": "https://mackenzie.house.gov/issues/breaking-down-budget",
+    "claims": [
+      {
+        "issueTag": "taxes_and_budget",
+        "quote": "Permanently increases the Child Tax Credit from $1,000 to $2,200 per child, giving families extra support as the cost of living rises.",
+        "positionText": "Supports a permanent $2,200-per-child Child Tax Credit."
+      },
+      {
+        "issueTag": "education",
+        "quote": "Expands access to school choice, giving parents more options to find the best education for their children.\n\nBroadens Pell Grant eligibility, supporting students pursuing trades, technical training, and credentials beyond traditional college",
+        "positionText": "Supports expanding school choice options for parents and broadening Pell Grant eligibility to cover trades and technical training programs."
+      },
+      {
+        "issueTag": "climate",
+        "quote": "Cuts red tape and unlocks American energy production, lowering costs for families and reducing our reliance on foreign energy sources.",
+        "positionText": "Supports reducing regulation to increase domestic energy production, aiming to lower household costs and reduce reliance on foreign energy."
+      }
+    ],
+    "sha256": "c7a03e64fb95004008ffdab15464c15389d5bdbf397a5268bae6055c443156bd"
+  },
+  {
+    "sourceKey": "fec:2026:H2PA18200",
+    "url": "https://summerlee.house.gov/issues/affordable-housing",
+    "claims": [
+      {
+        "issueTag": "housing",
+        "quote": "I’m working to address the affordable housing crisis through concrete legislative solutions—like the Keep Affordable Housing in Forgotten Communities Act, which I introduced to help preserve and expand affordable housing in historically underserved areas.",
+        "positionText": "Says she introduced legislation intended to preserve and expand affordable housing in historically underserved communities."
+      },
+      {
+        "issueTag": "housing",
+        "quote": "My priorities include increasing federal support for rental assistance, strengthening protections for tenants, and preventing displacement and homelessness. Everyone deserves safe, stable, and affordable housing, and that principle should be reflected across the board in our policies.",
+        "positionText": "Prioritizes expanding federal rental assistance, strengthening tenant protections, and preventing displacement and homelessness through federal policy."
+      }
+    ],
+    "sha256": "1ead1d021487a0f02b46c9fc70b12d1dcb6c6b904832cd6b773b0a8a352e1d7c"
+  },
+  {
+    "sourceKey": "fec:2026:H4WV02205",
+    "url": "https://rileymoore.house.gov/about",
+    "claims": [
+      {
+        "issueTag": "climate",
+        "quote": "While State Treasurer, Congressman Moore fought back against radical anti-fossil fuel ESG policies in the financial services industry.",
+        "positionText": "Opposes environmental, social, and governance (ESG) investing standards that he characterizes as anti-fossil-fuel, per his congressional office biography."
+      },
+      {
+        "issueTag": "education",
+        "quote": "As Treasurer, Congressman Moore also helped pass and administer both the Hope Scholarship Program and the Jumpstart Savings Program.",
+        "positionText": "Supports West Virginia's Hope Scholarship and Jumpstart Savings programs, which his office says he helped pass and administer as State Treasurer."
+      }
+    ],
+    "biography": {
+      "text": "According to his congressional office, Moore began his career as a welder in a mining operation, earned degrees from George Mason University and the National Defense University, served in the West Virginia House of Delegates, then as State Treasurer.",
+      "quote": "Congressman Moore started his career as a welder in a mining operation, and later went on to earn degrees from George Mason University and the National Defense University."
+    },
+    "sha256": "714ded7e9849195dc70871eec15858b5a88aed8a6aa3fdd64fe8e021b6946bbd"
+  },
+  {
+    "sourceKey": "fec:2026:H8PA15195",
+    "url": "https://mackenzie.house.gov/issues/improving-affordability",
+    "claims": [
+      {
+        "issueTag": "taxes_and_budget",
+        "quote": "The first legislation that I introduced was my working families tax package, a collection of bills that would significantly reduce costs for millions of American families.",
+        "positionText": "Supports a package of tax legislation aimed at reducing costs for working families."
+      },
+      {
+        "issueTag": "housing",
+        "quote": "This year, I helped to pass an expansion of the Low-Income Housing Tax Credit (LIHTC). This is the federal government's main tool for increasing the supply of affordable housing",
+        "positionText": "Supports expanding the Low-Income Housing Tax Credit and cutting regulations to increase affordable housing supply, according to his congressional office."
+      },
+      {
+        "issueTag": "healthcare",
+        "quote": "These bipartisan reforms aim to reduce prices, increase transparency, crack down on corporate insurance fraud, and cut out the middlemen.",
+        "positionText": "Supports healthcare reforms aimed at lower prices, greater transparency, and enforcement against insurance fraud."
+      },
+      {
+        "issueTag": "climate",
+        "quote": "That's why I'm working to unleash American energy with an all-of-the-above strategy. In Congress, I've worked to eliminate unnecessary red tape and scrap the failed, one-size-fits-all energy policies that caused the problem.",
+        "positionText": "Favors an all-of-the-above energy strategy, reducing regulations and repealing prior energy policies to lower energy prices."
+      }
+    ],
+    "sha256": "e79f3269eda106ba0e778bed5d6bdf163b80edd0bcfb4c79a38014601a77680c"
+  },
+  {
+    "sourceKey": "fec:2026:H4WV02205",
+    "url": "https://rileymoore.house.gov/issues/congress",
+    "claims": [
+      {
+        "issueTag": "technology_and_privacy",
+        "quote": "would ensure that data centers — not American families, small businesses, and other ratepayers — are responsible for the costs of the additional electricity infrastructure their operations require",
+        "positionText": "Cosponsors the Ratepayer Protection Act to make data centers, rather than households and small businesses, pay for the added electricity infrastructure they require."
+      },
+      {
+        "issueTag": "guns",
+        "quote": "This legislation safeguards the constitutional rights and privacy of law-abiding gun owners by prohibiting payment processors and financial institutions from using discriminatory merchant category codes (MCCs) to track firearm and ammunition purchases.",
+        "positionText": "Sponsored legislation barring payment processors and financial institutions from using merchant category codes to track firearm and ammunition purchases."
+      },
+      {
+        "issueTag": "immigration",
+        "quote": "This critical legislation delivers significant investments to secure America’s borders, provide needed resources for immigration enforcement, and give our border patrol agents the tools and technology they need to combat illegal immigration and stop transnational crime.",
+        "positionText": "Voted for the Secure America Act, supporting increased border security funding, immigration enforcement resources, and technology for border patrol agents."
+      }
+    ],
+    "sha256": "36c506ee9cd53a5a07398c35e909159195b1222abbc43cfc8a9abf6ade220c27"
+  },
+  {
+    "sourceKey": "fec:2026:H4PA08124",
+    "url": "https://bresnahan.house.gov/issues/congress",
+    "claims": [
+      {
+        "issueTag": "other",
+        "quote": "voted in favor of the Stop Insider Trading Act, legislation to prohibit Members of Congress and their immediate families from purchasing individual stocks, requiring advance public disclosure of stock sales, and strengthening penalties for ethics violations",
+        "positionText": "Supports banning members of Congress and their families from buying individual stocks, with disclosure requirements and stronger ethics penalties."
+      },
+      {
+        "issueTag": "other",
+        "quote": "The package included Rep. Bresnahan’s bipartisan legislation, the Local Farmers Feeding our Communities Act, which will help build stronger connections between local producers, and community food programs, expanding markets and improving access to healthy food for those in need.",
+        "positionText": "Sponsored legislation, per his office, linking local farmers with community food programs to expand markets and improve food access."
+      }
+    ],
+    "sha256": "615dee3447399198b13bba81038879b21a0e397731f1a43c324c342d9124531f"
+  },
+  {
+    "sourceKey": "fec:2026:H4WV02205",
+    "url": "https://rileymoore.house.gov/issues/labor-economy",
+    "claims": [
+      {
+        "issueTag": "jobs_and_labor",
+        "quote": "introduced the bipartisan “Know Your Labor Rights Act”, legislation that will ensure American workers are fully informed of their rights in the workplace and equipped to advocate for themselves on the job.",
+        "positionText": "Introduced bipartisan legislation intended to ensure workers are informed about their workplace rights and able to advocate for themselves on the job."
+      },
+      {
+        "issueTag": "taxes_and_budget",
+        "quote": "Washington, D.C. – Today, Congressman Riley M. Moore (R-WV) voted yes on H.J. Res. 139, a Balanced Budget Amendment to the Constitution.",
+        "positionText": "Supports a Balanced Budget Amendment to the Constitution, voting for H.J. Res. 139 in the House."
+      },
+      {
+        "issueTag": "jobs_and_labor",
+        "quote": "This important legislation will help Americans save tax-free for careers in the trades, skilled labor, and apprenticeship-based professions while strengthening the nation’s workforce as the United States rebuilds its manufacturing and industrial base.",
+        "positionText": "Introduced the Jumpstart Savings Act creating tax-advantaged accounts, modeled on 529 plans, for trades, skilled labor, and apprenticeship careers."
+      }
+    ],
+    "sha256": "7263381f7736c68cf3ce3bbe6ac4f3015d8e7c6a042311eada381b1221e56d97"
+  },
+  {
+    "sourceKey": "fec:2026:H4WV02205",
+    "url": "https://rileymoore.house.gov/issues/education",
+    "claims": [
+      {
+        "issueTag": "education",
+        "quote": "I proudly ran on eliminating the federal Department of Education and block granting those dollars directly to the states, and I am proud to see that come to fruition.",
+        "positionText": "Supports eliminating the federal Department of Education and redirecting its funding to states through block grants, applauding an executive order to dismantle it."
+      }
+    ],
+    "sha256": "07979a392be6a7ea17728d371de965578bdbb107e1aae0a9ce752704042329ec"
+  }
+]

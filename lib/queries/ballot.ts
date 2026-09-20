@@ -349,6 +349,7 @@ export async function getStatesWithBallots(): Promise<
 }
 
 export interface CandidateProfile extends BallotCandidate {
+  background: { text: string; sourceUrl: string; sourceKind: string } | null
   office: string
   level: "federal" | "state" | "local"
   districtName: string
@@ -369,11 +370,12 @@ export async function getCandidate(id: string): Promise<CandidateProfile | null>
 
   try {
     const rows = await db.execute<
-      BallotRow & { state: string; speaker_id: string | null }
+      BallotRow & { state: string; speaker_id: string | null; background: CandidateProfile["background"] }
     >(sql`
       select
         c.id as candidate_id, c.name as candidate_name, c.party, c.incumbent,
         c.speaker_id,
+        cs.source_record->'votrBackground' as background,
         cs.biography as ballot_designation, cs.campaign_website,
         cs.source_name, cs.source_url,
         cp.image_url as photo_url, cp.file_page as photo_file_page,
@@ -406,6 +408,7 @@ export async function getCandidate(id: string): Promise<CandidateProfile | null>
       stateName: stateName(row.state),
       electionDate: row.election_date ? new Date(row.election_date) : null,
       speakerId: row.speaker_id,
+      background: row.background ?? null,
     }
   } catch {
     return null

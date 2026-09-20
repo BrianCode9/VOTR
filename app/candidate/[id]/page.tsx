@@ -99,6 +99,17 @@ export default async function CandidatePage({ params }: PageProps<"/candidate/[i
                   </p>
                 ) : null}
 
+                {candidate.background ? (
+                  <div className="mt-4 max-w-xl text-sm leading-relaxed text-slate-ink">
+                    <p><span className="font-medium text-navy">Background: </span>{candidate.background.text}</p>
+                    <a href={candidate.background.sourceUrl} target="_blank" rel="noreferrer noopener"
+                      className="mt-1 inline-flex items-center gap-1 font-mono text-[10px] text-brand hover:underline">
+                      {candidate.background.sourceKind === "official_office" ? "Source: official office biography" : "Source: campaign biography"}
+                      <ExternalLink className="size-3" aria-hidden="true" />
+                    </a>
+                  </div>
+                ) : null}
+
                 {candidate.ballotDesignation ? (
                   <p className="mt-4 max-w-xl text-sm leading-relaxed text-slate-ink">
                     <span className="font-medium text-navy">
