@@ -4,6 +4,7 @@ import { cn } from "cn"
 import type { FeedItem } from "@/lib/queries/feed"
 import { iconFor } from "@/lib/topics/icons"
 import { TopicIcon } from "@/components/landing/topic-icon"
+import { SourceView } from "@/components/ballot/source-view"
 
 /**
  * One verified position, at document scale rather than feed scale.
@@ -111,13 +112,12 @@ export function PositionCard({
             ? "1 source"
             : `${item.sourceDiversity.count} independent sources`}
         </span>
-
-        <span>
-          Quote verified · characters {item.span.start}&ndash;{item.span.end}
-        </span>
-
-        {item.candidateName && !showCandidate ? null : null}
       </footer>
+
+      {/* The character span used to be printed here as a bare number, which
+          told a reader we had checked something without letting them check it.
+          It now opens the stored document at that span. */}
+      <SourceView insightId={item.id} />
     </article>
   )
 }
