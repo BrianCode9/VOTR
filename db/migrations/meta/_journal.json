@@ -43,6 +43,13 @@
       "when": 1789859218768,
       "tag": "0005_secret_random",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1789862944845,
+      "tag": "0006_candidate_photos",
+      "breakpoints": true
     }
   ]
 }

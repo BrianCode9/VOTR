@@ -776,3 +776,17 @@ export const candidateSources = pgTable(
   (t) => [index("candidate_sources_candidate_idx").on(t.candidateId)],
 )
 
+/** A reusable portrait with attribution and license metadata. */
+export const candidatePhotos = pgTable("candidate_photos", {
+  candidateId: uuid("candidate_id")
+    .primaryKey()
+    .references(() => candidates.id, { onDelete: "cascade" }),
+  imageUrl: text("image_url").notNull(),
+  sourcePage: text("source_page").notNull(),
+  filePage: text("file_page").notNull(),
+  creator: text("creator"),
+  licenseName: text("license_name").notNull(),
+  licenseUrl: text("license_url"),
+  fetchedAt: timestamp("fetched_at", { withTimezone: true }).notNull().defaultNow(),
+})
+

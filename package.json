@@ -21,6 +21,7 @@
     "data:policies": "tsx scripts/import-policy-evidence.ts",
     "data:verify": "tsx scripts/verify-candidate-import.ts",
     "data:fetch": "node scripts/fetch-candidate-sources.mjs",
+    "photos:import": "node scripts/import-candidate-photos.mjs",
     "feed": "tsx scripts/feed.ts",
     "verify:core": "tsx scripts/verify-core.ts",
     "seed:demo": "tsx scripts/seed-demo.ts",
