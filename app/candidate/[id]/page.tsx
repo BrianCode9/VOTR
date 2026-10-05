@@ -57,11 +57,11 @@ export default async function CandidatePage({ params }: PageProps<"/candidate/[i
         <section className="border-b border-hairline bg-mist py-10 sm:py-12">
           <Container>
             <Link
-              href={`/ballot/${candidate.state}`}
+              href={candidate.currentOfficeholder ? "/candidates" : `/ballot/${candidate.state}`}
               className="inline-flex items-center gap-1.5 font-mono text-[11px] tracking-[-0.01em] text-slate-ink transition-colors hover:text-brand"
             >
               <ArrowLeft className="size-3.5" aria-hidden="true" />
-              {candidate.stateName} ballot
+              {candidate.currentOfficeholder ? "Politician directory" : `${candidate.stateName} ballot`}
             </Link>
 
             <div className="mt-6 flex flex-col gap-6 sm:flex-row sm:items-start">
@@ -73,17 +73,22 @@ export default async function CandidatePage({ params }: PageProps<"/candidate/[i
                 </h1>
 
                 <p className="mt-2 text-base text-slate-ink sm:text-lg">
-                  Candidate for {candidate.office}
+                  {candidate.currentOfficeholder ? "Currently serving as" : "Candidate for"} {candidate.office}
                 </p>
 
                 <div className="mt-4 flex flex-wrap items-center gap-2">
                   <Chip>{candidate.party}</Chip>
-                  {candidate.incumbent ? <Chip>Incumbent</Chip> : null}
+                  {candidate.currentOfficeholder ? <Chip>Current officeholder</Chip> : candidate.incumbent ? <Chip>Incumbent</Chip> : null}
                   <Chip>
                     <MapPin className="size-3" aria-hidden="true" />
                     {candidate.districtName}
                   </Chip>
-                  {electionDay ? (
+                  {candidate.officeholderDetails ? (
+                    <Chip>
+                      <CalendarDays className="size-3" aria-hidden="true" />
+                      Term ends {formatElectionDate(candidate.officeholderDetails.termEnd, true)}
+                    </Chip>
+                  ) : electionDay ? (
                     <Chip>
                       <CalendarDays className="size-3" aria-hidden="true" />
                       {formatElectionDate(electionDay, true)}
@@ -133,7 +138,9 @@ export default async function CandidatePage({ params }: PageProps<"/candidate/[i
                       className="inline-flex items-center gap-1.5 transition-colors hover:text-brand"
                     >
                       <BadgeCheck className="size-3.5 text-brand" aria-hidden="true" />
-                      {candidate.certified
+                      {candidate.currentOfficeholder
+                        ? `Current roster: ${candidate.source.name}`
+                        : candidate.certified
                         ? `Certified by ${candidate.source.name}`
                         : `Declared with the ${candidate.source.name}`}
                     </a>
@@ -147,10 +154,39 @@ export default async function CandidatePage({ params }: PageProps<"/candidate/[i
                       className="inline-flex items-center gap-1.5 transition-colors hover:text-brand"
                     >
                       <ExternalLink className="size-3" aria-hidden="true" />
-                      Campaign website
+                      {candidate.currentOfficeholder ? "Official website" : "Campaign website"}
+                    </a>
+                  ) : null}
+
+                  {candidate.officeholderDetails?.contactForm ? (
+                    <a
+                      href={candidate.officeholderDetails.contactForm}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      className="inline-flex items-center gap-1.5 transition-colors hover:text-brand"
+                    >
+                      <ExternalLink className="size-3" aria-hidden="true" />
+                      Contact office
                     </a>
                   ) : null}
                 </div>
+
+                {candidate.officeholderDetails?.phone || candidate.officeholderDetails?.officeAddress ? (
+                  <dl className="mt-4 grid max-w-xl gap-2 text-sm text-slate-ink sm:grid-cols-2">
+                    {candidate.officeholderDetails.phone ? (
+                      <div>
+                        <dt className="font-medium text-navy">Washington office phone</dt>
+                        <dd><a className="hover:text-brand hover:underline" href={`tel:${candidate.officeholderDetails.phone}`}>{candidate.officeholderDetails.phone}</a></dd>
+                      </div>
+                    ) : null}
+                    {candidate.officeholderDetails.officeAddress ? (
+                      <div>
+                        <dt className="font-medium text-navy">Washington office</dt>
+                        <dd>{candidate.officeholderDetails.officeAddress}</dd>
+                      </div>
+                    ) : null}
+                  </dl>
+                ) : null}
               </div>
             </div>
           </Container>

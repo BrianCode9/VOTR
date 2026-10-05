@@ -1,6 +1,6 @@
 # Status
 
-Against the build order in `docs/VOTR-spec.md` section 13. Last updated 2026-09-19.
+Against the build order in `docs/VOTR-spec.md` section 13. Last updated 2026-09-20.
 
 The API contract the frontend is being built against is `docs/openapi.yaml`,
 and the enums it branches on are explained in the README. Both are the
@@ -39,6 +39,7 @@ sixteen CTAs were fragment links to other sections of the landing page.
 | `/` | Asks where you vote. The form is the hero, not section eight. |
 | `/ballot/[state]?district=N` | Your races, your candidates. The dashboard. |
 | `/candidate/[id]` | One person, their verified quotes, their certified filing. |
+| `/candidates?q=NAME` | Search candidate filings by name, with neutral alphabetical results. |
 | `/ballot/[state]/topic/[slug]` | One issue across your whole ballot. |
 
 `/feed` still serves every verified insight and is reachable from the footer.
@@ -80,7 +81,7 @@ npm run persist      # extract + verify + store insights
 npm run seed:demo    # demo fixtures, no model call, for frontend work
 npm run backfill     # one-time after migration 0003
 npm run corroborate  # recompute source-diversity counts
-npm test             # 225 tests, no database or API key needed
+npm test             # 228 tests, no database or API key needed
 npm run data:repair-names   # carry a source-parser fix into existing rows
 ```
 

@@ -18,6 +18,7 @@ npm run dev
 /ballot/[state]?district=N   your races and candidates
 /candidate/[id]              one person, their verified quotes and background
 /ballot/[state]/topic/[slug] one issue across your ballot
+/candidates?q=NAME           search candidate filings by name
 /feed                        every verified quote (not in the main flow)
 ```
 
@@ -34,7 +35,7 @@ JavaScript disabled.
 | Candidate photos | 484 across 48 states |
 | Published verified positions | CA 23, MD 19, PA 163, WV 38; 0 in the other 46 states |
 | PA/WV candidate backgrounds | 28 sourced backgrounds across 35 researched candidates |
-| Tests | 225 passing, plus 9 source-parser tests in `scripts/test-candidate-parsers.py` |
+| Tests | 228 passing, plus 9 source-parser tests in `scripts/test-candidate-parsers.py` |
 | Speaker backfill | Run; 4,310 people resolved |
 
 ### Ballot provenance
@@ -79,6 +80,8 @@ publish accessible policy material.
 - Landing-page candidate cards show available candidate portraits.
 - Candidate profiles now display sourced biography text with a link to its
   campaign or official-office source.
+- Candidate search is available at `/candidates`, with neutral alphabetical
+  results across the imported filing data.
 - FEC names parse from the source format instead of flipping on the first
   comma, so the generational suffix lands after the surname and the honorifics
   filers type into the name box are dropped: `GEORGE J JR KELLY` is now
@@ -118,12 +121,10 @@ from the end of a name, so correcting a spelling moves the identity key. Where
 the corrected key already belonged to another row the two rows were always one
 person, and they are merged: 8 such pairs, 4,310 speakers down to 4,302.
 
-**One pass is still outstanding.** The corrected names and the speaker merges
-are applied. The refresh of `candidate_sources.source_record`, which writes
-`filedName` and `droppedNameTokens` onto all 3,848 FEC rows, is written and
-dry-run but not applied; it reports `sourceRecordsRefreshed: 3848`. Run
-`npm run data:repair-names -- --apply` to finish it. The script is idempotent,
-so re-running it after that is a no-op.
+The corrected names, speaker merges, and `candidate_sources.source_record`
+refresh are applied. All 3,848 FEC rows now retain `filedName`, plus
+`droppedNameTokens` where applicable. The script is idempotent, so re-running
+it is a no-op.
 
 ## Unused after the strip-down
 

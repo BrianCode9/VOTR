@@ -54,6 +54,8 @@ export interface BallotCandidate {
    * which is a statement of intent to run, not a place on a ballot.
    */
   certified: boolean
+  /** True for a sitting member record, which is not itself a ballot line. */
+  currentOfficeholder: boolean
 }
 
 export interface BallotRace {
@@ -138,6 +140,7 @@ interface BallotRow {
   photo_license_url: string | null
   position_count: number
   certified: boolean
+  current_officeholder: boolean
   race_id: string
   office: string
   level: "federal" | "state" | "local"
@@ -171,6 +174,7 @@ function toCandidate(row: BallotRow): BallotCandidate {
         : null,
     positionCount: row.position_count,
     certified: row.certified,
+    currentOfficeholder: row.current_officeholder,
   }
 }
 
@@ -210,6 +214,7 @@ export async function getBallot(
           cp.license_url           as photo_license_url,
           coalesce(pos.n, 0)::int  as position_count,
           (cs.candidacy_status <> 'fec_filing_not_ballot_verified') as certified,
+          (cs.candidacy_status = 'current_officeholder') as current_officeholder,
           r.id                     as race_id,
           r.office,
           r.level,
@@ -235,6 +240,7 @@ export async function getBallot(
           -- between a ballot and a mailing list. "C" and the state-certified
           -- rows survive.
           and coalesce(cs.source_record->>'candidateStatusCode', 'C') <> 'N'
+          and cs.candidacy_status <> 'current_officeholder'
         order by r.level, r.office, c.name
       `)),
     ]
@@ -339,6 +345,7 @@ export async function getStatesWithBallots(): Promise<
       join candidate_sources cs on cs.candidate_id = c.id
       left join insights i on i.candidate_id = c.id and i.status = 'published'
       where d.geo_id <> 'DEMO-01'
+        and cs.candidacy_status <> 'current_officeholder'
       group by d.state
       order by d.state
     `)
@@ -358,6 +365,14 @@ export interface CandidateProfile extends BallotCandidate {
   electionDate: Date | null
   /** The person, not the ballot line. What the timeline query takes. */
   speakerId: string | null
+  officeholderDetails: {
+    termStart: string
+    termEnd: string
+    contactForm: string | null
+    phone: string | null
+    officeAddress: string | null
+    bioguideId: string
+  } | null
 }
 
 /** One candidate, for the profile page. Null when the id is not a real filing. */
@@ -370,18 +385,34 @@ export async function getCandidate(id: string): Promise<CandidateProfile | null>
 
   try {
     const rows = await db.execute<
-      BallotRow & { state: string; speaker_id: string | null; background: CandidateProfile["background"] }
+      BallotRow & {
+        state: string
+        speaker_id: string | null
+        background: CandidateProfile["background"]
+        officeholder_details: CandidateProfile["officeholderDetails"]
+      }
     >(sql`
       select
         c.id as candidate_id, c.name as candidate_name, c.party, c.incumbent,
         c.speaker_id,
         cs.source_record->'votrBackground' as background,
+        case when cs.candidacy_status = 'current_officeholder' then
+          jsonb_build_object(
+            'termStart', cs.source_record->>'termStart',
+            'termEnd', cs.source_record->>'termEnd',
+            'contactForm', cs.source_record->>'contactForm',
+            'phone', cs.source_record->>'phone',
+            'officeAddress', cs.source_record->>'officeAddress',
+            'bioguideId', cs.source_record->>'bioguideId'
+          )
+        else null end as officeholder_details,
         cs.biography as ballot_designation, cs.campaign_website,
         cs.source_name, cs.source_url,
         cp.image_url as photo_url, cp.file_page as photo_file_page,
         cp.creator as photo_creator, cp.license_name as photo_license_name,
         cp.license_url as photo_license_url,
         (cs.candidacy_status <> 'fec_filing_not_ballot_verified') as certified,
+        (cs.candidacy_status = 'current_officeholder') as current_officeholder,
         coalesce((select count(*) from insights i
                    where i.candidate_id = c.id and i.status = 'published'), 0)::int
           as position_count,
@@ -409,6 +440,7 @@ export async function getCandidate(id: string): Promise<CandidateProfile | null>
       electionDate: row.election_date ? new Date(row.election_date) : null,
       speakerId: row.speaker_id,
       background: row.background ?? null,
+      officeholderDetails: row.officeholder_details ?? null,
     }
   } catch {
     return null

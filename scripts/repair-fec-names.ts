@@ -123,8 +123,13 @@ async function main() {
           const want = fec.get(s.candidate_id)!.sourceRecord
           // Only the two name keys are written; the bulk-source provenance the
           // importer added is left exactly as it is.
-          const patch: Record<string, unknown> = { filedName: want.filedName ?? null }
-          if (want.droppedNameTokens) patch.droppedNameTokens = want.droppedNameTokens
+          const filedName = typeof want.filedName === "string" ? want.filedName : null
+          const droppedNameTokens = Array.isArray(want.droppedNameTokens)
+            && want.droppedNameTokens.every((token) => typeof token === "string")
+              ? want.droppedNameTokens
+              : undefined
+          const patch: { filedName: string | null; droppedNameTokens?: string[] } = { filedName }
+          if (droppedNameTokens) patch.droppedNameTokens = droppedNameTokens
           await tx`
             update candidate_sources
                set source_record = source_record || ${sql.json(patch)}::jsonb

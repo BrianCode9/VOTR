@@ -5,7 +5,7 @@
   "sourceRecordsRefreshed": 3848,
   "speakersRepaired": 0,
   "speakersMerged": 0,
-  "applied": false,
+  "applied": true,
   "merges": [],
   "examples": []
 }

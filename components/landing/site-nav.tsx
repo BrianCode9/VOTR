@@ -23,7 +23,7 @@ import {
  * does nothing, which is the failure this refactor is about.
  */
 const LINKS = [
-  { href: "/#featured", label: "Candidates" },
+  { href: "/candidates", label: "Candidates" },
   { href: "/#local", label: "State" },
 ] as const
 
@@ -80,14 +80,12 @@ export function SiteNav({ startHref = "/#start" }: { startHref?: string }) {
         </ul>
 
         <div className="ml-auto flex items-center gap-2">
-          {/* Jumps to the real address lookup rather than pretending to be a
-              live search field. */}
           <Link
-            href={startHref}
+            href="/candidates"
             className="hidden items-center gap-2 rounded-full border border-hairline bg-sheet/70 py-2 pr-4 pl-3 text-sm text-slate-ink/80 transition-colors hover:border-brand/40 hover:text-navy focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand lg:inline-flex"
           >
             <Search className="size-4" aria-hidden="true" />
-            Find your ballot
+            Search candidates
           </Link>
 
           <Button

@@ -27,7 +27,10 @@
     "seed:demo": "tsx scripts/seed-demo.ts",
     "corroborate": "tsx scripts/corroborate.ts",
     "backfill": "tsx scripts/backfill.ts",
-    "data:repair-names": "tsx scripts/repair-fec-names.ts"
+    "data:repair-names": "tsx scripts/repair-fec-names.ts",
+    "federal:prepare": "node scripts/prepare-federal-officeholders.mjs",
+    "federal:import": "node --import tsx scripts/import-federal-officeholders.ts",
+    "federal:test": "node --test scripts/prepare-federal-officeholders.test.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.127.0",
